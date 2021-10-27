@@ -2,17 +2,16 @@ package metadata
 
 import (
 	"fmt"
-	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
-	"github.com/msvens/mpimage/metadata/ifdexif"
-	"github.com/msvens/mpimage/metadata/ifdroot"
-	"github.com/msvens/mpimage/metadata/iptc2"
+	"github.com/msvens/mimage/metadata/ifdexif"
+	"github.com/msvens/mimage/metadata/ifdroot"
+	"github.com/msvens/mimage/metadata/iptc2"
 	"trimmer.io/go-xmp/models/dc"
 	"trimmer.io/go-xmp/models/ps"
 	xmpbase "trimmer.io/go-xmp/models/xmp_base"
 )
 
-func (md *MetaData) extractSummary(segments *jpegstructure.SegmentList) error {
-	var exifErr,iptcErr,xmpErr error
+func (md *MetaData) extractSummary() error {
+	var exifErr, iptcErr, xmpErr error
 
 	md.Summary = &ExifCompact{}
 
@@ -73,7 +72,7 @@ func (md *MetaData) extractExifTags() error {
 			err = e
 		}
 	}
-	
+
 	scanR(ifdroot.Make, &md.Summary.CameraMake)
 	scanR(ifdroot.Model, &md.Summary.CameraModel)
 	scanR(ifdroot.LensInfo, &md.Summary.LensInfo)

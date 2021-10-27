@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/msvens/mpimage/metadata"
+	"github.com/msvens/mimage/metadata"
 )
 
 func main() {
 
-	fname := "/Users/mellowtech/go/src/github.com/msvens/mimage/assets/nikon.jpg"
+	fname := "/Users/mellowtech/go/src/github.com/msvens/mimage/assets/leica.jpg"
 
-	md, err := metadata.NewMetaDataFromJpegFile(fname);
+	md, err := metadata.NewMetaDataFromJpegFile(fname)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

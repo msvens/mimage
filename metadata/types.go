@@ -91,7 +91,7 @@ func (ec ExifCompact) String() string {
 	fmt.Fprintf(sb, "  Max Aperture Value: %v\n", ec.MaxApertureValue.Float32())
 	fmt.Fprintf(sb, "  Flash Mode: %v\n", FlashModeName(ec.Flash))
 	fmt.Fprintf(sb, "  Exposure Time: %v\n", ec.ExposureTime)
-	fmt.Fprintf(sb, "  Exposure Compensation: %v\n", ec.ExposureCompensation)
+	fmt.Fprintf(sb, "  Exposure Compensation: %v\n", ec.ExposureCompensation.Float32())
 	fmt.Fprintf(sb, "  Exposure Program: %v\n", ExposureProgamName(ec.ExposureProgram))
 	fmt.Fprintf(sb, "  Fnumber: %v\n", ec.FNumber.Float32())
 	fmt.Fprintf(sb, "  ISO: %v\n", ec.ISO)

@@ -6,8 +6,8 @@ import (
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
-	"github.com/msvens/mpimage/metadata/iptc1"
-	"github.com/msvens/mpimage/metadata/iptc2"
+	"github.com/msvens/mimage/metadata/iptc1"
+	"github.com/msvens/mimage/metadata/iptc2"
 	"io/ioutil"
 	_ "trimmer.io/go-xmp/models"
 	"trimmer.io/go-xmp/xmp"
@@ -39,8 +39,7 @@ func NewMetaDataJpeg(data []byte) (*MetaData, error) {
 	ret.xmp, xmpErr = loadXmp(segments)
 
 	//Extract Summary:
-	ret.Summary = &ExifCompact{}
-	summaryErr := ret.extractSummary(segments)
+	summaryErr := ret.extractSummary()
 
 	//Extract ImageWidth/Height
 	//ImageWidth/Height
@@ -51,7 +50,6 @@ func NewMetaDataJpeg(data []byte) (*MetaData, error) {
 
 	ret.ImageWidth = uint(img.Bounds().Dx())
 	ret.ImageHeight = uint(img.Bounds().Dy())
-
 
 	if exifErr != nil && iptcErr != nil && xmpErr != nil {
 		return &MetaData{}, fmt.Errorf("Could not read any metadata (exif, iptc, xmp)")
@@ -84,7 +82,7 @@ func (md *MetaData) HasIptc() bool {
 	}
 }
 
-func (md *MetaData) IfdRoot() *exif.Ifd{
+func (md *MetaData) IfdRoot() *exif.Ifd {
 	if md.HasExif() {
 		return md.ifd.RootIfd
 	} else {
@@ -92,7 +90,7 @@ func (md *MetaData) IfdRoot() *exif.Ifd{
 	}
 }
 
-func (md *MetaData) IfdExif() *exif.Ifd{
+func (md *MetaData) IfdExif() *exif.Ifd {
 	if md.HasExif() {
 		return md.ifd.Lookup["IFD/Exif"]
 	} else {
@@ -145,7 +143,7 @@ func loadExif(segments *jpegstructure.SegmentList) (*exif.IfdIndex, error) {
 	var ifdMapping *exifcommon.IfdMapping
 
 	var err error
-	if _,rawExif,err = segments.Exif(); err != nil {
+	if _, rawExif, err = segments.Exif(); err != nil {
 		return nil, err
 	}
 	if ifdMapping, err = exifcommon.NewIfdMappingWithStandard(); err != nil {

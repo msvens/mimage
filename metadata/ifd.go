@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
-	"github.com/msvens/mpimage/metadata/ifdexif"
-	"github.com/msvens/mpimage/metadata/ifdroot"
+	"github.com/msvens/mimage/metadata/ifdexif"
+	"github.com/msvens/mimage/metadata/ifdroot"
 	"time"
 )
 

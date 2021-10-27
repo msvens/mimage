@@ -3,19 +3,19 @@ package metadata
 import (
 	"fmt"
 	"github.com/dsoprea/go-iptc"
-	"github.com/msvens/mpimage/metadata/iptc1"
-	"github.com/msvens/mpimage/metadata/iptc2"
+	"github.com/msvens/mimage/metadata/iptc1"
+	"github.com/msvens/mimage/metadata/iptc2"
 	"strings"
 )
 
 func DumpIPTCTags(tags map[iptc.StreamTagKey][]iptc.TagData) {
-	for k,v := range tags {
+	for k, v := range tags {
 		name := IptcTagName(k.RecordNumber, k.DatasetNumber)
 		str := []string{}
-		for _,data := range v {
+		for _, data := range v {
 			str = append(str, string(data))
 		}
-		fmt.Printf("%s (%v,%v): [%s]\n",name,k.RecordNumber, k.DatasetNumber, strings.Join(str,", "))
+		fmt.Printf("%s (%v,%v): [%s]\n", name, k.RecordNumber, k.DatasetNumber, strings.Join(str, ", "))
 	}
 }
 
@@ -54,7 +54,7 @@ func scanIptcTag(tags map[iptc.StreamTagKey][]iptc.TagData, record, dataset uint
 			wrongType = true
 		}
 	case *[]string:
-		for _,v := range tagData {
+		for _, v := range tagData {
 			if v.IsPrintable() {
 				*dtype = append(*dtype, string(v))
 			} else {
