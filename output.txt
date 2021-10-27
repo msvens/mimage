@@ -1,0 +1,780 @@
+(0,0)-(2048,1367)
+Had XMP data
+LEICA Q2
+Camera Make:  LEICA Q2
+Camera Model:  LEICA Q2
+title: Morning Fog
+keywords:  
+Object Name: Morning Fog
+Date Created: 20201027
+Time Created: 093403+0200
+Digital Creation Date: 20201027
+Digital Creation Time: 093403+0200
+1:90 (not a standard tag): [BINARY] 1b 25 47
+Record Version: [BINARY] 00 04
+LEICA Q2
+Ifd<ID=(0) IFD-PATH=[IFD] INDEX=(0) COUNT=(8) OFF=(0x0008) CHILDREN=(1) PARENT=(0x0000) NEXT-IFD=(0x034a)>
+Ifd<ID=(1) IFD-PATH=[IFD/Exif] INDEX=(0) COUNT=(35) OFF=(0x00e0) CHILDREN=(0) PARENT=(0x0008) NEXT-IFD=(0x0000)>
+Ifd<ID=(2) IFD-PATH=[IFD] INDEX=(1) COUNT=(6) OFF=(0x034a) CHILDREN=(0) PARENT=(0x0000) NEXT-IFD=(0x0000)>
+[
+    {
+      "ifd_path": "IFD",
+      "id": 271,
+      "name": "Make",
+      "unit_count": 16,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "LEICA CAMERA AG",
+      "value_bytes": "TEVJQ0EgQ0FNRVJBIEFHAA==",
+      "formatted_first": "LEICA CAMERA AG",
+      "formatted": "LEICA CAMERA AG",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD",
+      "id": 272,
+      "name": "Model",
+      "unit_count": 9,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "LEICA Q2",
+      "value_bytes": "TEVJQ0EgUTIA",
+      "formatted_first": "LEICA Q2",
+      "formatted": "LEICA Q2",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD",
+      "id": 282,
+      "name": "XResolution",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 144,
+          "Denominator": 1
+        }
+      ],
+      "value_bytes": "kAAAAAEAAAA=",
+      "formatted_first": "144/1",
+      "formatted": "[144/1]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD",
+      "id": 283,
+      "name": "YResolution",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 144,
+          "Denominator": 1
+        }
+      ],
+      "value_bytes": "kAAAAAEAAAA=",
+      "formatted_first": "144/1",
+      "formatted": "[144/1]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD",
+      "id": 296,
+      "name": "ResolutionUnit",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        2
+      ],
+      "value_bytes": "AgA=",
+      "formatted_first": "2",
+      "formatted": "[2]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD",
+      "id": 305,
+      "name": "Software",
+      "unit_count": 51,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "Adobe Photoshop Lightroom Classic 10.1 (Macintosh)",
+      "value_bytes": "QWRvYmUgUGhvdG9zaG9wIExpZ2h0cm9vbSBDbGFzc2ljIDEwLjEgKE1hY2ludG9zaCkA",
+      "formatted_first": "Adobe Photoshop Lightroom Classic 10.1 (Macintosh)",
+      "formatted": "Adobe Photoshop Lightroom Classic 10.1 (Macintosh)",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD",
+      "id": 306,
+      "name": "DateTime",
+      "unit_count": 20,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "2021:01:10 17:36:45",
+      "value_bytes": "MjAyMTowMToxMCAxNzozNjo0NQA=",
+      "formatted_first": "2021:01:10 17:36:45",
+      "formatted": "2021:01:10 17:36:45",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD",
+      "id": 34665,
+      "name": "ExifTag",
+      "unit_count": 1,
+      "type_id": 4,
+      "type_name": "LONG",
+      "value": [
+        224
+      ],
+      "value_bytes": "4AAAAA==",
+      "formatted_first": "224",
+      "formatted": "[224]",
+      "child_ifd_path": "IFD/Exif"
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 33434,
+      "name": "ExposureTime",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 1,
+          "Denominator": 250
+        }
+      ],
+      "value_bytes": "AQAAAPoAAAA=",
+      "formatted_first": "1/250",
+      "formatted": "[1/250]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 33437,
+      "name": "FNumber",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 25,
+          "Denominator": 10
+        }
+      ],
+      "value_bytes": "GQAAAAoAAAA=",
+      "formatted_first": "25/10",
+      "formatted": "[25/10]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 34850,
+      "name": "ExposureProgram",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        1
+      ],
+      "value_bytes": "AQA=",
+      "formatted_first": "1",
+      "formatted": "[1]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 34855,
+      "name": "ISOSpeedRatings",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        100
+      ],
+      "value_bytes": "ZAA=",
+      "formatted_first": "100",
+      "formatted": "[100]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 34864,
+      "name": "SensitivityType",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        1
+      ],
+      "value_bytes": "AQA=",
+      "formatted_first": "1",
+      "formatted": "[1]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 34865,
+      "name": "StandardOutputSensitivity",
+      "unit_count": 1,
+      "type_id": 4,
+      "type_name": "LONG",
+      "value": [
+        100
+      ],
+      "value_bytes": "ZAAAAA==",
+      "formatted_first": "100",
+      "formatted": "[100]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 36864,
+      "name": "ExifVersion",
+      "unit_count": 4,
+      "type_id": 7,
+      "type_name": "UNDEFINED",
+      "value": {
+        "ExifVersion": "0231"
+      },
+      "value_bytes": "MDIzMQ==",
+      "formatted_first": "0231",
+      "formatted": "0231",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 36867,
+      "name": "DateTimeOriginal",
+      "unit_count": 20,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "2020:10:27 09:34:03",
+      "value_bytes": "MjAyMDoxMDoyNyAwOTozNDowMwA=",
+      "formatted_first": "2020:10:27 09:34:03",
+      "formatted": "2020:10:27 09:34:03",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 36868,
+      "name": "DateTimeDigitized",
+      "unit_count": 20,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "2020:10:27 09:34:03",
+      "value_bytes": "MjAyMDoxMDoyNyAwOTozNDowMwA=",
+      "formatted_first": "2020:10:27 09:34:03",
+      "formatted": "2020:10:27 09:34:03",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 36880,
+      "name": "OffsetTime",
+      "unit_count": 7,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "+01:00",
+      "value_bytes": "KzAxOjAwAA==",
+      "formatted_first": "+01:00",
+      "formatted": "+01:00",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 36881,
+      "name": "OffsetTimeOriginal",
+      "unit_count": 7,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "+02:00",
+      "value_bytes": "KzAyOjAwAA==",
+      "formatted_first": "+02:00",
+      "formatted": "+02:00",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 36882,
+      "name": "OffsetTimeDigitized",
+      "unit_count": 7,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "+02:00",
+      "value_bytes": "KzAyOjAwAA==",
+      "formatted_first": "+02:00",
+      "formatted": "+02:00",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 37377,
+      "name": "ShutterSpeedValue",
+      "unit_count": 1,
+      "type_id": 10,
+      "type_name": "SRATIONAL",
+      "value": [
+        {
+          "Numerator": 7965784,
+          "Denominator": 1000000
+        }
+      ],
+      "value_bytes": "WIx5AEBCDwA=",
+      "formatted_first": "7965784/1000000",
+      "formatted": "[7965784/1000000]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 37378,
+      "name": "ApertureValue",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 2643856,
+          "Denominator": 1000000
+        }
+      ],
+      "value_bytes": "kFcoAEBCDwA=",
+      "formatted_first": "2643856/1000000",
+      "formatted": "[2643856/1000000]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 37380,
+      "name": "ExposureBiasValue",
+      "unit_count": 1,
+      "type_id": 10,
+      "type_name": "SRATIONAL",
+      "value": [
+        {
+          "Numerator": -3,
+          "Denominator": 10
+        }
+      ],
+      "value_bytes": "/f///woAAAA=",
+      "formatted_first": "-3/10",
+      "formatted": "[-3/10]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 37381,
+      "name": "MaxApertureValue",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 392,
+          "Denominator": 256
+        }
+      ],
+      "value_bytes": "iAEAAAABAAA=",
+      "formatted_first": "392/256",
+      "formatted": "[392/256]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 37383,
+      "name": "MeteringMode",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        5
+      ],
+      "value_bytes": "BQA=",
+      "formatted_first": "5",
+      "formatted": "[5]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 37384,
+      "name": "LightSource",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        0
+      ],
+      "value_bytes": "AAA=",
+      "formatted_first": "0",
+      "formatted": "[0]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 37385,
+      "name": "Flash",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        16
+      ],
+      "value_bytes": "EAA=",
+      "formatted_first": "16",
+      "formatted": "[16]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 37386,
+      "name": "FocalLength",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 280,
+          "Denominator": 10
+        }
+      ],
+      "value_bytes": "GAEAAAoAAAA=",
+      "formatted_first": "280/10",
+      "formatted": "[280/10]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 40961,
+      "name": "ColorSpace",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        1
+      ],
+      "value_bytes": "AQA=",
+      "formatted_first": "1",
+      "formatted": "[1]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41495,
+      "name": "SensingMethod",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        2
+      ],
+      "value_bytes": "AgA=",
+      "formatted_first": "2",
+      "formatted": "[2]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41728,
+      "name": "FileSource",
+      "unit_count": 1,
+      "type_id": 7,
+      "type_name": "UNDEFINED",
+      "value": 3,
+      "value_bytes": "AwAAAA==",
+      "formatted_first": "0x00000003",
+      "formatted": "0x00000003",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41985,
+      "name": "CustomRendered",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        0
+      ],
+      "value_bytes": "AAA=",
+      "formatted_first": "0",
+      "formatted": "[0]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41987,
+      "name": "WhiteBalance",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        0
+      ],
+      "value_bytes": "AAA=",
+      "formatted_first": "0",
+      "formatted": "[0]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41988,
+      "name": "DigitalZoomRatio",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 100,
+          "Denominator": 100
+        }
+      ],
+      "value_bytes": "ZAAAAGQAAAA=",
+      "formatted_first": "100/100",
+      "formatted": "[100/100]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41989,
+      "name": "FocalLengthIn35mmFilm",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        28
+      ],
+      "value_bytes": "HAA=",
+      "formatted_first": "28",
+      "formatted": "[28]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41990,
+      "name": "SceneCaptureType",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        0
+      ],
+      "value_bytes": "AAA=",
+      "formatted_first": "0",
+      "formatted": "[0]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41992,
+      "name": "Contrast",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        0
+      ],
+      "value_bytes": "AAA=",
+      "formatted_first": "0",
+      "formatted": "[0]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41993,
+      "name": "Saturation",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        0
+      ],
+      "value_bytes": "AAA=",
+      "formatted_first": "0",
+      "formatted": "[0]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 41994,
+      "name": "Sharpness",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        0
+      ],
+      "value_bytes": "AAA=",
+      "formatted_first": "0",
+      "formatted": "[0]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 42033,
+      "name": "BodySerialNumber",
+      "unit_count": 8,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "5367359",
+      "value_bytes": "NTM2NzM1OQA=",
+      "formatted_first": "5367359",
+      "formatted": "5367359",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 42034,
+      "name": "LensSpecification",
+      "unit_count": 4,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 2800,
+          "Denominator": 100
+        },
+        {
+          "Numerator": 2800,
+          "Denominator": 100
+        },
+        {
+          "Numerator": 392,
+          "Denominator": 256
+        },
+        {
+          "Numerator": 761,
+          "Denominator": 256
+        }
+      ],
+      "value_bytes": "8AoAAGQAAADwCgAAZAAAAIgBAAAAAQAA+QIAAAABAAA=",
+      "formatted_first": "2800/100...",
+      "formatted": "[2800/100 2800/100 392/256 761/256]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 42036,
+      "name": "LensModel",
+      "unit_count": 24,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "SUMMILUX 1:1.7/28 ASPH.",
+      "value_bytes": "U1VNTUlMVVggMToxLjcvMjggQVNQSC4A",
+      "formatted_first": "SUMMILUX 1:1.7/28 ASPH.",
+      "formatted": "SUMMILUX 1:1.7/28 ASPH.",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD/Exif",
+      "id": 42037,
+      "name": "LensSerialNumber",
+      "unit_count": 4,
+      "type_id": 2,
+      "type_name": "ASCII",
+      "value": "N/A",
+      "value_bytes": "Ti9BAA==",
+      "formatted_first": "N/A",
+      "formatted": "N/A",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD1",
+      "id": 259,
+      "name": "Compression",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        6
+      ],
+      "value_bytes": "BgA=",
+      "formatted_first": "6",
+      "formatted": "[6]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD1",
+      "id": 282,
+      "name": "XResolution",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 72,
+          "Denominator": 1
+        }
+      ],
+      "value_bytes": "SAAAAAEAAAA=",
+      "formatted_first": "72/1",
+      "formatted": "[72/1]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD1",
+      "id": 283,
+      "name": "YResolution",
+      "unit_count": 1,
+      "type_id": 5,
+      "type_name": "RATIONAL",
+      "value": [
+        {
+          "Numerator": 72,
+          "Denominator": 1
+        }
+      ],
+      "value_bytes": "SAAAAAEAAAA=",
+      "formatted_first": "72/1",
+      "formatted": "[72/1]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD1",
+      "id": 296,
+      "name": "ResolutionUnit",
+      "unit_count": 1,
+      "type_id": 3,
+      "type_name": "SHORT",
+      "value": [
+        2
+      ],
+      "value_bytes": "AgA=",
+      "formatted_first": "2",
+      "formatted": "[2]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD1",
+      "id": 513,
+      "name": "JPEGInterchangeFormat",
+      "unit_count": 1,
+      "type_id": 4,
+      "type_name": "LONG",
+      "value": [
+        936
+      ],
+      "value_bytes": "qAMAAA==",
+      "formatted_first": "936",
+      "formatted": "[936]",
+      "child_ifd_path": ""
+    },
+    {
+      "ifd_path": "IFD1",
+      "id": 514,
+      "name": "JPEGInterchangeFormatLength",
+      "unit_count": 1,
+      "type_id": 4,
+      "type_name": "LONG",
+      "value": [
+        10590
+      ],
+      "value_bytes": "XikAAA==",
+      "formatted_first": "10590",
+      "formatted": "[10590]",
+      "child_ifd_path": ""
+    }
+  ]
