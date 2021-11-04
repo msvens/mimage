@@ -3,8 +3,6 @@ package metadata
 import (
 	"fmt"
 	"github.com/dsoprea/go-iptc"
-	"github.com/msvens/mimage/metadata/iptc1"
-	"github.com/msvens/mimage/metadata/iptc2"
 	"strings"
 )
 
@@ -22,10 +20,10 @@ func DumpIPTCTags(tags map[iptc.StreamTagKey][]iptc.TagData) {
 func IptcTagName(record, dataset uint8) string {
 	var str string
 	var found bool
-	if record == iptc1.Record {
-		str, found = iptc1.TagNames[dataset]
-	} else if record == iptc2.Record {
-		str, found = iptc2.TagNames[dataset]
+	if record == IPTCEnvelop {
+		str, found = Iptc1Name[dataset]
+	} else if record == IPTCApplication {
+		str, found = Iptc2Name[dataset]
 	} else {
 		found = false //unneeded but nice for clarity
 	}

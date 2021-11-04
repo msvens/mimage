@@ -6,8 +6,6 @@ import (
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
-	"github.com/msvens/mimage/metadata/iptc1"
-	"github.com/msvens/mimage/metadata/iptc2"
 	"io/ioutil"
 	_ "trimmer.io/go-xmp/models"
 	"trimmer.io/go-xmp/xmp"
@@ -106,32 +104,40 @@ func (md *MetaData) IfdGPS() *exif.Ifd {
 	}
 }
 
+func (md *MetaData) PrintIfd() string {
+	if md.HasExif() {
+		return PrintExif(md.ifd)
+	} else {
+		return "No Exif Defined"
+	}
+}
+
 func (md *MetaData) ScanIfdRootTag(tagId uint16, dest interface{}) error {
 	if !md.HasExif() {
 		return NoExifErr
 	}
-	return scanIfdTag(md.IfdRoot(), tagId, dest)
+	return ScanIfdTag(md.IfdRoot(), tagId, dest)
 }
 
 func (md *MetaData) ScanIfdExifTag(tagId uint16, dest interface{}) error {
 	if !md.HasExif() {
 		return NoExifErr
 	}
-	return scanIfdTag(md.IfdExif(), tagId, dest)
+	return ScanIfdTag(md.IfdExif(), tagId, dest)
 }
 
 func (md *MetaData) ScanIptc1Tag(dataset uint8, dest interface{}) error {
 	if !md.HasIptc() {
 		return NoIptcErr
 	}
-	return scanIptcTag(md.iptc, iptc1.Record, dataset, dest)
+	return scanIptcTag(md.iptc, IPTCEnvelop, dataset, dest)
 }
 
 func (md *MetaData) ScanIptc2Tag(dataset uint8, dest interface{}) error {
 	if !md.HasIptc() {
 		return NoIptcErr
 	}
-	return scanIptcTag(md.iptc, iptc2.Record, dataset, dest)
+	return scanIptcTag(md.iptc, IPTCApplication, dataset, dest)
 }
 
 func (md *MetaData) Xmp() *xmp.Document {
@@ -150,6 +156,7 @@ func loadExif(segments *jpegstructure.SegmentList) (*exif.IfdIndex, error) {
 		return nil, err
 	}
 	ti := exif.NewTagIndex()
+	exif.LoadStandardTags(ti)
 
 	if _, index, err := exif.Collect(ifdMapping, ti, rawExif); err != nil {
 		return nil, err

@@ -1,0 +1,855 @@
+{
+  "IPTCApplication": {
+    "id": 2,
+    "name": "IPTCApplication",
+    "records": [
+      {
+        "id": 0,
+        "name": "ApplicationRecordVersion",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 3,
+        "name": "ObjectTypeReference",
+        "typeName": "string",
+        "minLength": 3,
+        "maxLength": 67
+      },
+      {
+        "id": 4,
+        "name": "ObjectAttributeReference",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 5,
+        "name": "ObjectName",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 64
+      },
+      {
+        "id": 7,
+        "name": "EditStatus",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 64
+      },
+      {
+        "id": 8,
+        "name": "EditorialUpdate",
+        "typeName": "digits",
+        "minLength": 2,
+        "maxLength": 0
+      },
+      {
+        "id": 10,
+        "name": "Urgency",
+        "typeName": "digits",
+        "minLength": 1,
+        "maxLength": 0
+      },
+      {
+        "id": 12,
+        "name": "SubjectReference",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 15,
+        "name": "Category",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 3
+      },
+      {
+        "id": 20,
+        "name": "SupplementalCategories",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 22,
+        "name": "FixtureIdentifier",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 25,
+        "name": "Keywords",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 26,
+        "name": "ContentLocationCode",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 27,
+        "name": "ContentLocationName",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 30,
+        "name": "ReleaseDate",
+        "typeName": "digits",
+        "minLength": 8,
+        "maxLength": 0
+      },
+      {
+        "id": 35,
+        "name": "ReleaseTime",
+        "typeName": "string",
+        "minLength": 11,
+        "maxLength": 0
+      },
+      {
+        "id": 37,
+        "name": "ExpirationDate",
+        "typeName": "digits",
+        "minLength": 8,
+        "maxLength": 0
+      },
+      {
+        "id": 38,
+        "name": "ExpirationTime",
+        "typeName": "string",
+        "minLength": 11,
+        "maxLength": 0
+      },
+      {
+        "id": 40,
+        "name": "SpecialInstructions",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 256
+      },
+      {
+        "id": 42,
+        "name": "ActionAdvised",
+        "typeName": "digits",
+        "minLength": 2,
+        "maxLength": 0
+      },
+      {
+        "id": 45,
+        "name": "ReferenceService",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 47,
+        "name": "ReferenceDate",
+        "typeName": "digits",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 50,
+        "name": "ReferenceNumber",
+        "typeName": "digits",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 55,
+        "name": "DateCreated",
+        "typeName": "digits",
+        "minLength": 8,
+        "maxLength": 0
+      },
+      {
+        "id": 60,
+        "name": "TimeCreated",
+        "typeName": "string",
+        "minLength": 11,
+        "maxLength": 0
+      },
+      {
+        "id": 62,
+        "name": "DigitalCreationDate",
+        "typeName": "digits",
+        "minLength": 8,
+        "maxLength": 0
+      },
+      {
+        "id": 63,
+        "name": "DigitalCreationTime",
+        "typeName": "string",
+        "minLength": 11,
+        "maxLength": 0
+      },
+      {
+        "id": 65,
+        "name": "OriginatingProgram",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 70,
+        "name": "ProgramVersion",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 10
+      },
+      {
+        "id": 75,
+        "name": "ObjectCycle",
+        "typeName": "string",
+        "minLength": 1,
+        "maxLength": 0
+      },
+      {
+        "id": 80,
+        "name": "Byline",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 85,
+        "name": "BylineTitle",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 90,
+        "name": "City",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 92,
+        "name": "Sublocation",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 95,
+        "name": "ProvinceState",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 100,
+        "name": "CountryPrimaryLocationCode",
+        "typeName": "string",
+        "minLength": 3,
+        "maxLength": 0
+      },
+      {
+        "id": 101,
+        "name": "CountryPrimaryLocationName",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 64
+      },
+      {
+        "id": 103,
+        "name": "OriginalTransmissionReference",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 105,
+        "name": "Headline",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 256
+      },
+      {
+        "id": 110,
+        "name": "Credit",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 115,
+        "name": "Source",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 116,
+        "name": "CopyrightNotice",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 128
+      },
+      {
+        "id": 118,
+        "name": "Contact",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 120,
+        "name": "CaptionAbstract",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 2000
+      },
+      {
+        "id": 121,
+        "name": "LocalCaption",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 256
+      },
+      {
+        "id": 122,
+        "name": "WriterEditor",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 125,
+        "name": "RasterizedCaption",
+        "typeName": "undef",
+        "minLength": 7360,
+        "maxLength": 0
+      },
+      {
+        "id": 130,
+        "name": "ImageType",
+        "typeName": "string",
+        "minLength": 2,
+        "maxLength": 0
+      },
+      {
+        "id": 131,
+        "name": "ImageOrientation",
+        "typeName": "string",
+        "minLength": 1,
+        "maxLength": 0
+      },
+      {
+        "id": 135,
+        "name": "LanguageIdentifier",
+        "typeName": "string",
+        "minLength": 2,
+        "maxLength": 3
+      },
+      {
+        "id": 150,
+        "name": "AudioType",
+        "typeName": "string",
+        "minLength": 2,
+        "maxLength": 0
+      },
+      {
+        "id": 151,
+        "name": "AudioSamplingRate",
+        "typeName": "digits",
+        "minLength": 6,
+        "maxLength": 0
+      },
+      {
+        "id": 152,
+        "name": "AudioSamplingResolution",
+        "typeName": "digits",
+        "minLength": 2,
+        "maxLength": 0
+      },
+      {
+        "id": 153,
+        "name": "AudioDuration",
+        "typeName": "digits",
+        "minLength": 6,
+        "maxLength": 0
+      },
+      {
+        "id": 154,
+        "name": "AudioOutcue",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 64
+      },
+      {
+        "id": 184,
+        "name": "JobID",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 64
+      },
+      {
+        "id": 185,
+        "name": "MasterDocumentID",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 256
+      },
+      {
+        "id": 186,
+        "name": "ShortDocumentID",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 64
+      },
+      {
+        "id": 187,
+        "name": "UniqueDocumentID",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 128
+      },
+      {
+        "id": 188,
+        "name": "OwnerID",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 128
+      },
+      {
+        "id": 200,
+        "name": "ObjectPreviewFileFormat",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 201,
+        "name": "ObjectPreviewFileVersion",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 202,
+        "name": "ObjectPreviewData",
+        "typeName": "undef",
+        "minLength": 0,
+        "maxLength": 256000
+      },
+      {
+        "id": 221,
+        "name": "Prefs",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 64
+      },
+      {
+        "id": 225,
+        "name": "ClassifyState",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 64
+      },
+      {
+        "id": 228,
+        "name": "SimilarityIndex",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 32
+      },
+      {
+        "id": 230,
+        "name": "DocumentNotes",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 1024
+      },
+      {
+        "id": 231,
+        "name": "DocumentHistory",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 256
+      },
+      {
+        "id": 232,
+        "name": "ExifCameraInfo",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 4096
+      },
+      {
+        "id": 255,
+        "name": "CatalogSets",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      }
+    ]
+  },
+  "IPTCEnvelope": {
+    "id": 1,
+    "name": "IPTCEnvelope",
+    "records": [
+      {
+        "id": 0,
+        "name": "EnvelopeRecordVersion",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 5,
+        "name": "Destination",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 20,
+        "name": "FileFormat",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 22,
+        "name": "FileVersion",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 30,
+        "name": "ServiceIdentifier",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 10
+      },
+      {
+        "id": 40,
+        "name": "EnvelopeNumber",
+        "typeName": "digits",
+        "minLength": 8,
+        "maxLength": 0
+      },
+      {
+        "id": 50,
+        "name": "ProductID",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 60,
+        "name": "EnvelopePriority",
+        "typeName": "digits",
+        "minLength": 1,
+        "maxLength": 0
+      },
+      {
+        "id": 70,
+        "name": "DateSent",
+        "typeName": "digits",
+        "minLength": 8,
+        "maxLength": 0
+      },
+      {
+        "id": 80,
+        "name": "TimeSent",
+        "typeName": "string",
+        "minLength": 11,
+        "maxLength": 0
+      },
+      {
+        "id": 90,
+        "name": "CodedCharacterSet",
+        "typeName": "string",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 100,
+        "name": "UniqueObjectName",
+        "typeName": "string",
+        "minLength": 14,
+        "maxLength": 80
+      },
+      {
+        "id": 120,
+        "name": "ARMIdentifier",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 122,
+        "name": "ARMVersion",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      }
+    ]
+  },
+  "IPTCFotoStation": {
+    "id": 240,
+    "name": "IPTCFotoStation",
+    "records": null
+  },
+  "IPTCNewsPhoto": {
+    "id": 3,
+    "name": "IPTCNewsPhoto",
+    "records": [
+      {
+        "id": 0,
+        "name": "NewsPhotoVersion",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 10,
+        "name": "IPTCPictureNumber",
+        "typeName": "string",
+        "minLength": 16,
+        "maxLength": 0
+      },
+      {
+        "id": 20,
+        "name": "IPTCImageWidth",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 30,
+        "name": "IPTCImageHeight",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 40,
+        "name": "IPTCPixelWidth",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 50,
+        "name": "IPTCPixelHeight",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 55,
+        "name": "SupplementalType",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 60,
+        "name": "ColorRepresentation",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 64,
+        "name": "InterchangeColorSpace",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 65,
+        "name": "ColorSequence",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 66,
+        "name": "ICC_Profile",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 70,
+        "name": "ColorCalibrationMatrix",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 80,
+        "name": "LookupTable",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 84,
+        "name": "NumIndexEntries",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 85,
+        "name": "ColorPalette",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 86,
+        "name": "IPTCBitsPerSample",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 90,
+        "name": "SampleStructure",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 100,
+        "name": "ScanningDirection",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 102,
+        "name": "IPTCImageRotation",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 110,
+        "name": "DataCompressionMethod",
+        "typeName": "int32u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 120,
+        "name": "QuantizationMethod",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 125,
+        "name": "EndPoints",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 130,
+        "name": "ExcursionTolerance",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 135,
+        "name": "BitsPerComponent",
+        "typeName": "int8u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 140,
+        "name": "MaximumDensityRange",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 145,
+        "name": "GammaCompensatedValue",
+        "typeName": "int16u",
+        "minLength": 0,
+        "maxLength": 0
+      }
+    ]
+  },
+  "IPTCObjectData": {
+    "id": 8,
+    "name": "IPTCObjectData",
+    "records": [
+      {
+        "id": 10,
+        "name": "SubFile",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      }
+    ]
+  },
+  "IPTCPostObjectData": {
+    "id": 9,
+    "name": "IPTCPostObjectData",
+    "records": [
+      {
+        "id": 10,
+        "name": "ConfirmedObjectSize",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      }
+    ]
+  },
+  "IPTCPreObjectData": {
+    "id": 7,
+    "name": "IPTCPreObjectData",
+    "records": [
+      {
+        "id": 10,
+        "name": "SizeMode",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 20,
+        "name": "MaxSubfileSize",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 90,
+        "name": "ObjectSizeAnnounced",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      },
+      {
+        "id": 95,
+        "name": "MaximumObjectSize",
+        "typeName": "nonWriteable",
+        "minLength": 0,
+        "maxLength": 0
+      }
+    ]
+  }
+}

@@ -2,9 +2,6 @@ package metadata
 
 import (
 	"fmt"
-	"github.com/msvens/mimage/metadata/ifdexif"
-	"github.com/msvens/mimage/metadata/ifdroot"
-	"github.com/msvens/mimage/metadata/iptc2"
 	"trimmer.io/go-xmp/models/dc"
 	"trimmer.io/go-xmp/models/ps"
 	xmpbase "trimmer.io/go-xmp/models/xmp_base"
@@ -13,7 +10,7 @@ import (
 func (md *MetaData) extractSummary() error {
 	var exifErr, iptcErr, xmpErr error
 
-	md.Summary = &ExifCompact{}
+	md.Summary = &MetaDataSummary{}
 
 	if md.HasExif() {
 		exifErr = md.extractExifTags()
@@ -46,11 +43,11 @@ func (md *MetaData) extractSummary() error {
 func (md *MetaData) extractIPTC() error {
 	var err error
 
-	if err = md.ScanIptc2Tag(iptc2.ObjectName, &md.Summary.Title); err != nil {
+	if err = md.ScanIptc2Tag(Iptc2_ObjectName, &md.Summary.Title); err != nil {
 		fmt.Println(err)
 	}
 
-	if err = md.ScanIptc2Tag(iptc2.Keywords, &md.Summary.Keywords); err != nil {
+	if err = md.ScanIptc2Tag(Iptc2_Keywords, &md.Summary.Keywords); err != nil {
 		fmt.Println(err)
 	}
 
@@ -73,28 +70,28 @@ func (md *MetaData) extractExifTags() error {
 		}
 	}
 
-	scanR(ifdroot.Make, &md.Summary.CameraMake)
-	scanR(ifdroot.Model, &md.Summary.CameraModel)
-	scanR(ifdroot.LensInfo, &md.Summary.LensInfo)
-	scanE(ifdexif.LensModel, &md.Summary.LensModel)
-	scanE(ifdexif.LensMake, &md.Summary.LensMake)
-	scanE(ifdexif.FocalLength, &md.Summary.FocalLength)
-	scanE(ifdexif.FocalLengthIn35mmFilm, &md.Summary.FocalLengthIn35mmFormat)
-	scanE(ifdexif.MaxApertureValue, &md.Summary.MaxApertureValue)
-	scanE(ifdexif.Flash, &md.Summary.Flash)
-	scanE(ifdexif.ExposureTime, &md.Summary.ExposureTime)
-	scanE(ifdexif.ExposureBiasValue, &md.Summary.ExposureCompensation)
-	scanE(ifdexif.ExposureProgram, &md.Summary.ExposureProgram)
-	scanE(ifdexif.FNumber, &md.Summary.FNumber)
-	scanE(ifdexif.ISOSpeedRatings, &md.Summary.ISO)
-	scanE(ifdexif.ColorSpace, &md.Summary.ColorSpace)
-	scanR(ifdroot.XResolution, &md.Summary.XResolution)
-	scanR(ifdroot.YResolution, &md.Summary.YResolution)
-	scanE(ifdexif.OffsetTime, &md.Summary.OffsetTime)
-	scanE(ifdexif.OffsetTimeOriginal, &md.Summary.OffsetTimeOriginal)
-	scanR(ifdroot.DateTime, &md.Summary.DateTime)
-	scanE(ifdexif.DateTimeOriginal, &md.Summary.DateTimeOriginal)
-	scanR(ifdroot.Software, &md.Summary.Software)
+	scanR(IFD_Make, &md.Summary.CameraMake)
+	scanR(IFD_Model, &md.Summary.CameraModel)
+	scanR(IFD_LensInfo, &md.Summary.LensInfo)
+	scanE(Exif_LensModel, &md.Summary.LensModel)
+	scanE(Exif_LensMake, &md.Summary.LensMake)
+	scanE(Exif_FocalLength, &md.Summary.FocalLength)
+	scanE(Exif_FocalLengthIn35mmFilm, &md.Summary.FocalLengthIn35mmFormat)
+	scanE(Exif_MaxApertureValue, &md.Summary.MaxApertureValue)
+	scanE(Exif_Flash, &md.Summary.FlashMode)
+	scanE(Exif_ExposureTime, &md.Summary.ExposureTime)
+	scanE(Exif_ExposureBiasValue, &md.Summary.ExposureCompensation)
+	scanE(Exif_ExposureProgram, &md.Summary.ExposureProgram)
+	scanE(Exif_FNumber, &md.Summary.FNumber)
+	scanE(Exif_ISOSpeedRatings, &md.Summary.ISO)
+	scanE(Exif_ColorSpace, &md.Summary.ColorSpace)
+	scanR(IFD_XResolution, &md.Summary.XResolution)
+	scanR(IFD_YResolution, &md.Summary.YResolution)
+	scanE(Exif_OffsetTime, &md.Summary.OffsetTime)
+	scanE(Exif_OffsetTimeOriginal, &md.Summary.OffsetTimeOriginal)
+	scanR(IFD_DateTime, &md.Summary.DateTime)
+	scanE(Exif_DateTimeOriginal, &md.Summary.DateTimeOriginal)
+	scanR(IFD_Software, &md.Summary.Software)
 
 	md.Summary.OriginalDate, _ = ParseIfdDateTime(md.Summary.DateTimeOriginal, md.Summary.OffsetTimeOriginal)
 	md.Summary.ModifyDate, _ = ParseIfdDateTime(md.Summary.DateTime, md.Summary.OffsetTime)
