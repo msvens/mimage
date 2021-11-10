@@ -6,10 +6,31 @@ import (
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
+	"image/jpeg"
 	"io/ioutil"
 	_ "trimmer.io/go-xmp/models"
 	"trimmer.io/go-xmp/xmp"
 )
+
+func parseJpegFile(filename string) (*jpegstructure.SegmentList, []byte, error) {
+	if data, err := ioutil.ReadFile(filename); err != nil {
+		return nil, nil, err
+	} else {
+		sl, err := parseJpegBytes(data)
+		return sl, data, err
+	}
+}
+
+func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
+	jmp := jpegstructure.NewJpegMediaParser()
+
+	intfc, err := jmp.ParseBytes(data)
+	if err != nil {
+		return nil, err
+	}
+	segments := intfc.(*jpegstructure.SegmentList)
+	return segments, nil
+}
 
 func NewMetaDataFromJpegFile(filename string) (*MetaData, error) {
 	if data, err := ioutil.ReadFile(filename); err != nil {
@@ -21,15 +42,11 @@ func NewMetaDataFromJpegFile(filename string) (*MetaData, error) {
 
 func NewMetaDataJpeg(data []byte) (*MetaData, error) {
 	ret := MetaData{}
-	jmp := jpegstructure.NewJpegMediaParser()
-
-	intfc, err := jmp.ParseBytes(data)
+	segments, err := parseJpegBytes(data)
 	if err != nil {
 		return nil, err
 	}
-	segments := intfc.(*jpegstructure.SegmentList)
 
-	//segments.Print()
 	var exifErr, iptcErr, xmpErr error
 
 	ret.ifd, exifErr = loadExif(segments)
@@ -41,7 +58,7 @@ func NewMetaDataJpeg(data []byte) (*MetaData, error) {
 
 	//Extract ImageWidth/Height
 	//ImageWidth/Height
-	img, err := jmp.GetImage(bytes.NewReader(data))
+	img, err := jpeg.Decode(bytes.NewReader(data))
 	if err != nil {
 		return &ret, err
 	}
@@ -108,7 +125,19 @@ func (md *MetaData) PrintIfd() string {
 	if md.HasExif() {
 		return PrintExif(md.ifd)
 	} else {
-		return "No Exif Defined"
+		return "No Exif defined"
+	}
+}
+
+func (md *MetaData) WriteExif() error {
+	return nil
+}
+
+func (md *MetaData) PrintIptc() string {
+	if md.HasIptc() {
+		return PrintIptc(md.iptc)
+	} else {
+		return "No Iptc defined"
 	}
 }
 

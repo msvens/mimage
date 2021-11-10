@@ -11,11 +11,38 @@ import (
 const ExifDateTime = "2006:01:02 15:04:05"
 const ExifDateTimeOffset = "2006:01:02 15:04:05 -07:00"
 
+func TimeOffsetString(t time.Time) string {
+	_, offset := t.Zone()
+	sign := '+'
+	if offset < 0 {
+		sign = '-'
+		offset = -offset
+	}
+	h := offset / 3600
+	m := (offset % 3600) / 60
+	return fmt.Sprintf("%c%02v:%02v", sign, h, m)
+}
+
 func ParseIfdDateTime(dt string, offset string) (time.Time, error) {
 	if offset == "" {
 		return time.Parse(ExifDateTime, dt)
 	} else {
 		return time.Parse(ExifDateTimeOffset, dt+" "+offset)
+	}
+}
+
+func ExifTagName(ifd *exif.Ifd, fieldId uint16) string {
+	var name string
+	var found bool
+	if ifd.IfdIdentity().Name() == "IFD" {
+		name, found = IFDName[fieldId]
+	} else if ifd.IfdIdentity().Name() == "Exif" {
+		name, found = ExifName[fieldId]
+	}
+	if found {
+		return name
+	} else {
+		return "Unknown Ifd Identity"
 	}
 }
 
@@ -39,26 +66,6 @@ func PrintExif(ifdIndex *exif.IfdIndex) string {
 	sb.WriteString("}")
 	return sb.String()
 }
-
-func ExifTagName(ifd *exif.Ifd, fieldId uint16) string {
-	var name string
-	var found bool
-	if ifd.IfdIdentity().Name() == "IFD" {
-		name, found = IFDName[fieldId]
-	} else if ifd.IfdIdentity().Name() == "Exif" {
-		name, found = ExifName[fieldId]
-	}
-	if found {
-		return name
-	} else {
-		return "Unknown Ifd Identity"
-	}
-}
-
-/*
-func getIfdTagName(exifIfd *exif.Ifd, fieldId uint16) string {
-	return ExifTagName(exifIfd, fieldId)
-}*/
 
 func ScanIfdTag(ifd *exif.Ifd, tagId uint16, dest interface{}) error {
 	entries, err := ifd.FindTagWithId(tagId)
@@ -162,15 +169,19 @@ func ScanIfdTag(ifd *exif.Ifd, tagId uint16, dest interface{}) error {
 		} else {
 			wrongTagType = true
 		}
+	case *URat:
+		if entry.TagType() == exifcommon.TypeRational {
+			v := value.([]exifcommon.Rational)
+			dtype.Numerator = v[0].Numerator
+			dtype.Denominator = v[0].Denominator
+		} else {
+			wrongTagType = true
+		}
 	case *Rat:
 		if entry.TagType() == exifcommon.TypeSignedRational {
 			v := value.([]exifcommon.SignedRational)
-			dtype.Numerator = int64(v[0].Numerator)
-			dtype.Denominator = int64(v[0].Denominator)
-		} else if entry.TagType() == exifcommon.TypeRational {
-			v := value.([]exifcommon.Rational)
-			dtype.Numerator = int64(v[0].Numerator)
-			dtype.Denominator = int64(v[0].Denominator)
+			dtype.Numerator = v[0].Numerator
+			dtype.Denominator = v[0].Denominator
 		} else {
 			wrongTagType = true
 		}
@@ -183,4 +194,9 @@ func ScanIfdTag(ifd *exif.Ifd, tagId uint16, dest interface{}) error {
 		return fmt.Errorf("Wrong TagType: %s for destination", n)
 	}
 	return nil
+}
+
+//Writes exif tags from this MetaDataSummary. Will skip GPSInfo for now
+func WriteSummary(md *MetaDataSummary, dest []byte) ([]byte, error) {
+	return nil, nil
 }

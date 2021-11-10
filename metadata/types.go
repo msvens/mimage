@@ -18,9 +18,14 @@ type MetaData struct {
 	ImageHeight uint
 }
 
+type URat struct {
+	Numerator   uint32
+	Denominator uint32
+}
+
 type Rat struct {
-	Numerator   int64
-	Denominator int64
+	Numerator   int32
+	Denominator int32
 }
 
 type ItpcType uint16
@@ -37,6 +42,18 @@ func (r Rat) String() string {
 	return fmt.Sprintf("%v/%v", r.Numerator, r.Denominator)
 }
 
+func (r URat) Float64() float64 {
+	return float64(r.Numerator) / float64(r.Denominator)
+}
+
+func (r URat) Float32() float32 {
+	return float32(r.Numerator) / float32(r.Denominator)
+}
+
+func (r URat) String() string {
+	return fmt.Sprintf("%v/%v", r.Numerator, r.Denominator)
+}
+
 type MetaDataSummary struct {
 	Title                   string        `json:"title,omitempty"`
 	Keywords                []string      `json:"keywords,omitempty"`
@@ -47,18 +64,18 @@ type MetaDataSummary struct {
 	LensInfo                string        `json:"lensInfo,omitempty"`
 	LensModel               string        `json:"lensModel,omitempty"`
 	LensMake                string        `json:"lensMake,omitempty"`
-	FocalLength             Rat           `json:"focalLength,omitempty"`
+	FocalLength             URat          `json:"focalLength,omitempty"`
 	FocalLengthIn35mmFormat uint16        `json:"focalLengthIn35mmFormat,omitempty"`
-	MaxApertureValue        Rat           `json:"maxApertureValue,omitempty"`
+	MaxApertureValue        URat          `json:"maxApertureValue,omitempty"`
 	FlashMode               uint16        `json:"flashMode,omitempty"`
-	ExposureTime            Rat           `json:"exposureTime,omitempty"`
+	ExposureTime            URat          `json:"exposureTime,omitempty"`
 	ExposureCompensation    Rat           `json:"exposureCompensationn,omitempty"`
 	ExposureProgram         uint16        `json:"exposoureProgram,omitempty"`
-	FNumber                 Rat           `json:"fNumber,omitempty"`
+	FNumber                 URat          `json:"fNumber,omitempty"`
 	ISO                     uint16        `json:"ISO,omitempty"`
 	ColorSpace              uint16        `json:"colorSpace,omitempty"`
-	XResolution             Rat           `json:"xResolution,omitempty"`
-	YResolution             Rat           `json:"yResolution,omitempty"`
+	XResolution             URat          `json:"xResolution,omitempty"`
+	YResolution             URat          `json:"yResolution,omitempty"`
 	DateTimeOriginal        string        `json:"dateTimeOriginal,omitempty"`
 	OffsetTimeOriginal      string        `json:"offsetTimeOriginal,omitempty"`
 	DateTime                string        `json:"dateTime,omitempty"`

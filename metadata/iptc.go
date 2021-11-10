@@ -6,15 +6,17 @@ import (
 	"strings"
 )
 
-func DumpIPTCTags(tags map[iptc.StreamTagKey][]iptc.TagData) {
+func PrintIptc(tags map[iptc.StreamTagKey][]iptc.TagData) string {
+	buff := strings.Builder{}
 	for k, v := range tags {
 		name := IptcTagName(k.RecordNumber, k.DatasetNumber)
 		str := []string{}
 		for _, data := range v {
 			str = append(str, string(data))
 		}
-		fmt.Printf("%s (%v,%v): [%s]\n", name, k.RecordNumber, k.DatasetNumber, strings.Join(str, ", "))
+		buff.WriteString(fmt.Sprintf("%s (%v,%v): [%s]\n", name, k.RecordNumber, k.DatasetNumber, strings.Join(str, ", ")))
 	}
+	return buff.String()
 }
 
 func IptcTagName(record, dataset uint8) string {
