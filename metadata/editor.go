@@ -359,7 +359,7 @@ func (mde *MetaDataEditor) SetExifDate(dateTag ExifDate, time time.Time) error {
 			return err
 		}
 	default:
-		fmt.Errorf("Unknown date to set: %v", dateTag)
+		return fmt.Errorf("Unknown date to set: %v", dateTag)
 	}
 	return nil
 }

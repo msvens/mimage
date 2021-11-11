@@ -12,15 +12,6 @@ import (
 	"trimmer.io/go-xmp/xmp"
 )
 
-func parseJpegFile(filename string) (*jpegstructure.SegmentList, []byte, error) {
-	if data, err := ioutil.ReadFile(filename); err != nil {
-		return nil, nil, err
-	} else {
-		sl, err := parseJpegBytes(data)
-		return sl, data, err
-	}
-}
-
 func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
 	jmp := jpegstructure.NewJpegMediaParser()
 
@@ -185,7 +176,9 @@ func loadExif(segments *jpegstructure.SegmentList) (*exif.IfdIndex, error) {
 		return nil, err
 	}
 	ti := exif.NewTagIndex()
-	exif.LoadStandardTags(ti)
+	if err = exif.LoadStandardTags(ti); err != nil {
+		return nil, err
+	}
 
 	if _, index, err := exif.Collect(ifdMapping, ti, rawExif); err != nil {
 		return nil, err

@@ -195,8 +195,3 @@ func ScanIfdTag(ifd *exif.Ifd, tagId uint16, dest interface{}) error {
 	}
 	return nil
 }
-
-//Writes exif tags from this MetaDataSummary. Will skip GPSInfo for now
-func WriteSummary(md *MetaDataSummary, dest []byte) ([]byte, error) {
-	return nil, nil
-}
