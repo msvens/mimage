@@ -130,15 +130,11 @@ func anchor(ca CropAnchor) imaging.Anchor {
 	}
 }
 
-/*
-func hasCopyExif(dest []Options) bool {
-	for _, d := range dest {
-		if d.CopyExif {
-			return true
-		}
-	}
-	return false
-}*/
+//Create Options that default to crop center strategy, image quality 90% and Resize strategy lanczos
+func NewOptions(transform TransformType, width, height int, copyExif bool) Options {
+	return Options{Width: width, Height: height, Quality: 90, Anchor: Center,
+		Transform: transform, Strategy: Lanczos, CopyExif: copyExif}
+}
 
 func openForExifCopy(sourceFile string) (image.Image, []byte, error) {
 	srcBytes, err := ioutil.ReadFile(sourceFile)
