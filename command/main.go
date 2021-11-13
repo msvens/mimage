@@ -14,8 +14,8 @@ func main() {
 
 	//tryEditTags()
 	//tryCreateMetaData()
-	tryMetaDataCopy()
-	//tryImageTransform()
+	//tryMetaDataCopy()
+	tryImageTransform()
 	//tryImageDesc()
 	//tryUserComment()
 	//trySegments()
@@ -118,7 +118,7 @@ func tryMetaDataCopy() {
 		fmt.Println(err)
 	}
 	mde.PrintSegments()
-	fmt.Println("\n")
+	fmt.Println()
 	bytes, err := mde.Bytes()
 	mdeNew, _ := metadata.NewMetaDataEditor(bytes)
 	mdeNew.PrintSegments()
@@ -134,19 +134,14 @@ func tryImageTransform() {
 
 	oDir := "/Users/mellowtech/imgtest/"
 
-	tests := make([]img.DestImage, 5, 5)
-	tests[0] = img.DestImage{Width: 400, Height: 400, Quality: 90, Anchor: img.Center,
-		Transform: img.ResizeAndCrop, Strategy: img.Lanczos, FileName: oDir + "400x400.jpg"}
-	tests[1] = img.DestImage{Width: 1200, Height: 628, Quality: 90, Anchor: img.Center,
-		Transform: img.ResizeAndCrop, Strategy: img.Lanczos, FileName: oDir + "1200x628.jpg", CopyExif: true}
-	tests[2] = img.DestImage{Width: 1200, Height: 1200, Quality: 90, Anchor: img.Center,
-		Transform: img.ResizeAndCrop, Strategy: img.Lanczos, FileName: oDir + "1200x1200.jpg", CopyExif: true}
-	tests[3] = img.DestImage{Width: 1200, Height: 628, Quality: 90, Anchor: img.Center,
-		Transform: img.ResizeAndCrop, Strategy: img.Lanczos, FileName: oDir + "1080x1350.jpg", CopyExif: true}
-	tests[4] = img.DestImage{Width: 1200, Height: 1200, Quality: 90, Anchor: img.Center,
-		Transform: img.Resize, Strategy: img.Lanczos, FileName: oDir + "1200.jpg", CopyExif: true}
-
-	err := img.TransformFile(fname, tests...)
+	tests := map[string]img.Options{
+		oDir + "400x400.jpg":   {Width: 400, Height: 400, Quality: 90, Transform: img.ResizeAndCrop},
+		oDir + "1200x628.jpg":  {Width: 1200, Height: 628, Quality: 90, Transform: img.ResizeAndCrop, CopyExif: true},
+		oDir + "1200x1200.jpg": {Width: 1200, Height: 1200, Quality: 90, Transform: img.ResizeAndCrop, CopyExif: true},
+		oDir + "1080x1350.jpg": {Width: 1080, Height: 1350, Quality: 90, Transform: img.ResizeAndCrop, CopyExif: true},
+		oDir + "1200.jpg":      {Width: 1200, Height: 0, Quality: 90, Transform: img.Resize, CopyExif: true},
+	}
+	err := img.TransformFile(fname, tests)
 
 	if err != nil {
 		fmt.Println(err)

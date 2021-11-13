@@ -137,7 +137,6 @@ var IptcRecordName = map[uint8]string{
 	}
 	err = ioutil.WriteFile("./metadata/geniptctags.go", []byte(buff.String()), 0644)
 	return err
-	return err
 }
 
 func findRecordHeadings(node *html.Node) map[string]*html.Node {
@@ -237,7 +236,7 @@ func parseIptcTableRow(tr *html.Node) (rawIptcTag, error) {
 	}
 	ret.Name = strings.Replace(td[1], "-", "", -1)
 	if err := parseType(td[2], &ret); err != nil {
-		return ret, fmt.Errorf("Could not parse type: ", td[2])
+		return ret, fmt.Errorf("Could not parse type: %s", td[2])
 	}
 	return ret, nil
 }

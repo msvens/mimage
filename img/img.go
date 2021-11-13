@@ -57,7 +57,7 @@ const (
 	ResizeAndFit
 )
 
-type DestImage struct {
+type Options struct {
 	Width     int
 	Height    int
 	Quality   int
@@ -65,7 +65,7 @@ type DestImage struct {
 	Transform TransformType
 	Strategy  ResampleStrategy
 	CopyExif  bool
-	FileName  string
+	//FileName  string
 }
 
 func resampleFiler(strategy ResampleStrategy) imaging.ResampleFilter {
@@ -130,14 +130,15 @@ func anchor(ca CropAnchor) imaging.Anchor {
 	}
 }
 
-func hasCopyExif(dest []DestImage) bool {
+/*
+func hasCopyExif(dest []Options) bool {
 	for _, d := range dest {
 		if d.CopyExif {
 			return true
 		}
 	}
 	return false
-}
+}*/
 
 func openForExifCopy(sourceFile string) (image.Image, []byte, error) {
 	srcBytes, err := ioutil.ReadFile(sourceFile)
@@ -151,7 +152,7 @@ func openForExifCopy(sourceFile string) (image.Image, []byte, error) {
 	return srcImg, srcBytes, nil
 }
 
-func saveWithExif(srcBytes []byte, dstImage image.Image, opt DestImage) error {
+func saveWithExif(srcBytes []byte, dstImage image.Image, opt Options, fileName string) error {
 	dstBytes := new(bytes.Buffer)
 	err := imaging.Encode(dstBytes, dstImage, imaging.JPEG, imaging.JPEGQuality(opt.Quality))
 	if err != nil {
@@ -169,39 +170,20 @@ func saveWithExif(srcBytes []byte, dstImage image.Image, opt DestImage) error {
 	if err != nil {
 		return err
 	}
-	return mde.WriteFile(opt.FileName)
-	//return nil
-	/*
-		if out, err := metadata.CopyExif(srcBytes,dstBytes.Bytes(),true); err != nil {
-			return err
-		} else {
-			err = ioutil.WriteFile(opt.FileName, out, 0644)
-			if err != nil {
-				return err
-			}
-		}
-		return nil*/
+	return mde.WriteFile(fileName)
 }
 
-func TransformFile(source string, dest ...DestImage) error {
-	var srcImg image.Image
-	var err error
-	var srcBytes []byte
-	if hasCopyExif(dest) {
-		srcImg, srcBytes, err = openForExifCopy(source)
-	} else {
-		srcImg, err = imaging.Open(source)
-	}
+func TransformFile(source string, destinations map[string]Options) error {
+	srcImg, srcBytes, err := openForExifCopy(source)
 	if err != nil {
 		return err
 	}
-
-	for _, d := range dest {
-		dst := transform(srcImg, d)
-		if d.CopyExif {
-			err = saveWithExif(srcBytes, dst, d)
+	for dest, options := range destinations {
+		destImg := transform(srcImg, options)
+		if options.CopyExif {
+			err = saveWithExif(srcBytes, destImg, options, dest)
 		} else {
-			err = imaging.Save(dst, d.FileName, imaging.JPEGQuality(d.Quality))
+			err = imaging.Save(destImg, dest, imaging.JPEGQuality(options.Quality))
 		}
 		if err != nil {
 			return err
@@ -210,18 +192,43 @@ func TransformFile(source string, dest ...DestImage) error {
 	return nil
 }
 
-func transform(src image.Image, dest DestImage) image.Image {
+/*
+func Transform(source string, dest string, opt Options) error {
+	var srcImg image.Image
+	var err error
+	var srcBytes []byte
+	if opt.CopyExif {
+		srcImg, srcBytes, err = openForExifCopy(source)
+	} else {
+		srcImg, err = imaging.Open(source)
+	}
+	if err != nil {
+		return err
+	}
+	dst := transform(srcImg, opt)
+	if opt.CopyExif {
+		err = saveWithExif(srcBytes, dst, opt, dest)
+	} else {
+		err = imaging.Save(dst, dest, imaging.JPEGQuality(opt.Quality))
+	}
+	return err
+}
+*/
+
+func transform(src image.Image, opt Options) image.Image {
 	var dstImage image.Image
 
-	switch dest.Transform {
+	a := anchor(opt.Anchor)
+	rf := resampleFiler(opt.Strategy)
+	switch opt.Transform {
 	case ResizeAndCrop:
-		dstImage = imaging.Fill(src, dest.Width, dest.Height, anchor(dest.Anchor), resampleFiler(dest.Strategy))
+		dstImage = imaging.Fill(src, opt.Width, opt.Height, a, rf)
 	case Crop:
-		dstImage = imaging.CropAnchor(src, dest.Width, dest.Height, anchor(dest.Anchor))
+		dstImage = imaging.CropAnchor(src, opt.Width, opt.Height, a)
 	case Resize:
-		dstImage = imaging.Resize(src, dest.Width, dest.Height, resampleFiler(dest.Strategy))
+		dstImage = imaging.Resize(src, opt.Width, opt.Height, rf)
 	case ResizeAndFit:
-		dstImage = imaging.Fit(src, dest.Width, dest.Height, resampleFiler(dest.Strategy))
+		dstImage = imaging.Fit(src, opt.Width, opt.Height, rf)
 	}
 	return dstImage
 }
