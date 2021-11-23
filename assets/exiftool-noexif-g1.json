@@ -1,0 +1,36 @@
+[{
+  "SourceFile": "noexif.jpg",
+  "ExifTool": {
+    "ExifToolVersion": 12.30
+  },
+  "System": {
+    "FileName": "noexif.jpg",
+    "Directory": ".",
+    "FileSize": "105 KiB",
+    "FileModifyDate": "2021:07:26 06:41:04+02:00",
+    "FileAccessDate": "2021:11:15 08:43:41+01:00",
+    "FileInodeChangeDate": "2021:11:15 08:43:38+01:00",
+    "FilePermissions": "-rw-r--r--"
+  },
+  "File": {
+    "FileType": "JPEG",
+    "FileTypeExtension": "jpg",
+    "MIMEType": "image/jpeg",
+    "ImageWidth": 1116,
+    "ImageHeight": 562,
+    "EncodingProcess": "Baseline DCT, Huffman coding",
+    "BitsPerSample": 8,
+    "ColorComponents": 3,
+    "YCbCrSubSampling": "YCbCr4:2:0 (2 2)"
+  },
+  "JFIF": {
+    "JFIFVersion": 1.01,
+    "ResolutionUnit": "None",
+    "XResolution": 1,
+    "YResolution": 1
+  },
+  "Composite": {
+    "ImageSize": "1116x562",
+    "Megapixels": 0.627
+  }
+}]

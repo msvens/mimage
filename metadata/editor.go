@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
+	exifundefined "github.com/dsoprea/go-exif/v3/undefined"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"io/ioutil"
+	"path/filepath"
 	"time"
 	"trimmer.io/go-xmp/xmp"
 )
 
-const ExifPath = "IFD/Exif"
 const EditorSoftware = "github.com/msvens/mexif (go-exif)"
 
 var xmpPrefix = []byte("http://ns.adobe.com/xap/1.0/\000")
@@ -60,11 +61,6 @@ func NewMetaDataEditor(imgSource []byte) (*MetaDataEditor, error) {
 }
 
 func (mde *MetaDataEditor) Bytes() ([]byte, error) {
-	if mde.dirtyExif {
-		if err := mde.SetIfdTag(IFD_Software, EditorSoftware); err != nil {
-			return nil, err
-		}
-	}
 	if err := mde.setExif(); err != nil {
 		return nil, err
 	}
@@ -269,11 +265,12 @@ func (mde *MetaDataEditor) HasXmp() bool {
 	}
 }
 
+//Retrives a metadata struct based on this editor. Will commit any changes first
 func (mde *MetaDataEditor) MetaData() (*MetaData, error) {
 	if b, e := mde.Bytes(); e != nil {
 		return nil, e
 	} else {
-		return NewMetaDataJpeg(b)
+		return Parse(b)
 	}
 }
 
@@ -328,6 +325,8 @@ func toGoExifValue(value interface{}) interface{} {
 			ret = append(ret, exifcommon.SignedRational{Denominator: v.Denominator, Numerator: v.Numerator})
 		}
 		return ret
+	case LensInfo:
+		return t.toExif()
 	default:
 		return t
 	}
@@ -369,12 +368,22 @@ func (mde *MetaDataEditor) SetImageDescription(description string) error {
 }
 
 func (mde *MetaDataEditor) SetUserComment(comment string) error {
-	return mde.SetExifTag(Exif_UserComment, comment)
+	uc := exifundefined.Tag9286UserComment{
+		EncodingType:  exifundefined.TagUndefinedType_9286_UserComment_Encoding_UNICODE,
+		EncodingBytes: []byte(comment),
+	}
+	return mde.SetExifTag(Exif_UserComment, uc)
+}
+
+func (md *MetaDataEditor) CommitExifChanges() error {
+	return md.setExif()
 }
 
 func (mde *MetaDataEditor) setExif() error {
 	if mde.dirtyExif {
-		//drop existing exif first
+		if err := mde.SetIfdTag(IFD_Software, EditorSoftware); err != nil {
+			return err
+		}
 		if _, err := mde.sl.DropExif(); err != nil {
 			return err
 		}
@@ -387,7 +396,13 @@ func (mde *MetaDataEditor) setExif() error {
 	return nil
 }
 
+//Writes this image to file by first commiting all edits. Any existing
+//file will be truncated. Destination needs to have jpg or jpeg extension
 func (mde *MetaDataEditor) WriteFile(dest string) error {
+	//make sure dest has the right file extension
+	if filepath.Ext(dest) != ".jpg" && filepath.Ext(dest) != ".jpeg" {
+		return JpegWrongFileExtErr
+	}
 	if out, err := mde.Bytes(); err != nil {
 		return err
 	} else {

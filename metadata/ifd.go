@@ -4,12 +4,19 @@ import (
 	"fmt"
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
+	exifundefined "github.com/dsoprea/go-exif/v3/undefined"
 	"strings"
 	"time"
 )
 
 const ExifDateTime = "2006:01:02 15:04:05"
 const ExifDateTimeOffset = "2006:01:02 15:04:05 -07:00"
+
+const IFDPath = "IFD"
+const ExifPath = "IFD/Exif"
+const GPSInfoPath = "IFD/GPSInfo"
+const IopPath = "IFD/Exif/Iop"
+const ThumbNailPath = "IFD1"
 
 func TimeOffsetString(t time.Time) string {
 	_, offset := t.Zone()
@@ -34,19 +41,28 @@ func ParseIfdDateTime(dt string, offset string) (time.Time, error) {
 func ExifTagName(ifd *exif.Ifd, fieldId uint16) string {
 	var name string
 	var found bool
-	if ifd.IfdIdentity().Name() == "IFD" {
+	if ifd == nil {
+		return fmt.Sprintf("Unknown Ifd Nil")
+	}
+	if ifd.IfdIdentity().String() == IFDPath || ifd.IfdIdentity().String() == ThumbNailPath {
 		name, found = IFDName[fieldId]
-	} else if ifd.IfdIdentity().Name() == "Exif" {
+	} else if ifd.IfdIdentity().String() == ExifPath {
 		name, found = ExifName[fieldId]
+	} else if ifd.IfdIdentity().String() == IopPath {
+		name, found = IopName[fieldId]
+	} else if ifd.IfdIdentity().String() == GPSInfoPath {
+		name, found = GPSInfoName[fieldId]
+	} else {
+		return fmt.Sprintf("Unknown Ifd Path %s", ifd.IfdIdentity().String())
 	}
 	if found {
 		return name
 	} else {
-		return "Unknown Ifd Identity"
+		return fmt.Sprintf("Unknown Ifd Tag: %v", fieldId)
 	}
 }
 
-func PrintExif(ifdIndex *exif.IfdIndex) string {
+func printExif(ifdIndex *exif.IfdIndex) string {
 	sb := strings.Builder{}
 	sb.WriteString("exifdata:{\n")
 	for _, ifd := range ifdIndex.Ifds {
@@ -78,9 +94,11 @@ func ScanIfdTag(ifd *exif.Ifd, tagId uint16, dest interface{}) error {
 
 	entry := entries[0]
 
-	if entry.TagType() == exifcommon.TypeUndefined {
-		return IfdUndefinedTypeErr
-	}
+	/*
+		if entry.TagType() == exifcommon.TypeUndefined {
+			return IfdUndefinedTypeErr
+		}
+	*/
 
 	value, err := entry.Value()
 
@@ -172,16 +190,43 @@ func ScanIfdTag(ifd *exif.Ifd, tagId uint16, dest interface{}) error {
 	case *URat:
 		if entry.TagType() == exifcommon.TypeRational {
 			v := value.([]exifcommon.Rational)
-			dtype.Numerator = v[0].Numerator
-			dtype.Denominator = v[0].Denominator
+			*dtype = fromExifURat(v[0])
+			//dtype.Numerator = v[0].Numerator
+			//dtype.Denominator = v[0].Denominator
 		} else {
 			wrongTagType = true
 		}
 	case *Rat:
 		if entry.TagType() == exifcommon.TypeSignedRational {
 			v := value.([]exifcommon.SignedRational)
-			dtype.Numerator = v[0].Numerator
-			dtype.Denominator = v[0].Denominator
+			*dtype = fromExifRat(v[0])
+			//dtype.Numerator = v[0].Numerator
+			//dtype.Denominator = v[0].Denominator
+		} else {
+			wrongTagType = true
+		}
+	case *LensInfo:
+		if entry.TagType() == exifcommon.TypeRational {
+			v := value.([]exifcommon.Rational)
+			if len(v) != 4 {
+				return fmt.Errorf("Expected 4 values for LensInfo got %v", len(v))
+			}
+			if ret, e := fromExifLensInfo(v); e != nil {
+				return e
+			} else {
+				*dtype = ret
+			}
+		} else {
+			wrongTagType = true
+		}
+	case *exifundefined.Tag9286UserComment:
+		if entry.TagType() == exifcommon.TypeUndefined {
+			v, ok := value.(exifundefined.Tag9286UserComment)
+			if !ok {
+				fmt.Errorf("Cannot recognise User Comment Type")
+			} else {
+				*dtype = v
+			}
 		} else {
 			wrongTagType = true
 		}

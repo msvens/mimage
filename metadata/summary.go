@@ -14,18 +14,12 @@ func (md *MetaData) extractSummary() error {
 
 	if md.HasExif() {
 		exifErr = md.extractExifTags()
-	} else {
-		fmt.Println("md has no exif data")
 	}
 	if md.HasIptc() {
 		iptcErr = md.extractIPTC()
-	} else {
-		fmt.Println("md has no iptc data")
 	}
 	if md.HasXmp() {
 		xmpErr = md.extractXmp()
-	} else {
-		fmt.Println("md has no xmp data")
 	}
 
 	if exifErr != nil {
@@ -43,15 +37,15 @@ func (md *MetaData) extractSummary() error {
 func (md *MetaData) extractIPTC() error {
 	var err error
 
-	if err = md.ScanIptc2Tag(Iptc2_ObjectName, &md.Summary.Title); err != nil {
-		fmt.Println(err)
+	if e := md.ScanApplicationTag(Iptc2_ObjectName, &md.Summary.Title); e != nil && e != IptcTagNotFoundErr {
+		err = e
 	}
 
-	if err = md.ScanIptc2Tag(Iptc2_Keywords, &md.Summary.Keywords); err != nil {
-		fmt.Println(err)
+	if e := md.ScanApplicationTag(Iptc2_Keywords, &md.Summary.Keywords); e != nil && e != IptcTagNotFoundErr {
+		err = e
 	}
 
-	return nil
+	return err
 }
 
 func (md *MetaData) extractExifTags() error {
@@ -72,7 +66,7 @@ func (md *MetaData) extractExifTags() error {
 
 	scanR(IFD_Make, &md.Summary.CameraMake)
 	scanR(IFD_Model, &md.Summary.CameraModel)
-	scanR(IFD_LensInfo, &md.Summary.LensInfo)
+	scanE(Exif_LensSpecification, &md.Summary.LensInfo)
 	scanE(Exif_LensModel, &md.Summary.LensModel)
 	scanE(Exif_LensMake, &md.Summary.LensMake)
 	scanE(Exif_FocalLength, &md.Summary.FocalLength)
@@ -87,14 +81,12 @@ func (md *MetaData) extractExifTags() error {
 	scanE(Exif_ColorSpace, &md.Summary.ColorSpace)
 	scanR(IFD_XResolution, &md.Summary.XResolution)
 	scanR(IFD_YResolution, &md.Summary.YResolution)
-	scanE(Exif_OffsetTime, &md.Summary.OffsetTime)
-	scanE(Exif_OffsetTimeOriginal, &md.Summary.OffsetTimeOriginal)
-	scanR(IFD_DateTime, &md.Summary.DateTime)
-	scanE(Exif_DateTimeOriginal, &md.Summary.DateTimeOriginal)
 	scanR(IFD_Software, &md.Summary.Software)
 
-	md.Summary.OriginalDate, _ = ParseIfdDateTime(md.Summary.DateTimeOriginal, md.Summary.OffsetTimeOriginal)
-	md.Summary.ModifyDate, _ = ParseIfdDateTime(md.Summary.DateTime, md.Summary.OffsetTime)
+	_ = md.ScanIfdDate(OriginalDate, &md.Summary.OriginalDate)
+	_ = md.ScanIfdDate(ModifyDate, &md.Summary.ModifyDate)
+	//md.Summary.OriginalDate, _ = ParseIfdDateTime(md.Summary.DateTimeOriginal, md.Summary.OffsetTimeOriginal)
+	//md.Summary.ModifyDate, _ = ParseIfdDateTime(md.Summary.DateTime, md.Summary.OffsetTime)
 
 	//GPSInfo
 	if gpsIfd := md.IfdGPS(); gpsIfd != nil {

@@ -47,6 +47,8 @@ func scanIptcTag(tags map[iptc.StreamTagKey][]iptc.TagData, record, dataset uint
 
 	wrongType := false
 	switch dtype := dest.(type) {
+	case *[]byte:
+		*dtype = tagData[0]
 	case *string:
 		if tagData[0].IsPrintable() {
 			*dtype = string(tagData[0])

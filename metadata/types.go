@@ -3,10 +3,19 @@ package metadata
 import (
 	"fmt"
 	"github.com/dsoprea/go-exif/v3"
+	exifcommon "github.com/dsoprea/go-exif/v3/common"
 	"github.com/dsoprea/go-iptc"
 	"strings"
 	"time"
 	"trimmer.io/go-xmp/xmp"
+)
+
+type ImageType int
+
+const (
+	JpegType ImageType = iota
+	PngType
+	TiffType
 )
 
 type MetaData struct {
@@ -38,6 +47,18 @@ func (r Rat) Float32() float32 {
 	return float32(r.Numerator) / float32(r.Denominator)
 }
 
+func (r Rat) toExif() exifcommon.SignedRational {
+	return exifcommon.SignedRational{Numerator: r.Numerator, Denominator: r.Denominator}
+}
+
+func (r Rat) IsZero() bool {
+	return r.Numerator == 0 && r.Denominator == 0
+}
+
+func fromExifRat(v exifcommon.SignedRational) Rat {
+	return Rat{v.Numerator, v.Denominator}
+}
+
 func (r Rat) String() string {
 	return fmt.Sprintf("%v/%v", r.Numerator, r.Denominator)
 }
@@ -50,8 +71,50 @@ func (r URat) Float32() float32 {
 	return float32(r.Numerator) / float32(r.Denominator)
 }
 
+func (r URat) IsZero() bool {
+	return r.Numerator == 0 && r.Denominator == 0
+}
+
+func (r URat) toExif() exifcommon.Rational {
+	return exifcommon.Rational{Numerator: r.Numerator, Denominator: r.Denominator}
+}
+
+func fromExifURat(v exifcommon.Rational) URat {
+	return URat{v.Numerator, v.Denominator}
+}
+
 func (r URat) String() string {
 	return fmt.Sprintf("%v/%v", r.Numerator, r.Denominator)
+}
+
+type LensInfo struct {
+	MinFocalLength           URat `json:"minFocalLength,omitempty"`
+	MaxFocalLength           URat `json:"maxFocalLength,omitempty"`
+	MinFNumberMinFocalLength URat `json:"minFNumberMinFocalLength,omitempty"`
+	MinFNumberMaxFocalLength URat `json:"MinFNumberMaxFocalLength,omitempty"`
+}
+
+func (li LensInfo) toExif() []exifcommon.Rational {
+	return []exifcommon.Rational{li.MinFocalLength.toExif(), li.MaxFocalLength.toExif(),
+		li.MinFNumberMinFocalLength.toExif(), li.MinFNumberMaxFocalLength.toExif()}
+}
+
+func fromExifLensInfo(vals []exifcommon.Rational) (LensInfo, error) {
+	ret := LensInfo{}
+	if len(vals) != 4 {
+		return ret, fmt.Errorf("Expected 4 lensinfo values got %v", len(vals))
+	}
+	ret.MinFocalLength = fromExifURat(vals[0])
+	ret.MaxFocalLength = fromExifURat(vals[1])
+	ret.MinFNumberMinFocalLength = fromExifURat(vals[2])
+	ret.MinFNumberMaxFocalLength = fromExifURat(vals[3])
+	return ret, nil
+
+}
+
+func (li LensInfo) String() string {
+	return fmt.Sprintf("[%v,%v,%v,%v]", li.MinFocalLength, li.MaxFocalLength,
+		li.MinFNumberMinFocalLength, li.MinFNumberMaxFocalLength)
 }
 
 type MetaDataSummary struct {
@@ -61,7 +124,7 @@ type MetaDataSummary struct {
 	Rating                  uint16        `json:"rating,omitempty"`
 	CameraMake              string        `json:"cameraMake,omitempty"`
 	CameraModel             string        `json:"cameraModel,omitempty"`
-	LensInfo                string        `json:"lensInfo,omitempty"`
+	LensInfo                LensInfo      `json:"lensInfo,omitempty"`
 	LensModel               string        `json:"lensModel,omitempty"`
 	LensMake                string        `json:"lensMake,omitempty"`
 	FocalLength             URat          `json:"focalLength,omitempty"`
@@ -76,10 +139,6 @@ type MetaDataSummary struct {
 	ColorSpace              uint16        `json:"colorSpace,omitempty"`
 	XResolution             URat          `json:"xResolution,omitempty"`
 	YResolution             URat          `json:"yResolution,omitempty"`
-	DateTimeOriginal        string        `json:"dateTimeOriginal,omitempty"`
-	OffsetTimeOriginal      string        `json:"offsetTimeOriginal,omitempty"`
-	DateTime                string        `json:"dateTime,omitempty"`
-	OffsetTime              string        `json:"offsetTime,omitempty"`
 	OriginalDate            time.Time     `json:"originalDate,omitempty"`
 	ModifyDate              time.Time     `json:"modifyDate,omitempty"`
 	GPSInfo                 *exif.GpsInfo `json:"gpsInfo,omitempty"`

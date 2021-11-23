@@ -1,13 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"github.com/msvens/mimage/img"
 	"github.com/msvens/mimage/metadata"
 	"regexp"
 	"strings"
 	"time"
-	"trimmer.io/go-xmp/xmp"
 )
 
 func main() {
@@ -19,32 +20,14 @@ func main() {
 	//tryImageDesc()
 	//tryUserComment()
 	//trySegments()
-	//tryMetaData()
+	tryMetaData()
 
-	/*
-		t := []int{1,2,3,4}
+	//play with errors:
+	wrapped := fmt.Errorf("some new error: %w", jpegstructure.ErrNoXmp)
 
-		t1 := append(t[0:2],t[1:]...)
-		t1[1] = 5
+	fmt.Println(errors.Is(jpegstructure.ErrNoXmp, jpegstructure.ErrNoXmp))
 
-		fmt.Println(t)
-		fmt.Println(t1)
-
-	*/
-
-	//testRegExp()
-
-	/*
-		if err := generator.GenerateIptcTags(); err != nil {
-			fmt.Println(err)
-		}*/
-
-	/*if err := generator.GenerateExifTags(); err != nil {
-		fmt.Println(err)
-	}*/
-	//parseExiv2()
-	//collectStandardTags()
-	//fmt.Println(len(ifd.IfdSchema.Ifds))
+	fmt.Println(wrapped)
 
 }
 
@@ -72,19 +55,19 @@ func tryCreateMetaData() {
 func tryMetaData() {
 	fname := "./assets/Leica.jpg"
 
-	md, err := metadata.NewMetaDataFromJpegFile(fname)
+	md, err := metadata.ParseFile(fname)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	if md != nil {
 		fmt.Println(md.Summary)
-		fmt.Println(md.PrintIfd())
-		fmt.Println(md.PrintIptc())
+		//fmt.Println(md.PrintIfd())
+		//fmt.Println(md.PrintIptc())
 	}
-	if md.HasXmp() {
+	/*if md.HasXmp() {
 		b, _ := xmp.MarshalIndent(md.Xmp(), "", "  ")
 		fmt.Println(string(b))
-	}
+	}*/
 }
 
 func tryEditTags() {
