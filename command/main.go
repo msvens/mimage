@@ -1,9 +1,7 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"github.com/msvens/mimage/img"
 	"github.com/msvens/mimage/metadata"
 	"regexp"
@@ -16,18 +14,13 @@ func main() {
 	//tryEditTags()
 	//tryCreateMetaData()
 	//tryMetaDataCopy()
-	tryImageTransform()
+	//tryImageTransform()
 	//tryImageDesc()
 	//tryUserComment()
 	//trySegments()
 	tryMetaData()
 
 	//play with errors:
-	wrapped := fmt.Errorf("some new error: %w", jpegstructure.ErrNoXmp)
-
-	fmt.Println(errors.Is(jpegstructure.ErrNoXmp, jpegstructure.ErrNoXmp))
-
-	fmt.Println(wrapped)
 
 }
 
@@ -53,14 +46,14 @@ func tryCreateMetaData() {
 }
 
 func tryMetaData() {
-	fname := "./assets/Leica.jpg"
+	fname := "./assets/xe3.jpg"
 
 	md, err := metadata.ParseFile(fname)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	if md != nil {
-		fmt.Println(md.Summary)
+		fmt.Println(md.Summary.Title)
 		//fmt.Println(md.PrintIfd())
 		//fmt.Println(md.PrintIptc())
 	}
