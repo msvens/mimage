@@ -2,17 +2,94 @@ package metadata
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/dsoprea/go-exif/v3"
-	exifcommon "github.com/dsoprea/go-exif/v3/common"
-	exifundefined "github.com/dsoprea/go-exif/v3/undefined"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"image/jpeg"
 	"io/ioutil"
+	"strings"
 	"time"
 	_ "trimmer.io/go-xmp/models"
-	"trimmer.io/go-xmp/xmp"
 )
+
+var ParseImageErr = errors.New("Could not parse image")
+
+//var JpegWrongFileExtErr = fmt.Errorf("Only .jpeg or .jpg file extension allowed")
+
+type MetaDataSummary struct {
+	Title                   string        `json:"title,omitempty"`
+	Keywords                []string      `json:"keywords,omitempty"`
+	Software                string        `json:"software,omitempty"`
+	Rating                  uint16        `json:"rating,omitempty"`
+	CameraMake              string        `json:"cameraMake,omitempty"`
+	CameraModel             string        `json:"cameraModel,omitempty"`
+	LensInfo                LensInfo      `json:"lensInfo,omitempty"`
+	LensModel               string        `json:"lensModel,omitempty"`
+	LensMake                string        `json:"lensMake,omitempty"`
+	FocalLength             URat          `json:"focalLength,omitempty"`
+	FocalLengthIn35mmFormat uint16        `json:"focalLengthIn35mmFormat,omitempty"`
+	MaxApertureValue        URat          `json:"maxApertureValue,omitempty"`
+	FlashMode               uint16        `json:"flashMode,omitempty"`
+	ExposureTime            URat          `json:"exposureTime,omitempty"`
+	ExposureCompensation    Rat           `json:"exposureCompensation,omitempty"`
+	ExposureProgram         uint16        `json:"exposureProgram,omitempty"`
+	FNumber                 URat          `json:"fNumber,omitempty"`
+	ISO                     uint16        `json:"ISO,omitempty"`
+	ColorSpace              uint16        `json:"colorSpace,omitempty"`
+	XResolution             URat          `json:"xResolution,omitempty"`
+	YResolution             URat          `json:"yResolution,omitempty"`
+	OriginalDate            time.Time     `json:"originalDate,omitempty"`
+	ModifyDate              time.Time     `json:"modifyDate,omitempty"`
+	GPSInfo                 *exif.GpsInfo `json:"gpsInfo,omitempty"`
+	City                    string        `json:"city,omitempty"`
+	Country                 string        `json:"country,omitempty"`
+	State                   string        `json:"state,omitempty"`
+}
+
+func (ec MetaDataSummary) String() string {
+	sb := &strings.Builder{}
+	sb.WriteString("Summary:{\n")
+	sb.WriteString(fmt.Sprintf("  Title: %v\n", ec.Title))
+	sb.WriteString(fmt.Sprintf("  Keywords: %v\n", strings.Join(ec.Keywords, ", ")))
+	sb.WriteString(fmt.Sprintf("  Sofware: %v\n", ec.Software))
+	sb.WriteString(fmt.Sprintf("  Rating: %v\n", ec.Rating))
+	sb.WriteString(fmt.Sprintf("  Camera Make: %v\n", ec.CameraMake))
+	sb.WriteString(fmt.Sprintf("  Camera Model: %v\n", ec.CameraModel))
+	sb.WriteString(fmt.Sprintf("  Lens Info: %v\n", ec.LensInfo))
+	sb.WriteString(fmt.Sprintf("  Lens Model: %v\n", ec.LensModel))
+	sb.WriteString(fmt.Sprintf("  Lens Make: %v\n", ec.LensMake))
+	sb.WriteString(fmt.Sprintf("  Focal Length: %v\n", ec.FocalLength.Float32()))
+	sb.WriteString(fmt.Sprintf("  Focal Length 35MM: %v\n", ec.FocalLengthIn35mmFormat))
+	sb.WriteString(fmt.Sprintf("  Max Aperture Value: %v\n", ec.MaxApertureValue.Float32()))
+	sb.WriteString(fmt.Sprintf("  Flash Mode: %v\n", ExifValueStringNoErr(IfdExif, Exif_Flash, ec.FlashMode)))
+	sb.WriteString(fmt.Sprintf("  Exposure Time: %v\n", ec.ExposureTime))
+	sb.WriteString(fmt.Sprintf("  Exposure Compensation: %v\n", ec.ExposureCompensation.Float32()))
+	sb.WriteString(fmt.Sprintf("  Exposure Program: %v\n", ExifValueStringNoErr(IfdExif, Exif_ExposureProgram, ec.ExposureProgram)))
+	sb.WriteString(fmt.Sprintf("  Fnumber: %v\n", ec.FNumber.Float32()))
+	sb.WriteString(fmt.Sprintf("  ISO: %v\n", ec.ISO))
+	sb.WriteString(fmt.Sprintf("  ColorSpace: %v\n", ExifValueStringNoErr(IfdExif, Exif_ColorSpace, ec.ColorSpace)))
+	sb.WriteString(fmt.Sprintf("  XResolution: %v\n", ec.XResolution))
+	sb.WriteString(fmt.Sprintf("  YResolution: %v\n", ec.YResolution))
+	sb.WriteString(fmt.Sprintf("  OriginalDate: %v\n", ec.OriginalDate))
+	sb.WriteString(fmt.Sprintf("  ModifyDate: %v\n", ec.ModifyDate))
+	sb.WriteString(fmt.Sprintf("  GPSInfo:%v\n", ec.GPSInfo))
+	sb.WriteString(fmt.Sprintf("  City: %v\n", ec.City))
+	sb.WriteString(fmt.Sprintf("  State/Province: %v\n", ec.State))
+	sb.WriteString(fmt.Sprintf("  Country:%v\n", ec.Country))
+	sb.WriteString("}\n")
+	return sb.String()
+}
+
+type MetaData struct {
+	xmpData     XmpData
+	iptcData    *IptcData
+	exifData    *ExifData
+	summary     *MetaDataSummary
+	summaryErr  error
+	ImageWidth  uint
+	ImageHeight uint
+}
 
 func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
 	jmp := jpegstructure.NewJpegMediaParser()
@@ -25,15 +102,15 @@ func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
 	}
 }
 
-func ParseFile(filename string) (*MetaData, error) {
+func NewMetaDataFile(filename string) (*MetaData, error) {
 	if data, err := ioutil.ReadFile(filename); err != nil {
 		return nil, err
 	} else {
-		return Parse(data)
+		return NewMetaData(data)
 	}
 }
 
-func Parse(data []byte) (*MetaData, error) {
+func NewMetaData(data []byte) (*MetaData, error) {
 	ret := MetaData{}
 	segments, err := parseJpegBytes(data)
 	if err != nil {
@@ -42,25 +119,19 @@ func Parse(data []byte) (*MetaData, error) {
 
 	var exifErr, xmpErr error
 
-	ret.ifd, exifErr = loadExif(segments)
+	ret.exifData, exifErr = NewExifData(segments)
 	if exifErr != nil && exifErr != NoExifErr {
 		return nil, exifErr
 	}
-	ret.iptc, _ = segments.Iptc() //dont care about the error
 
-	ret.xmp, xmpErr = loadXmp(segments)
+	ret.iptcData, _ = NewIptcData(segments)
+
+	ret.xmpData, xmpErr = NewXmpData(segments)
 	if xmpErr != nil && xmpErr != NoXmpErr {
 		return nil, xmpErr
 	}
 
-	//Extract Summary:
-	if err = ret.extractSummary(); err != nil {
-		return &ret, err
-	}
-	//summaryErr := ret.extractSummary()
-
 	//Extract ImageWidth/Height
-	//ImageWidth/Height
 	img, err := jpeg.Decode(bytes.NewReader(data))
 	if err != nil {
 		return &ret, err
@@ -72,209 +143,145 @@ func Parse(data []byte) (*MetaData, error) {
 	return &ret, nil
 }
 
-func (md *MetaData) HasExif() bool {
-	if md.ifd != nil {
-		return true
-	} else {
-		return false
-	}
-}
-func (md *MetaData) HasXmp() bool {
-	if md.xmp != nil {
-		return true
-	} else {
-		return false
-	}
-}
-func (md *MetaData) HasIptc() bool {
-	if md.iptc != nil {
-		return true
-	} else {
-		return false
-	}
+func (md *MetaData) Exif() *ExifData {
+	return md.exifData
 }
 
-//Convinince method to retrive IFD_ImageDescription. The MetaDataEditor has
-//a corresponding method to set the IFD_ImageDescription
-func (md *MetaData) GetIfdImageDescription() (string, error) {
-	ret := ""
-	if !md.HasExif() {
-		return ret, NoExifErr
+func (md *MetaData) Iptc() *IptcData {
+	return md.iptcData
+}
+
+func (md *MetaData) Summary() *MetaDataSummary {
+	if md.summary != nil {
+		return md.summary
 	}
-	err := md.ScanIfdRootTag(IFD_ImageDescription, &ret)
-	return ret, err
-}
-
-//Convinience method to retrieve Exif_UserComment. As the UserComment is
-//an undefined field this method will assume it has been set by the corresponding
-//MetaDataEditor method
-func (md *MetaData) GetIfdUserComment() (string, error) {
-	ret := exifundefined.Tag9286UserComment{}
-	if !md.HasExif() {
-		return "", NoExifErr
+	md.summary = &MetaDataSummary{}
+	var exifErr, iptcErr, xmpErr error
+	if !md.exifData.IsEmpty() {
+		exifErr = md.extractExifTags()
 	}
-	err := md.ScanIfdExifTag(Exif_UserComment, &ret)
-	return string(ret.EncodingBytes), err
-}
-
-func (md *MetaData) IfdRoot() *exif.Ifd {
-	if md.HasExif() {
-		return md.ifd.RootIfd
-	} else {
-		return nil
+	if !md.xmpData.IsEmpty() {
+		xmpErr = md.extractXmp()
 	}
-}
-
-func (md *MetaData) GetIfd(ifdPath string) *exif.Ifd {
-	if md.HasExif() {
-		return md.ifd.Lookup[ifdPath]
+	if !md.iptcData.IsEmpty() {
+		iptcErr = md.extractIPTC()
 	}
-	return nil
-}
-
-func (md *MetaData) HasIfd(ifdPath string) bool {
-	if md.HasExif() {
-		_, found := md.ifd.Lookup[ifdPath]
-		return found
+	if exifErr != nil {
+		md.summaryErr = exifErr
+	} else if iptcErr != nil {
+		md.summaryErr = iptcErr
+	} else if xmpErr != nil {
+		md.summaryErr = xmpErr
 	}
-	return false
+	return md.summary
 }
 
-func (md *MetaData) IfdExif() *exif.Ifd {
-	return md.GetIfd(ExifPath)
+func (md *MetaData) SummaryErr() error {
+	return md.SummaryErr()
 }
 
-func (md *MetaData) IfdGPS() *exif.Ifd {
-	return md.GetIfd(GPSInfoPath)
+func (md *MetaData) Xmp() XmpData {
+	return md.xmpData
 }
 
-func (md *MetaData) PrintIfd() string {
-	if md.HasExif() {
-		return printExif(md.ifd)
-	} else {
-		return "No Exif defined"
-	}
+func (md *MetaData) String() string {
+	sb := strings.Builder{}
+	sb.WriteString("==MetaData==\n==Summary==\n")
+	sb.WriteString(md.Summary().String())
+	sb.WriteString("\n==Exif==\n")
+	sb.WriteString(md.exifData.String())
+	sb.WriteString("\n==IPTC==\n")
+	sb.WriteString(md.iptcData.String())
+	sb.WriteString("\n==XMP==\n")
+	sb.WriteString(md.xmpData.String())
+	return sb.String()
 }
 
-func (md *MetaData) PrintIptc() string {
-	if md.HasIptc() {
-		return PrintIptc(md.iptc)
-	} else {
-		return "No Iptc defined"
-	}
-}
-
-func (md *MetaData) ScanIfdRootTag(tagId uint16, dest interface{}) error {
-	if !md.HasExif() {
-		return NoExifErr
-	}
-	return ScanIfdTag(md.IfdRoot(), tagId, dest)
-}
-
-func (md *MetaData) ScanIfdExifTag(tagId uint16, dest interface{}) error {
-	if !md.HasExif() {
-		return NoExifErr
-	}
-	return ScanIfdTag(md.IfdExif(), tagId, dest)
-}
-
-func (md *MetaData) ScanIfdDate(dateTag ExifDate, dest *time.Time) error {
-	if !md.HasExif() {
-		return NoExifErr
-	}
-	var t, o string
+func (md *MetaData) extractIPTC() error {
 	var err error
-	switch dateTag {
-	case OriginalDate:
-		if err = ScanIfdTag(md.IfdExif(), Exif_DateTimeOriginal, &t); err != nil {
-			return err
-		}
-		_ = ScanIfdTag(md.IfdExif(), Exif_OffsetTimeOriginal, &o) //dont care about offset errors
-		*dest, err = ParseIfdDateTime(t, o)
-		if err != nil {
-			return err
-		}
-	case ModifyDate:
-		if err = ScanIfdTag(md.IfdRoot(), IFD_DateTime, &t); err != nil {
-			return err
-		}
-		_ = ScanIfdTag(md.IfdExif(), Exif_OffsetTime, &o) //dont care about offset errors
-		*dest, err = ParseIfdDateTime(t, o)
-		if err != nil {
-			return err
-		}
-	case DigitizedDate:
-		if err = ScanIfdTag(md.IfdExif(), Exif_DateTimeDigitized, &t); err != nil {
-			return err
-		}
-		_ = ScanIfdTag(md.IfdExif(), Exif_OffsetTimeDigitized, &o) //dont care about offset errors
-		*dest, err = ParseIfdDateTime(t, o)
-		if err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("Unknown date to scan: %v", dateTag)
+
+	if e := md.iptcData.ScanApplicationTag(Iptc2_ObjectName, &md.summary.Title); e != nil && e != IptcTagNotFoundErr {
+		err = e
 	}
-	return nil
-}
 
-func (md *MetaData) ScanIptcEnvelopTag(dataset uint8, dest interface{}) error {
-	if !md.HasIptc() {
-		return NoIptcErr
+	if e := md.iptcData.ScanApplicationTag(Iptc2_Keywords, &md.summary.Keywords); e != nil && e != IptcTagNotFoundErr {
+		err = e
 	}
-	return scanIptcTag(md.iptc, IPTCEnvelop, dataset, dest)
+
+	return err
 }
 
-func (md *MetaData) ScanApplicationTag(dataset uint8, dest interface{}) error {
-	if !md.HasIptc() {
-		return NoIptcErr
-	}
-	return scanIptcTag(md.iptc, IPTCApplication, dataset, dest)
-}
-
-func (md *MetaData) Xmp() *xmp.Document {
-	return md.xmp
-}
-
-func loadExif(segments *jpegstructure.SegmentList) (*exif.IfdIndex, error) {
-	var rawExif []byte
-	var ifdMapping *exifcommon.IfdMapping
-
+func (md *MetaData) extractExifTags() error {
 	var err error
-	if _, rawExif, err = segments.Exif(); err != nil {
-		return nil, NoExifErr
+
+	scanR := func(tagId uint16, dest interface{}) {
+		e := md.exifData.ScanIfdRoot(tagId, dest)
+		if e != nil && e != IfdTagNotFoundErr {
+			err = e
+		}
 	}
-	if ifdMapping, err = exifcommon.NewIfdMappingWithStandard(); err != nil {
-		return nil, err
-	}
-	ti := exif.NewTagIndex()
-	if err = exif.LoadStandardTags(ti); err != nil {
-		return nil, err
+	scanE := func(tagId uint16, dest interface{}) {
+		e := md.exifData.ScanIfdExif(tagId, dest)
+		if e != nil && e != IfdTagNotFoundErr {
+			err = e
+		}
 	}
 
-	if _, index, err := exif.Collect(ifdMapping, ti, rawExif); err != nil {
-		return nil, err
-	} else {
-		return &index, nil
+	scanR(IFD_Make, &md.summary.CameraMake)
+	scanR(IFD_Model, &md.summary.CameraModel)
+	scanE(Exif_LensSpecification, &md.summary.LensInfo)
+	if md.summary.LensInfo == (LensInfo{}) {
+		scanR(IFD_LensInfo, &md.summary.LensInfo)
 	}
+	scanE(Exif_LensModel, &md.summary.LensModel)
+	scanE(Exif_LensMake, &md.summary.LensMake)
+	scanE(Exif_FocalLength, &md.summary.FocalLength)
+	scanE(Exif_FocalLengthIn35mmFilm, &md.summary.FocalLengthIn35mmFormat)
+	scanE(Exif_MaxApertureValue, &md.summary.MaxApertureValue)
+	scanE(Exif_Flash, &md.summary.FlashMode)
+	scanE(Exif_ExposureTime, &md.summary.ExposureTime)
+	scanE(Exif_ExposureBiasValue, &md.summary.ExposureCompensation)
+	scanE(Exif_ExposureProgram, &md.summary.ExposureProgram)
+	scanE(Exif_FNumber, &md.summary.FNumber)
+	scanE(Exif_ISOSpeedRatings, &md.summary.ISO)
+	scanE(Exif_ColorSpace, &md.summary.ColorSpace)
+	scanR(IFD_XResolution, &md.summary.XResolution)
+	scanR(IFD_YResolution, &md.summary.YResolution)
+	scanR(IFD_Software, &md.summary.Software)
+
+	_ = md.exifData.ScanExifDate(OriginalDate, &md.summary.OriginalDate)
+	_ = md.exifData.ScanExifDate(ModifyDate, &md.summary.ModifyDate)
+
+	//GPSInfo
+	if md.exifData.HasIfd(IfdGpsInfo) {
+		md.summary.GPSInfo, _ = md.exifData.GpsInfo()
+	}
+	return err
 }
 
-func loadXmp(segments *jpegstructure.SegmentList) (*xmp.Document, error) {
-	_, s, err := segments.FindXmp()
-	if err != nil {
-		return nil, NoXmpErr
-	}
-	str, err := s.FormattedXmp()
-	if err != nil {
-		//We should log errors
-		return nil, NoXmpErr
-	}
-	model := &xmp.Document{}
+func (md *MetaData) extractXmp() error {
 
-	err = xmp.Unmarshal([]byte(str), model)
-	if err != nil {
-		return nil, NoXmpErr
-	} else {
-		return model, nil
+	if dcm := md.xmpData.DublinCore(); dcm != nil {
+		if md.summary.Title == "" {
+			md.summary.Title = dcm.Title.Default()
+		}
+		if len(md.summary.Keywords) == 0 {
+			md.summary.Keywords = dcm.Subject
+		}
 	}
+	if basem := md.xmpData.Base(); basem != nil {
+		if md.summary.Rating == 0 {
+			md.summary.Rating = uint16(basem.Rating)
+		}
+		if md.summary.Software == "" {
+			md.summary.Software = basem.CreatorTool.String()
+		}
+	}
+	if psm := md.xmpData.PhotoShop(); psm != nil {
+		md.summary.City = psm.City
+		md.summary.Country = psm.Country
+		md.summary.State = psm.State
+	}
+
+	return nil
 }

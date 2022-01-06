@@ -1035,13 +1035,13 @@
       {
         "id": 344,
         "name": "XClipPathUnits",
-        "typeName": "UNDEFINED",
+        "typeName": "SSHORT",
         "description": "The number of units that span the width of the image, in terms of integer ClipPath coordinates."
       },
       {
         "id": 345,
         "name": "YClipPathUnits",
-        "typeName": "UNDEFINED",
+        "typeName": "SSHORT",
         "description": "The number of units that span the height of the image, in terms of integer ClipPath coordinates."
       },
       {
@@ -1161,19 +1161,19 @@
       {
         "id": 28722,
         "name": "VignettingCorrParams",
-        "typeName": "UNDEFINED",
+        "typeName": "SSHORT",
         "description": "Sony vignetting correction parameters"
       },
       {
         "id": 28725,
         "name": "ChromaticAberrationCorrParams",
-        "typeName": "UNDEFINED",
+        "typeName": "SSHORT",
         "description": "Sony chromatic aberration correction parameters"
       },
       {
         "id": 28727,
         "name": "DistortionCorrParams",
-        "typeName": "UNDEFINED",
+        "typeName": "SSHORT",
         "description": "Sony distortion correction parameters"
       },
       {
@@ -1281,7 +1281,7 @@
       {
         "id": 34858,
         "name": "TimeZoneOffset",
-        "typeName": "UNDEFINED",
+        "typeName": "SSHORT",
         "description": "This optional tag encodes the time zone of the camera clock (relative to Greenwich Mean Time) used to create the DataTimeOriginal tag-value when the picture was taken. It may also contain the time zone offset of the clock used to create the DateTime tag-value when the image was modified."
       },
       {

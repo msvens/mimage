@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/msvens/mimage/generator"
 	"github.com/msvens/mimage/img"
 	"github.com/msvens/mimage/metadata"
 	"regexp"
@@ -19,9 +20,26 @@ func main() {
 	//tryUserComment()
 	//trySegments()
 	tryMetaData()
-
+	//tryParseExifToolExif()
+	/*m := map[interface{}]string{
+		uint(1): "one",
+		2: "two",
+	}
+	fmt.Println(m[2])
+	fmt.Println(m[uint(1)])*/
 	//play with errors:
+	//generator.GenerateExifTags()
+}
 
+func tryParseExifToolExif() {
+	vals, err := generator.ParseExifValues()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		for _, v := range vals {
+			fmt.Println(v.Id, v.Group)
+		}
+	}
 }
 
 func tryCreateMetaData() {
@@ -46,14 +64,15 @@ func tryCreateMetaData() {
 }
 
 func tryMetaData() {
-	fname := "./assets/xe3.jpg"
+	fname := "./assets/leica.jpg"
 
-	md, err := metadata.ParseFile(fname)
+	md, err := metadata.NewMetaDataFile(fname)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	if md != nil {
-		fmt.Println(md.Summary.Title)
+		fmt.Println(md)
+		//fmt.Println(md.Summary().Title)
 		//fmt.Println(md.PrintIfd())
 		//fmt.Println(md.PrintIptc())
 	}

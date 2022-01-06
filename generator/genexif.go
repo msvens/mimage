@@ -16,6 +16,7 @@ var ifdTypes = map[string]uint16{
 	"SHORT":     3,
 	"LONG":      4,
 	"RATIONAL":  5,
+	"SSHORT":    6,
 	"UNDEFINED": 7,
 	"SLONG":     9,
 	"SRATIONAL": 10,
@@ -58,14 +59,22 @@ func GenerateExifTags() error {
 		return err
 	}
 
-	err = ioutil.WriteFile("./metadata/exiftags.json", outBytes, 0644)
+	err = ioutil.WriteFile("./assets/exiftags.json", outBytes, 0644)
 	if err != nil {
 		return err
 	}
 
 	//create source files:
-	return generateExifTagSources(data)
-
+	err = generateExifTagSources(data)
+	if err != nil {
+		return err
+	}
+	//create exif values source files:
+	exifVals, err := ParseExifValues()
+	if err != nil {
+		return err
+	}
+	return generateExifTagValueSources(exifVals, data)
 }
 
 func findTableBody(doc *html.Node) (*html.Node, error) {

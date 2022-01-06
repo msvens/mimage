@@ -79,7 +79,7 @@ func GenerateIptcTags() error {
 		return err
 	}
 
-	err = ioutil.WriteFile("./metadata/iptctags.json", outBytes, 0644)
+	err = ioutil.WriteFile("./assets/iptctags.json", outBytes, 0644)
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ const(
   IPTCFotoStation uint8 = 240
 )
 
-var IptcRecordName = map[uint8]string{
+var IptcRecordName = map[IPTCRecord]string{
   IPTCEnvelop: "IPTCEnvelop",
   IPTCApplication: "IPTCApplication",
   IPTCNewsPhoto: "IPTCNewsPhoto",

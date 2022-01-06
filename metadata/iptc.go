@@ -1,46 +1,50 @@
 package metadata
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dsoprea/go-iptc"
+	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"strings"
 )
 
-func PrintIptc(tags map[iptc.StreamTagKey][]iptc.TagData) string {
-	buff := strings.Builder{}
-	for k, v := range tags {
-		name := IptcTagName(k.RecordNumber, k.DatasetNumber)
-		str := []string{}
-		for _, data := range v {
-			str = append(str, string(data))
-		}
-		buff.WriteString(fmt.Sprintf("%s (%v,%v): [%s]\n", name, k.RecordNumber, k.DatasetNumber, strings.Join(str, ", ")))
-	}
-	return buff.String()
+var NoIptcErr = errors.New("No IPTC data")
+var IptcTagNotFoundErr = errors.New("Iptc tag not found")
+var IptcUndefinedTypeErr = errors.New("Could not parse ")
+
+type IptcData struct {
+	raw map[iptc.StreamTagKey][]iptc.TagData
 }
 
-func IptcTagName(record, dataset uint8) string {
-	var str string
-	var found bool
-	if record == IPTCEnvelop {
-		str, found = Iptc1Name[dataset]
-	} else if record == IPTCApplication {
-		str, found = Iptc2Name[dataset]
-	} else {
-		found = false //unneeded but nice for clarity
-	}
-	if found {
-		return str
-	} else {
-		return fmt.Sprintf("Unknown Tag. Record: %v, Dataset: %v", record, dataset)
-	}
+func NewIptcData(segments *jpegstructure.SegmentList) (*IptcData, error) {
+	raw, err := segments.Iptc() //dont care about the error
+	return &IptcData{raw}, err
 }
 
-func scanIptcTag(tags map[iptc.StreamTagKey][]iptc.TagData, record, dataset uint8, dest interface{}) error {
+func (ipd *IptcData) IsEmpty() bool {
+	return len(ipd.raw) == 0
+}
+
+func (ipd *IptcData) RawIptc() map[iptc.StreamTagKey][]iptc.TagData {
+	return ipd.raw
+}
+
+func (ipd *IptcData) ScanIptcEnvelopTag(dataset uint8, dest interface{}) error {
+	return ipd.Scan(IPTCEnvelop, dataset, dest)
+}
+
+func (ipd *IptcData) ScanApplicationTag(dataset uint8, dest interface{}) error {
+	return ipd.Scan(IPTCApplication, dataset, dest)
+}
+
+func (ipd *IptcData) Scan(record, dataset uint8, dest interface{}) error {
+	if ipd.IsEmpty() {
+		return NoIptcErr
+	}
 
 	tagKey := iptc.StreamTagKey{RecordNumber: record, DatasetNumber: dataset}
 
-	tagData, found := tags[tagKey]
+	tagData, found := ipd.raw[tagKey]
 	if !found {
 		return IptcTagNotFoundErr
 	}
@@ -73,4 +77,37 @@ func scanIptcTag(tags map[iptc.StreamTagKey][]iptc.TagData, record, dataset uint
 		return IptcUndefinedTypeErr
 	}
 	return nil
+}
+
+func (ipd *IptcData) String() string {
+	if ipd.IsEmpty() {
+		return "No IPTC data"
+	}
+	buff := strings.Builder{}
+	for k, v := range ipd.raw {
+		name := ipd.TagName(k.RecordNumber, k.DatasetNumber)
+		str := []string{}
+		for _, data := range v {
+			str = append(str, string(data))
+		}
+		buff.WriteString(fmt.Sprintf("%s (%v,%v): [%s]\n", name, k.RecordNumber, k.DatasetNumber, strings.Join(str, ", ")))
+	}
+	return buff.String()
+}
+
+func (ipd *IptcData) TagName(record, dataset uint8) string {
+	var str string
+	var found bool
+	if record == IPTCEnvelop {
+		str, found = Iptc1Name[dataset]
+	} else if record == IPTCApplication {
+		str, found = Iptc2Name[dataset]
+	} else {
+		found = false //unneeded but nice for clarity
+	}
+	if found {
+		return str
+	} else {
+		return fmt.Sprintf("Unknown Tag. Record: %v, Dataset: %v", record, dataset)
+	}
 }

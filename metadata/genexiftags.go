@@ -3,94 +3,6 @@ package metadata
 //Do not edit! This is an automatically generated file (see generator.GenerateExifTags()).
 //This file was generated based on https://www.exiv2.org/tags.html
 
-//Iop Tag Ids
-const (
-	Iop_InteroperabilityIndex   uint16 = 0x0001
-	Iop_InteroperabilityVersion uint16 = 0x0002
-	Iop_RelatedImageFileFormat  uint16 = 0x1000
-	Iop_RelatedImageWidth       uint16 = 0x1001
-	Iop_RelatedImageLength      uint16 = 0x1002
-)
-
-var IopName = map[uint16]string{
-	Iop_InteroperabilityIndex:   "InteroperabilityIndex",
-	Iop_InteroperabilityVersion: "InteroperabilityVersion",
-	Iop_RelatedImageFileFormat:  "RelatedImageFileFormat",
-	Iop_RelatedImageWidth:       "RelatedImageWidth",
-	Iop_RelatedImageLength:      "RelatedImageLength",
-}
-
-//GPSInfo Tag Ids
-const (
-	GPSInfo_GPSVersionID         uint16 = 0x0000
-	GPSInfo_GPSLatitudeRef       uint16 = 0x0001
-	GPSInfo_GPSLatitude          uint16 = 0x0002
-	GPSInfo_GPSLongitudeRef      uint16 = 0x0003
-	GPSInfo_GPSLongitude         uint16 = 0x0004
-	GPSInfo_GPSAltitudeRef       uint16 = 0x0005
-	GPSInfo_GPSAltitude          uint16 = 0x0006
-	GPSInfo_GPSTimeStamp         uint16 = 0x0007
-	GPSInfo_GPSSatellites        uint16 = 0x0008
-	GPSInfo_GPSStatus            uint16 = 0x0009
-	GPSInfo_GPSMeasureMode       uint16 = 0x000a
-	GPSInfo_GPSDOP               uint16 = 0x000b
-	GPSInfo_GPSSpeedRef          uint16 = 0x000c
-	GPSInfo_GPSSpeed             uint16 = 0x000d
-	GPSInfo_GPSTrackRef          uint16 = 0x000e
-	GPSInfo_GPSTrack             uint16 = 0x000f
-	GPSInfo_GPSImgDirectionRef   uint16 = 0x0010
-	GPSInfo_GPSImgDirection      uint16 = 0x0011
-	GPSInfo_GPSMapDatum          uint16 = 0x0012
-	GPSInfo_GPSDestLatitudeRef   uint16 = 0x0013
-	GPSInfo_GPSDestLatitude      uint16 = 0x0014
-	GPSInfo_GPSDestLongitudeRef  uint16 = 0x0015
-	GPSInfo_GPSDestLongitude     uint16 = 0x0016
-	GPSInfo_GPSDestBearingRef    uint16 = 0x0017
-	GPSInfo_GPSDestBearing       uint16 = 0x0018
-	GPSInfo_GPSDestDistanceRef   uint16 = 0x0019
-	GPSInfo_GPSDestDistance      uint16 = 0x001a
-	GPSInfo_GPSProcessingMethod  uint16 = 0x001b
-	GPSInfo_GPSAreaInformation   uint16 = 0x001c
-	GPSInfo_GPSDateStamp         uint16 = 0x001d
-	GPSInfo_GPSDifferential      uint16 = 0x001e
-	GPSInfo_GPSHPositioningError uint16 = 0x001f
-)
-
-var GPSInfoName = map[uint16]string{
-	GPSInfo_GPSVersionID:         "GPSVersionID",
-	GPSInfo_GPSLatitudeRef:       "GPSLatitudeRef",
-	GPSInfo_GPSLatitude:          "GPSLatitude",
-	GPSInfo_GPSLongitudeRef:      "GPSLongitudeRef",
-	GPSInfo_GPSLongitude:         "GPSLongitude",
-	GPSInfo_GPSAltitudeRef:       "GPSAltitudeRef",
-	GPSInfo_GPSAltitude:          "GPSAltitude",
-	GPSInfo_GPSTimeStamp:         "GPSTimeStamp",
-	GPSInfo_GPSSatellites:        "GPSSatellites",
-	GPSInfo_GPSStatus:            "GPSStatus",
-	GPSInfo_GPSMeasureMode:       "GPSMeasureMode",
-	GPSInfo_GPSDOP:               "GPSDOP",
-	GPSInfo_GPSSpeedRef:          "GPSSpeedRef",
-	GPSInfo_GPSSpeed:             "GPSSpeed",
-	GPSInfo_GPSTrackRef:          "GPSTrackRef",
-	GPSInfo_GPSTrack:             "GPSTrack",
-	GPSInfo_GPSImgDirectionRef:   "GPSImgDirectionRef",
-	GPSInfo_GPSImgDirection:      "GPSImgDirection",
-	GPSInfo_GPSMapDatum:          "GPSMapDatum",
-	GPSInfo_GPSDestLatitudeRef:   "GPSDestLatitudeRef",
-	GPSInfo_GPSDestLatitude:      "GPSDestLatitude",
-	GPSInfo_GPSDestLongitudeRef:  "GPSDestLongitudeRef",
-	GPSInfo_GPSDestLongitude:     "GPSDestLongitude",
-	GPSInfo_GPSDestBearingRef:    "GPSDestBearingRef",
-	GPSInfo_GPSDestBearing:       "GPSDestBearing",
-	GPSInfo_GPSDestDistanceRef:   "GPSDestDistanceRef",
-	GPSInfo_GPSDestDistance:      "GPSDestDistance",
-	GPSInfo_GPSProcessingMethod:  "GPSProcessingMethod",
-	GPSInfo_GPSAreaInformation:   "GPSAreaInformation",
-	GPSInfo_GPSDateStamp:         "GPSDateStamp",
-	GPSInfo_GPSDifferential:      "GPSDifferential",
-	GPSInfo_GPSHPositioningError: "GPSHPositioningError",
-}
-
 //IFD Tag Ids
 const (
 	IFD_ProcessingSoftware            uint16 = 0x000b
@@ -751,4 +663,92 @@ var ExifName = map[uint16]string{
 	Exif_SourceImageNumberOfCompositeImage:   "SourceImageNumberOfCompositeImage",
 	Exif_SourceExposureTimesOfCompositeImage: "SourceExposureTimesOfCompositeImage",
 	Exif_Gamma:                               "Gamma",
+}
+
+//Iop Tag Ids
+const (
+	Iop_InteroperabilityIndex   uint16 = 0x0001
+	Iop_InteroperabilityVersion uint16 = 0x0002
+	Iop_RelatedImageFileFormat  uint16 = 0x1000
+	Iop_RelatedImageWidth       uint16 = 0x1001
+	Iop_RelatedImageLength      uint16 = 0x1002
+)
+
+var IopName = map[uint16]string{
+	Iop_InteroperabilityIndex:   "InteroperabilityIndex",
+	Iop_InteroperabilityVersion: "InteroperabilityVersion",
+	Iop_RelatedImageFileFormat:  "RelatedImageFileFormat",
+	Iop_RelatedImageWidth:       "RelatedImageWidth",
+	Iop_RelatedImageLength:      "RelatedImageLength",
+}
+
+//GPSInfo Tag Ids
+const (
+	GPSInfo_GPSVersionID         uint16 = 0x0000
+	GPSInfo_GPSLatitudeRef       uint16 = 0x0001
+	GPSInfo_GPSLatitude          uint16 = 0x0002
+	GPSInfo_GPSLongitudeRef      uint16 = 0x0003
+	GPSInfo_GPSLongitude         uint16 = 0x0004
+	GPSInfo_GPSAltitudeRef       uint16 = 0x0005
+	GPSInfo_GPSAltitude          uint16 = 0x0006
+	GPSInfo_GPSTimeStamp         uint16 = 0x0007
+	GPSInfo_GPSSatellites        uint16 = 0x0008
+	GPSInfo_GPSStatus            uint16 = 0x0009
+	GPSInfo_GPSMeasureMode       uint16 = 0x000a
+	GPSInfo_GPSDOP               uint16 = 0x000b
+	GPSInfo_GPSSpeedRef          uint16 = 0x000c
+	GPSInfo_GPSSpeed             uint16 = 0x000d
+	GPSInfo_GPSTrackRef          uint16 = 0x000e
+	GPSInfo_GPSTrack             uint16 = 0x000f
+	GPSInfo_GPSImgDirectionRef   uint16 = 0x0010
+	GPSInfo_GPSImgDirection      uint16 = 0x0011
+	GPSInfo_GPSMapDatum          uint16 = 0x0012
+	GPSInfo_GPSDestLatitudeRef   uint16 = 0x0013
+	GPSInfo_GPSDestLatitude      uint16 = 0x0014
+	GPSInfo_GPSDestLongitudeRef  uint16 = 0x0015
+	GPSInfo_GPSDestLongitude     uint16 = 0x0016
+	GPSInfo_GPSDestBearingRef    uint16 = 0x0017
+	GPSInfo_GPSDestBearing       uint16 = 0x0018
+	GPSInfo_GPSDestDistanceRef   uint16 = 0x0019
+	GPSInfo_GPSDestDistance      uint16 = 0x001a
+	GPSInfo_GPSProcessingMethod  uint16 = 0x001b
+	GPSInfo_GPSAreaInformation   uint16 = 0x001c
+	GPSInfo_GPSDateStamp         uint16 = 0x001d
+	GPSInfo_GPSDifferential      uint16 = 0x001e
+	GPSInfo_GPSHPositioningError uint16 = 0x001f
+)
+
+var GPSInfoName = map[uint16]string{
+	GPSInfo_GPSVersionID:         "GPSVersionID",
+	GPSInfo_GPSLatitudeRef:       "GPSLatitudeRef",
+	GPSInfo_GPSLatitude:          "GPSLatitude",
+	GPSInfo_GPSLongitudeRef:      "GPSLongitudeRef",
+	GPSInfo_GPSLongitude:         "GPSLongitude",
+	GPSInfo_GPSAltitudeRef:       "GPSAltitudeRef",
+	GPSInfo_GPSAltitude:          "GPSAltitude",
+	GPSInfo_GPSTimeStamp:         "GPSTimeStamp",
+	GPSInfo_GPSSatellites:        "GPSSatellites",
+	GPSInfo_GPSStatus:            "GPSStatus",
+	GPSInfo_GPSMeasureMode:       "GPSMeasureMode",
+	GPSInfo_GPSDOP:               "GPSDOP",
+	GPSInfo_GPSSpeedRef:          "GPSSpeedRef",
+	GPSInfo_GPSSpeed:             "GPSSpeed",
+	GPSInfo_GPSTrackRef:          "GPSTrackRef",
+	GPSInfo_GPSTrack:             "GPSTrack",
+	GPSInfo_GPSImgDirectionRef:   "GPSImgDirectionRef",
+	GPSInfo_GPSImgDirection:      "GPSImgDirection",
+	GPSInfo_GPSMapDatum:          "GPSMapDatum",
+	GPSInfo_GPSDestLatitudeRef:   "GPSDestLatitudeRef",
+	GPSInfo_GPSDestLatitude:      "GPSDestLatitude",
+	GPSInfo_GPSDestLongitudeRef:  "GPSDestLongitudeRef",
+	GPSInfo_GPSDestLongitude:     "GPSDestLongitude",
+	GPSInfo_GPSDestBearingRef:    "GPSDestBearingRef",
+	GPSInfo_GPSDestBearing:       "GPSDestBearing",
+	GPSInfo_GPSDestDistanceRef:   "GPSDestDistanceRef",
+	GPSInfo_GPSDestDistance:      "GPSDestDistance",
+	GPSInfo_GPSProcessingMethod:  "GPSProcessingMethod",
+	GPSInfo_GPSAreaInformation:   "GPSAreaInformation",
+	GPSInfo_GPSDateStamp:         "GPSDateStamp",
+	GPSInfo_GPSDifferential:      "GPSDifferential",
+	GPSInfo_GPSHPositioningError: "GPSHPositioningError",
 }

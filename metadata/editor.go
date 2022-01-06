@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
@@ -10,10 +11,15 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"time"
+	xmpbase "trimmer.io/go-xmp/models/xmp_base"
+	xmpmm "trimmer.io/go-xmp/models/xmp_mm"
 	"trimmer.io/go-xmp/xmp"
 )
 
 const EditorSoftware = "github.com/msvens/mexif (go-exif)"
+const XmpEditorSoftware = "github.com/msvens/mexif (go-xmp)"
+
+var JpegWrongFileExtErr = errors.New("File does not end with .jpg or .jpeg")
 
 var xmpPrefix = []byte("http://ns.adobe.com/xap/1.0/\000")
 
@@ -28,12 +34,6 @@ const (
 )
 
 const CopyAll = EXIF | XMP | IPTC
-
-const (
-	OriginalDate ExifDate = iota
-	ModifyDate
-	DigitizedDate
-)
 
 type MetaDataEditor struct {
 	sl        *jpegstructure.SegmentList
@@ -73,7 +73,21 @@ func (mde *MetaDataEditor) Bytes() ([]byte, error) {
 }
 
 func (mde *MetaDataEditor) SetXmp(doc *xmp.Document) error {
-
+	//change creator tool:
+	t := time.Now()
+	base := xmpbase.FindModel(doc)
+	if base != nil {
+		base.CreatorTool = XmpEditorSoftware
+		base.ModifyDate = xmp.NewDate(t)
+	}
+	mm := xmpmm.FindModel(doc)
+	if mm != nil {
+		re := xmpmm.ResourceEvent{}
+		re.Action = xmpmm.ActionSaved
+		re.SoftwareAgent = XmpEditorSoftware
+		re.When = xmp.NewDate(t)
+		mm.AddHistory(&re)
+	}
 	buff := bytes.Buffer{}
 	buff.Write(xmpPrefix)
 	xmpBytes, err := xmp.Marshal(doc)
@@ -270,13 +284,13 @@ func (mde *MetaDataEditor) MetaData() (*MetaData, error) {
 	if b, e := mde.Bytes(); e != nil {
 		return nil, e
 	} else {
-		return Parse(b)
+		return NewMetaData(b)
 	}
 }
 
 func (mde *MetaDataEditor) SetExifTag(id uint16, value interface{}) error {
 
-	exifIb, err := exif.GetOrCreateIbFromRootIb(mde.rootIb, ExifPath)
+	exifIb, err := exif.GetOrCreateIbFromRootIb(mde.rootIb, IfdPaths[IfdExif])
 	if err != nil {
 		return err
 	} else {

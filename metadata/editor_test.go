@@ -6,9 +6,18 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
-	"trimmer.io/go-xmp/models/dc"
 	"trimmer.io/go-xmp/xmp"
 )
+
+func getXmpModel(t *testing.T) *xmp.Document {
+	bytes := getAssetBytes(XmpFile, t)
+	model := &xmp.Document{}
+	err := xmp.Unmarshal(bytes, model)
+	if err != nil {
+		t.Fatalf("Could not parse XMP Document %s ", err.Error())
+	}
+	return model
+}
 
 func TestNewMetaDataEditor(t *testing.T) {
 
@@ -53,13 +62,13 @@ func TestMetaDataEditor_CopyMetaDataFile(t *testing.T) {
 		t.Fatalf("Could not copy metadata from file: %v", err)
 	}
 	md := editorMD(mde, t)
-	if !md.HasXmp() {
+	if md.xmpData.IsEmpty() {
 		t.Errorf("Expected XMP Section")
 	}
-	if !md.HasIptc() {
+	if md.iptcData.IsEmpty() {
 		t.Errorf("Expected IPTC Section")
 	}
-	if !md.HasExif() {
+	if md.exifData.IsEmpty() {
 		t.Errorf("Expected Exif Section")
 	}
 	//test with a file that does not exist.
@@ -268,21 +277,21 @@ func TestMetaDataEditor_MetaData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Could not retrive Metadata")
 	}
-	if !md.HasIptc() {
+	if md.iptcData.IsEmpty() {
 		t.Errorf("Expected IPTC in Metada")
 	}
-	if !md.HasXmp() {
+	if md.xmpData.IsEmpty() {
 		t.Errorf("Expected Xmp in Metada")
 	}
-	if !md.HasExif() {
+	if md.exifData.IsEmpty() {
 		t.Errorf("Expected Exif in Metada")
 	}
 	//check some fields in summary
-	if md.Summary.Title != expectedTitle {
-		t.Errorf("Expected %s got %s", expectedTitle, md.Summary.Title)
+	if md.Summary().Title != expectedTitle {
+		t.Errorf("Expected %s got %s", expectedTitle, md.Summary().Title)
 	}
-	if md.Summary.CameraModel != expectedCameraModel {
-		t.Errorf("Expected %s got %s", expectedCameraModel, md.Summary.CameraModel)
+	if md.Summary().CameraModel != expectedCameraModel {
+		t.Errorf("Expected %s got %s", expectedCameraModel, md.Summary().CameraModel)
 	}
 
 }
@@ -298,11 +307,11 @@ func TestMetaDataEditor_SetExifDate(t *testing.T) {
 		}
 	}
 	md := editorMD(mde, t)
-	if cmpDates(tnow, md.Summary.OriginalDate) {
-		t.Errorf("Expected %v got %v", tnow, md.Summary.OriginalDate)
+	if cmpDates(tnow, md.Summary().OriginalDate) {
+		t.Errorf("Expected %v got %v", tnow, md.Summary().OriginalDate)
 	}
-	if cmpDates(tnow, md.Summary.ModifyDate) {
-		t.Errorf("Expected %v got %v", tnow, md.Summary.ModifyDate)
+	if cmpDates(tnow, md.Summary().ModifyDate) {
+		t.Errorf("Expected %v got %v", tnow, md.Summary().ModifyDate)
 	}
 }
 
@@ -310,7 +319,7 @@ func TestMetaDataEditor_CommitExifChanges(t *testing.T) {
 	var err error
 	mde := getEditor(LeicaImg, t)
 	md := editorMD(mde, t)
-	model := md.Summary.CameraModel
+	model := md.Summary().CameraModel
 	newModel := "A new model"
 
 	//change model
@@ -321,11 +330,11 @@ func TestMetaDataEditor_CommitExifChanges(t *testing.T) {
 	if err = mde.sl.Write(out); err != nil {
 		t.Fatalf("Could not write segments: %v", err)
 	}
-	if md, err = Parse(out.Bytes()); err != nil {
+	if md, err = NewMetaData(out.Bytes()); err != nil {
 		t.Fatalf("Could not read metadata: %v", err)
 	}
-	if model != md.Summary.CameraModel {
-		t.Errorf("Expected %s got %s", model, md.Summary.CameraModel)
+	if model != md.Summary().CameraModel {
+		t.Errorf("Expected %s got %s", model, md.Summary().CameraModel)
 	}
 
 	//now commit changes
@@ -338,11 +347,11 @@ func TestMetaDataEditor_CommitExifChanges(t *testing.T) {
 	if err = mde.sl.Write(out); err != nil {
 		t.Fatalf("Could not write segments: %v", err)
 	}
-	if md, err = Parse(out.Bytes()); err != nil {
+	if md, err = NewMetaData(out.Bytes()); err != nil {
 		t.Fatalf("Could not read metadata: %v", err)
 	}
-	if newModel != md.Summary.CameraModel {
-		t.Errorf("Expected %s got %s", newModel, md.Summary.CameraModel)
+	if newModel != md.Summary().CameraModel {
+		t.Errorf("Expected %s got %s", newModel, md.Summary().CameraModel)
 	}
 }
 
@@ -356,18 +365,26 @@ func TestMetaDataEditor_SetExifTag(t *testing.T) {
 		t.Fatalf("Could not set exif tag: %v", err)
 	}
 	md := editorMD(mde, t)
-	if md.Summary.FocalLength != expectedFocalLength {
-		t.Errorf("expected %v got %v", expectedFocalLength, md.Summary.FocalLength)
+	focalLength := URat{}
+	md.exifData.ScanIfdExif(Exif_FocalLength, &focalLength)
+	if focalLength != expectedFocalLength {
+		t.Errorf("expected focalLength %v got %v", expectedFocalLength, focalLength)
 	}
 }
 
 func TestMetaDataEditor_SetIfdTag(t *testing.T) {
 
 	//TODO: make sure to cover all various types as well non-happy paths
-
+	//TODO: this this is broken. Fix so its pulling the actual lens info value and not the summary which
+	//will default to Exif_LensSpecification
+	expectedLensInfo := LensInfo{
+		MinFocalLength:           URat{2800, 100},
+		MaxFocalLength:           URat{2800, 100},
+		MinFNumberMinFocalLength: URat{392, 256},
+		MinFNumberMaxFocalLength: URat{500, 256},
+	}
 	mde := getEditor(LeicaImg, t)
 	md := editorMD(mde, t)
-	expectedLensInfo := md.Summary.LensInfo
 
 	if expectedLensInfo.MinFocalLength.IsZero() {
 		t.Fatalf("Expected Lens Info to not be zero")
@@ -377,8 +394,10 @@ func TestMetaDataEditor_SetIfdTag(t *testing.T) {
 		t.Fatalf("Could not set ifd tag: %v", err)
 	}
 	md = editorMD(mde, t)
-	if md.Summary.LensInfo != expectedLensInfo {
-		t.Errorf("expected %v got %v", expectedLensInfo, md.Summary.FocalLength)
+	lensInfo := LensInfo{}
+	md.exifData.ScanIfdRoot(IFD_LensInfo, &lensInfo)
+	if lensInfo != expectedLensInfo {
+		t.Errorf("expected %v got %v", expectedLensInfo, lensInfo)
 	}
 
 }
@@ -390,7 +409,7 @@ func TestMetaDataEditor_SetImageDescription(t *testing.T) {
 		t.Fatalf("Could not set Image Description: %v", err)
 	}
 	md := editorMD(mde, t)
-	ret, err := md.GetIfdImageDescription()
+	ret, err := md.exifData.GetIfdImageDescription()
 	if err != nil {
 		t.Fatalf("Could not get Image Description from Metadata: %v", err)
 	} else if ret != expImageDescription {
@@ -405,7 +424,7 @@ func TestMetaDataEditor_SetUserComment(t *testing.T) {
 		t.Fatalf("Could not set User Comment: %v", err)
 	}
 	md := editorMD(mde, t)
-	ret, err := md.GetIfdUserComment()
+	ret, err := md.exifData.GetIfdUserComment()
 	if err != nil {
 		t.Fatalf("Could not get Image Comment from Metadata: %v", err)
 	} else if ret != expUserComment {
@@ -413,41 +432,88 @@ func TestMetaDataEditor_SetUserComment(t *testing.T) {
 	}
 }
 
-func TestMetaDataEditor_SetXmp(t *testing.T) {
-	md := getMetaData(LeicaImg, t)
-	//mde := getEditor(NoExifImg, t)
-
-	if !md.HasXmp() {
-		t.Fatalf("Expected XMP")
-	}
-
-	model := md.Xmp()
-	dcmodel := dc.FindModel(model)
-	if dcmodel == nil {
-		t.Fatalf("Expected Dublin Core")
+func TestMetaDataEditor_SetExifAndXmp(t *testing.T) {
+	expectedFocalLength := URat{350, 10}
+	expectedLensInfo := LensInfo{
+		MinFocalLength:           URat{2800, 100},
+		MaxFocalLength:           URat{2800, 100},
+		MinFNumberMinFocalLength: URat{392, 256},
+		MinFNumberMaxFocalLength: URat{500, 256},
 	}
 	expTitle := "New Title"
 	expKeywords := []string{"keyword 1", "keyword 2"}
-	dcmodel.Title.Set("", expTitle)
-	dcmodel.Subject = xmp.StringArray{}
-	dcmodel.Subject.Add(expKeywords[0])
-	dcmodel.Subject.Add(expKeywords[1])
+
+	testSetExifXmp := func(assetName string, t *testing.T) {
+		e := getEditor(assetName, t)
+		model := getXmpModel(t)
+
+		e.SetXmp(model)
+		if err := e.SetIfdTag(IFD_LensInfo, expectedLensInfo); err != nil {
+			t.Errorf("Could not set ifd tag for %s: %v", assetName, err)
+		}
+		if err := e.SetExifTag(Exif_FocalLength, expectedFocalLength); err != nil {
+			t.Errorf("Could not set exif tag for %s: %v", assetName, err)
+		}
+		md := editorMD(e, t)
+
+		//now verify
+		if dcm := md.xmpData.DublinCore(); dcm != nil {
+			if dcm.Title.Default() != expTitle {
+				t.Errorf("Expected title for %s: %s got %s", assetName, expTitle, dcm.Title.Default())
+			}
+			if len(dcm.Subject) != len(expKeywords) {
+				t.Errorf("Expected number of keywords for %s: %v got %v", assetName, len(expKeywords), len(dcm.Subject))
+			}
+			for _, kv := range dcm.Subject {
+				if kv != expKeywords[0] && kv != expKeywords[1] {
+					t.Errorf("Did not find expected keyword for %s: %s", assetName, kv)
+				}
+			}
+		} else {
+			t.Errorf("Expected Dublin Core Xmp data got nil")
+		}
+		focalLength := URat{}
+		md.exifData.ScanIfdExif(Exif_FocalLength, &focalLength)
+		if focalLength != expectedFocalLength {
+			t.Errorf("expected focalLength for %s: %v got %v", assetName, expectedFocalLength, focalLength)
+		}
+		lensInfo := LensInfo{}
+		md.exifData.ScanIfdRoot(IFD_LensInfo, &lensInfo)
+		if lensInfo != expectedLensInfo {
+			t.Errorf("expected lensInfo for %s: %v got %v", assetName, expectedLensInfo, lensInfo)
+		}
+	}
+	testSetExifXmp(NoExifImg, t)
+	testSetExifXmp(LeicaImg, t)
+
+}
+
+func TestMetaDataEditor_SetXmp(t *testing.T) {
+
+	model := getXmpModel(t)
+	expTitle := "New Title"
+	expKeywords := []string{"keyword 1", "keyword 2"}
 
 	mde := getEditor(NoExifImg, t)
 	if err := mde.SetXmp(model); err != nil {
 		t.Fatalf("Could not set xmp model")
 	}
-	md = editorMD(mde, t)
-	//now compare
-	if md.Summary.Title != expTitle {
-		t.Errorf("Expected title %s got %s", expTitle, md.Summary.Title)
-	}
-	for _, kv := range md.Summary.Keywords {
-		if kv != expKeywords[0] && kv != expKeywords[1] {
-			t.Errorf("Did not find expected keyword: %s", kv)
+	md := editorMD(mde, t)
+	if dcm := md.xmpData.DublinCore(); dcm != nil {
+		if dcm.Title.Default() != expTitle {
+			t.Errorf("Expected title %s got %s", expTitle, dcm.Title.Default())
 		}
+		if len(dcm.Subject) != len(expKeywords) {
+			t.Errorf("Expected %v keywords got %v", len(expKeywords), len(dcm.Subject))
+		}
+		for _, kv := range dcm.Subject {
+			if kv != expKeywords[0] && kv != expKeywords[1] {
+				t.Errorf("Did not find expected keyword %s", kv)
+			}
+		}
+	} else {
+		t.Errorf("Expected Dublin Core Xmp data got nil")
 	}
-
 }
 
 func TestMetaDataEditor_WriteFile(t *testing.T) {
@@ -461,7 +527,7 @@ func TestMetaDataEditor_WriteFile(t *testing.T) {
 	}
 	//now reopen
 	md := getMetaData(out, t)
-	if desc, err := md.GetIfdImageDescription(); err != nil {
+	if desc, err := md.exifData.GetIfdImageDescription(); err != nil {
 		t.Errorf("Could not retrieve image description: %v", err)
 	} else if desc != expImageDesc {
 		t.Errorf("Expected %s got %s", expImageDesc, desc)
