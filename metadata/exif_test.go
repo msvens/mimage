@@ -52,12 +52,12 @@ func TestExifValueStringNoErr(t *testing.T) {
 		"Whatever": "Undefined",
 	}
 	for k, exp := range expExifFlashValues {
-		if v := ExifValueStringNoErr(IfdExif, Exif_Flash, k); !strings.EqualFold(exp, v) {
+		if v := ExifValueString(IfdExif, Exif_Flash, k); !strings.EqualFold(exp, v) {
 			t.Errorf("Expected value string: %v got %v", exp, v)
 		}
 	}
 	for k, exp := range expIopInteroperabilityIndexValues {
-		if v := ExifValueStringNoErr(IfdIop, Iop_InteroperabilityIndex, k); !strings.EqualFold(exp, v) {
+		if v := ExifValueString(IfdIop, Iop_InteroperabilityIndex, k); !strings.EqualFold(exp, v) {
 			t.Errorf("Expected value string: %v got %v", exp, v)
 		}
 	}
@@ -79,22 +79,22 @@ func TestExifValueString(t *testing.T) {
 	noIopInteroperabilityIndexValue := "Whatever"
 
 	for k, exp := range expExifFlashValues {
-		v, _ := ExifValueString(IfdExif, Exif_Flash, k)
+		v, _ := ExifValueStringErr(IfdExif, Exif_Flash, k)
 		if !strings.EqualFold(exp, v) {
 			t.Errorf("Expected valuestring: %s got %s", exp, v)
 		}
 	}
-	if _, err := ExifValueString(IfdExif, Exif_Flash, noExifFlashValue); err == nil {
+	if _, err := ExifValueStringErr(IfdExif, Exif_Flash, noExifFlashValue); err == nil {
 		t.Errorf("Expcted error on undefined flash value")
 	}
 
 	for k, exp := range expIopInteroperabilityIndexValues {
-		v, _ := ExifValueString(IfdIop, Iop_InteroperabilityIndex, k)
+		v, _ := ExifValueStringErr(IfdIop, Iop_InteroperabilityIndex, k)
 		if !strings.EqualFold(exp, v) {
 			t.Errorf("Expected valuestring: %s got %s", exp, v)
 		}
 	}
-	if _, err := ExifValueString(IfdIop, Iop_InteroperabilityIndex, noIopInteroperabilityIndexValue); err == nil {
+	if _, err := ExifValueStringErr(IfdIop, Iop_InteroperabilityIndex, noIopInteroperabilityIndexValue); err == nil {
 		t.Errorf("Expcted error on undefined interoperatiblityindex")
 	}
 
@@ -342,33 +342,34 @@ func TestExifTagName(t *testing.T) {
 	    "GPSVersionID": "2.2.0.0", //0x0000
 	*/
 	errS := "Unknown Ifd"
-	if tn := ExifTagName(IfdRoot, uint16(0x010f)); strings.HasPrefix(tn, errS) {
+	if tn := ExifTagName(IfdRoot, ExifTag(0x010f)); strings.HasPrefix(tn, errS) {
 		t.Errorf("Expected Make got %s", tn)
 	}
-	if tn := ExifTagName(IfdExif, uint16(0x829a)); strings.HasPrefix(tn, errS) {
+	if tn := ExifTagName(IfdExif, ExifTag(0x829a)); strings.HasPrefix(tn, errS) {
 		t.Errorf("Expected ExposureTime got %s", tn)
 	}
-	if tn := ExifTagName(IfdGpsInfo, uint16(0x0000)); strings.HasPrefix(tn, errS) {
+	if tn := ExifTagName(IfdGpsInfo, ExifTag(0x0000)); strings.HasPrefix(tn, errS) {
 		t.Errorf("Expected GPSVersion got %s", tn)
 	}
-	if tn := ExifTagName(IfdThumbnail, uint16(0x0103)); strings.HasPrefix(tn, errS) {
+	if tn := ExifTagName(IfdThumbnail, ExifTag(0x0103)); strings.HasPrefix(tn, errS) {
 		t.Errorf("Expected Compression got %s", tn)
 	}
-	if tn := ExifTagName(IfdIop, uint16(0x0001)); strings.HasPrefix(tn, errS) {
+	if tn := ExifTagName(IfdIop, ExifTag(0x0001)); strings.HasPrefix(tn, errS) {
 		t.Errorf("Expected InteropIndex got %s", tn)
 	}
 	//now try some bad cases
 	var na IfdIndex = 200
-	if tn := ExifTagName(na, uint16(0x0001)); !strings.HasPrefix(tn, "Unknown Ifd Tag: ") {
+	if tn := ExifTagName(na, ExifTag(0x0001)); !strings.HasPrefix(tn, "Unknown Ifd Tag: ") {
 		t.Errorf("Expected Unknown Ifd Nil got %s", tn)
 	}
-
 }
 
+//Todo:
 func TestParseIfdDateTime(t *testing.T) {
 
 }
 
+//Todo:
 func TestTimeOffsetString(t *testing.T) {
 
 }

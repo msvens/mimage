@@ -35,6 +35,18 @@ const (
 
 const CopyAll = EXIF | XMP | IPTC
 
+func exifOffsetString(t time.Time) string {
+	_, offset := t.Zone()
+	sign := '+'
+	if offset < 0 {
+		sign = '-'
+		offset = -offset
+	}
+	h := offset / 3600
+	m := (offset % 3600) / 60
+	return fmt.Sprintf("%c%02v:%02v", sign, h, m)
+}
+
 type MetaDataEditor struct {
 	sl        *jpegstructure.SegmentList
 	rootIb    *exif.IfdBuilder
@@ -288,13 +300,13 @@ func (mde *MetaDataEditor) MetaData() (*MetaData, error) {
 	}
 }
 
-func (mde *MetaDataEditor) SetExifTag(id uint16, value interface{}) error {
+func (mde *MetaDataEditor) SetExifTag(id ExifTag, value interface{}) error {
 
 	exifIb, err := exif.GetOrCreateIbFromRootIb(mde.rootIb, IfdPaths[IfdExif])
 	if err != nil {
 		return err
 	} else {
-		if err := exifIb.SetStandard(id, toGoExifValue(value)); err != nil {
+		if err := exifIb.SetStandard(uint16(id), toGoExifValue(value)); err != nil {
 			return err
 		}
 	}
@@ -302,8 +314,8 @@ func (mde *MetaDataEditor) SetExifTag(id uint16, value interface{}) error {
 	return nil
 }
 
-func (mde *MetaDataEditor) SetIfdTag(id uint16, value interface{}) error {
-	if err := mde.rootIb.SetStandard(id, toGoExifValue(value)); err != nil {
+func (mde *MetaDataEditor) SetIfdTag(id ExifTag, value interface{}) error {
+	if err := mde.rootIb.SetStandard(uint16(id), toGoExifValue(value)); err != nil {
 		return err
 	} else {
 		mde.dirtyExif = true
@@ -340,7 +352,7 @@ func toGoExifValue(value interface{}) interface{} {
 		}
 		return ret
 	case LensInfo:
-		return t.toExif()
+		return t.toRational()
 	default:
 		return t
 	}
@@ -348,7 +360,7 @@ func toGoExifValue(value interface{}) interface{} {
 
 func (mde *MetaDataEditor) SetExifDate(dateTag ExifDate, time time.Time) error {
 	var err error
-	offset := TimeOffsetString(time)
+	offset := exifOffsetString(time)
 	switch dateTag {
 	case OriginalDate:
 		if err = mde.SetExifTag(Exif_DateTimeOriginal, time); err != nil {

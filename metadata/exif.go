@@ -19,6 +19,14 @@ var IfdUndefinedTypeErr = errors.New("Tag type undefined")
 const ExifDateTime = "2006:01:02 15:04:05"
 const ExifDateTimeOffset = "2006:01:02 15:04:05 -07:00"
 
+func exifDataTime(dt string, offset string) (time.Time, error) {
+	if offset == "" {
+		return time.Parse(ExifDateTime, dt)
+	} else {
+		return time.Parse(ExifDateTimeOffset, dt+" "+offset)
+	}
+}
+
 const (
 	OriginalDate ExifDate = iota
 	ModifyDate
@@ -43,7 +51,7 @@ var IfdPaths = map[IfdIndex]string{
 	IfdThumbnail: "IFD1",
 }
 
-var ifdValueMap = map[IfdIndex]map[uint16]interface{}{
+var ifdValueMap = map[IfdIndex]map[ExifTag]interface{}{
 	IfdRoot:      IFDValues,
 	IfdExif:      ExifValues,
 	IfdGpsInfo:   GPSInfoValues,
@@ -51,7 +59,27 @@ var ifdValueMap = map[IfdIndex]map[uint16]interface{}{
 	IfdThumbnail: IFDValues,
 }
 
-func ExifValueIsAllowed(index IfdIndex, tagId uint16, value interface{}) bool {
+func ExifTagName(index IfdIndex, tagId ExifTag) string {
+	var name string
+	var found bool
+	switch index {
+	case IfdRoot, IfdThumbnail:
+		name, found = IFDName[tagId]
+	case IfdExif:
+		name, found = ExifName[tagId]
+	case IfdIop:
+		name, found = IopName[tagId]
+	case IfdGpsInfo:
+		name, found = GPSInfoName[tagId]
+	}
+	if found {
+		return name
+	} else {
+		return fmt.Sprintf("Unknown Ifd Tag: %v", tagId)
+	}
+}
+
+func ExifValueIsAllowed(index IfdIndex, tagId ExifTag, value interface{}) bool {
 	ifdValueMap, found := ifdValueMap[index]
 	if !found {
 		return false
@@ -115,15 +143,15 @@ func ExifValueIsAllowed(index IfdIndex, tagId uint16, value interface{}) bool {
 	}
 }
 
-func ExifValueStringNoErr(index IfdIndex, tagId uint16, value interface{}) string {
-	if v, err := ExifValueString(index, tagId, value); err == nil {
+func ExifValueString(index IfdIndex, tagId ExifTag, value interface{}) string {
+	if v, err := ExifValueStringErr(index, tagId, value); err == nil {
 		return v
 	} else {
 		return "undefined"
 	}
 }
 
-func ExifValueString(index IfdIndex, tagId uint16, value interface{}) (string, error) {
+func ExifValueStringErr(index IfdIndex, tagId ExifTag, value interface{}) (string, error) {
 	ifdValueMap, found := ifdValueMap[index]
 	if !found {
 		return "", IfdTagNotFoundErr
@@ -279,7 +307,7 @@ func (ed *ExifData) Ifd(index IfdIndex) *exif.Ifd {
 	return ed.rawExif.Lookup[IfdPaths[index]]
 }
 
-func (ed *ExifData) Scan(ifdIndex IfdIndex, tagId uint16, dest interface{}) error {
+func (ed *ExifData) Scan(ifdIndex IfdIndex, tagId ExifTag, dest interface{}) error {
 	if ed.IsEmpty() {
 		return NoExifErr
 	}
@@ -289,7 +317,7 @@ func (ed *ExifData) Scan(ifdIndex IfdIndex, tagId uint16, dest interface{}) erro
 		return IfdTagNotFoundErr
 	}
 
-	entries, err := ifd.FindTagWithId(tagId)
+	entries, err := ifd.FindTagWithId(uint16(tagId))
 	if err != nil {
 		return IfdTagNotFoundErr
 	}
@@ -390,17 +418,13 @@ func (ed *ExifData) Scan(ifdIndex IfdIndex, tagId uint16, dest interface{}) erro
 		if entry.TagType() == exifcommon.TypeRational {
 			v := value.([]exifcommon.Rational)
 			*dtype = NewURatFromRational(v[0])
-			//dtype.Numerator = v[0].Numerator
-			//dtype.Denominator = v[0].Denominator
 		} else {
 			wrongTagType = true
 		}
 	case *Rat:
 		if entry.TagType() == exifcommon.TypeSignedRational {
 			v := value.([]exifcommon.SignedRational)
-			*dtype = Rat{v[0].Numerator, v[0].Denominator}
-			//dtype.Numerator = v[0].Numerator
-			//dtype.Denominator = v[0].Denominator
+			*dtype = NewRatFromSignedRational(v[0])
 		} else {
 			wrongTagType = true
 		}
@@ -452,7 +476,7 @@ func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 			return err
 		}
 		_ = ed.ScanIfdExif(Exif_OffsetTimeOriginal, &o) //dont care about offset errors
-		*dest, err = ParseIfdDateTime(t, o)
+		*dest, err = exifDataTime(t, o)
 		if err != nil {
 			return err
 		}
@@ -461,7 +485,7 @@ func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 			return err
 		}
 		_ = ed.ScanIfdExif(Exif_OffsetTime, &o) //dont care about offset errors
-		*dest, err = ParseIfdDateTime(t, o)
+		*dest, err = exifDataTime(t, o)
 		if err != nil {
 			return err
 		}
@@ -470,7 +494,7 @@ func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 			return err
 		}
 		_ = ed.ScanIfdExif(Exif_OffsetTimeDigitized, &o) //dont care about offset errors
-		*dest, err = ParseIfdDateTime(t, o)
+		*dest, err = exifDataTime(t, o)
 		if err != nil {
 			return err
 		}
@@ -480,12 +504,20 @@ func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 	return nil
 }
 
-func (ed *ExifData) ScanIfdRoot(tagId uint16, dest interface{}) error {
+func (ed *ExifData) ScanIfdExif(tagId ExifTag, dest interface{}) error {
+	return ed.Scan(IfdExif, tagId, dest)
+}
+
+func (ed *ExifData) ScanIfdIop(tagId ExifTag, dest interface{}) error {
+	return ed.Scan(IfdIop, tagId, dest)
+}
+
+func (ed *ExifData) ScanIfdRoot(tagId ExifTag, dest interface{}) error {
 	return ed.Scan(IfdRoot, tagId, dest)
 }
 
-func (ed *ExifData) ScanIfdExif(tagId uint16, dest interface{}) error {
-	return ed.Scan(IfdExif, tagId, dest)
+func (ed *ExifData) ScanIfdThumbnail(tagId ExifTag, dest interface{}) error {
+	return ed.Scan(IfdThumbnail, tagId, dest)
 }
 
 func (ed *ExifData) String() string {
@@ -510,223 +542,4 @@ func (ed *ExifData) String() string {
 	}
 	sb.WriteString("}")
 	return sb.String()
-
 }
-
-func TimeOffsetString(t time.Time) string {
-	_, offset := t.Zone()
-	sign := '+'
-	if offset < 0 {
-		sign = '-'
-		offset = -offset
-	}
-	h := offset / 3600
-	m := (offset % 3600) / 60
-	return fmt.Sprintf("%c%02v:%02v", sign, h, m)
-}
-
-func ParseIfdDateTime(dt string, offset string) (time.Time, error) {
-	if offset == "" {
-		return time.Parse(ExifDateTime, dt)
-	} else {
-		return time.Parse(ExifDateTimeOffset, dt+" "+offset)
-	}
-}
-
-func ExifTagName(index IfdIndex, fieldId uint16) string {
-	var name string
-	var found bool
-	switch index {
-	case IfdRoot, IfdThumbnail:
-		name, found = IFDName[fieldId]
-	case IfdExif:
-		name, found = ExifName[fieldId]
-	case IfdIop:
-		name, found = IopName[fieldId]
-	case IfdGpsInfo:
-		name, found = GPSInfoName[fieldId]
-	}
-	if found {
-		return name
-	} else {
-		return fmt.Sprintf("Unknown Ifd Tag: %v", fieldId)
-	}
-}
-
-/*
-func ExifTagName(ifd *exif.Ifd, fieldId uint16) string {
-	var name string
-	var found bool
-	if ifd == nil {
-		return fmt.Sprintf("Unknown Ifd Nil")
-	}
-	if ifd.IfdIdentity().String() == IFDPath || ifd.IfdIdentity().String() == ThumbNailPath {
-		name, found = IFDName[fieldId]
-	} else if ifd.IfdIdentity().String() == ExifPath {
-		name, found = ExifName[fieldId]
-	} else if ifd.IfdIdentity().String() == IopPath {
-		name, found = IopName[fieldId]
-	} else if ifd.IfdIdentity().String() == GPSInfoPath {
-		name, found = GPSInfoName[fieldId]
-	} else {
-		return fmt.Sprintf("Unknown Ifd Path %s", ifd.IfdIdentity().String())
-	}
-	if found {
-		return name
-	} else {
-		return fmt.Sprintf("Unknown Ifd Tag: %v", fieldId)
-	}
-}
-*/
-
-/*
-func ScanIfdTag(ifd *exif.Ifd, tagId uint16, dest interface{}) error {
-	entries, err := ifd.FindTagWithId(tagId)
-	if err != nil {
-		return IfdTagNotFoundErr
-	}
-	if len(entries) < 1 {
-		return fmt.Errorf("No entry data for: %s", ExifTagName(ifd, tagId))
-	}
-
-	entry := entries[0]
-
-	value, err := entry.Value()
-
-	if err != nil {
-		return err
-	}
-	wrongTagType := false
-
-	switch dtype := dest.(type) {
-
-	case *string:
-		*dtype, err = entry.Format()
-	case *float32:
-		if entry.TagType() == exifcommon.TypeFloat {
-			v := value.([]float32)
-			*dtype = float32(v[0])
-		} else {
-			wrongTagType = true
-		}
-	case *float64:
-		if entry.TagType() == exifcommon.TypeDouble {
-			v := value.([]float64)
-			*dtype = float64(v[0])
-		} else if entry.TagType() == exifcommon.TypeFloat {
-			v := value.([]float32)
-			*dtype = float64(v[0])
-		} else if entry.TagType() == exifcommon.TypeRational {
-			v := value.([]exifcommon.Rational)
-			*dtype = float64(v[0].Numerator) / float64(v[0].Denominator)
-		} else if entry.TagType() == exifcommon.TypeSignedRational {
-			v := value.([]exifcommon.SignedRational)
-			*dtype = float64(v[0].Numerator) / float64(v[0].Denominator)
-		} else {
-			wrongTagType = true
-		}
-	case *int64:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = int64(v[0])
-		} else if entry.TagType() == exifcommon.TypeLong {
-			v := value.([]uint32)
-			*dtype = int64(v[0])
-		} else if entry.TagType() == exifcommon.TypeSignedLong {
-			v := value.([]int32)
-			*dtype = int64(v[0])
-		} else {
-			wrongTagType = true
-		}
-	case *uint64:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = uint64(v[0])
-		} else if entry.TagType() == exifcommon.TypeLong {
-			v := value.([]uint32)
-			*dtype = uint64(v[0])
-		} else {
-			wrongTagType = true
-		}
-	case *int32:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = int32(v[0])
-		} else if entry.TagType() == exifcommon.TypeSignedLong {
-			v := value.([]int32)
-			*dtype = v[0]
-		} else {
-			wrongTagType = true
-		}
-	case *uint32:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = uint32(v[0])
-		} else if entry.TagType() == exifcommon.TypeLong {
-			v := value.([]uint32)
-			*dtype = v[0]
-		} else {
-			wrongTagType = true
-		}
-	case *uint16:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = v[0]
-			return nil
-		} else {
-			wrongTagType = true
-		}
-	case *URat:
-		if entry.TagType() == exifcommon.TypeRational {
-			v := value.([]exifcommon.Rational)
-			*dtype = NewURatFromRational(v[0])
-			//dtype.Numerator = v[0].Numerator
-			//dtype.Denominator = v[0].Denominator
-		} else {
-			wrongTagType = true
-		}
-	case *Rat:
-		if entry.TagType() == exifcommon.TypeSignedRational {
-			v := value.([]exifcommon.SignedRational)
-			*dtype = fromExifRat(v[0])
-			//dtype.Numerator = v[0].Numerator
-			//dtype.Denominator = v[0].Denominator
-		} else {
-			wrongTagType = true
-		}
-	case *LensInfo:
-		if entry.TagType() == exifcommon.TypeRational {
-			v := value.([]exifcommon.Rational)
-			if len(v) != 4 {
-				return fmt.Errorf("Expected 4 values for LensInfo got %v", len(v))
-			}
-			if ret, e := NewLensInfoFromRational(v); e != nil {
-				return e
-			} else {
-				*dtype = ret
-			}
-		} else {
-			wrongTagType = true
-		}
-	case *exifundefined.Tag9286UserComment:
-		if entry.TagType() == exifcommon.TypeUndefined {
-			v, ok := value.(exifundefined.Tag9286UserComment)
-			if !ok {
-				fmt.Errorf("Cannot recognise User Comment Type")
-			} else {
-				*dtype = v
-			}
-		} else {
-			wrongTagType = true
-		}
-	default:
-		return fmt.Errorf("Cannot handle destination type %T", dest)
-	}
-
-	if wrongTagType {
-		n := exifcommon.TypeNames[entry.TagType()]
-		return fmt.Errorf("Wrong TagType: %s for destination", n)
-	}
-	return nil
-}
-*/

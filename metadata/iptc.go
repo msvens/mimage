@@ -16,6 +16,32 @@ type IptcData struct {
 	raw map[iptc.StreamTagKey][]iptc.TagData
 }
 
+func IptcTagName(record IptcRecord, tag IptcTag) string {
+	var str string
+	var found bool
+	switch record {
+	case Envelope:
+		str, found = IptcEnvelopeName[tag]
+	case Application:
+		str, found = IptcApplicationName[tag]
+	case NewsPhoto:
+		str, found = IptcNewsPhotoName[tag]
+	case PreObjectData:
+		str, found = IptcPreObjectDataName[tag]
+	case ObjectData:
+		str, found = IptcObjectDataName[tag]
+	case PostObjectData:
+		str, found = IptcPostObjectDataName[tag]
+	case FotoStation:
+		str, found = IptcFotoStationName[tag]
+	}
+	if found {
+		return str
+	} else {
+		return fmt.Sprintf("Unknown Tag. Record: %v, Dataset: %v", record, tag)
+	}
+}
+
 func NewIptcData(segments *jpegstructure.SegmentList) (*IptcData, error) {
 	raw, err := segments.Iptc() //dont care about the error
 	return &IptcData{raw}, err
@@ -29,20 +55,12 @@ func (ipd *IptcData) RawIptc() map[iptc.StreamTagKey][]iptc.TagData {
 	return ipd.raw
 }
 
-func (ipd *IptcData) ScanIptcEnvelopTag(dataset uint8, dest interface{}) error {
-	return ipd.Scan(IPTCEnvelop, dataset, dest)
-}
-
-func (ipd *IptcData) ScanApplicationTag(dataset uint8, dest interface{}) error {
-	return ipd.Scan(IPTCApplication, dataset, dest)
-}
-
-func (ipd *IptcData) Scan(record, dataset uint8, dest interface{}) error {
+func (ipd *IptcData) Scan(record IptcRecord, tag IptcTag, dest interface{}) error {
 	if ipd.IsEmpty() {
 		return NoIptcErr
 	}
 
-	tagKey := iptc.StreamTagKey{RecordNumber: record, DatasetNumber: dataset}
+	tagKey := iptc.StreamTagKey{RecordNumber: uint8(record), DatasetNumber: uint8(tag)}
 
 	tagData, found := ipd.raw[tagKey]
 	if !found {
@@ -55,22 +73,9 @@ func (ipd *IptcData) Scan(record, dataset uint8, dest interface{}) error {
 		*dtype = tagData[0]
 	case *string:
 		*dtype = string(tagData[0])
-		tagData[0].IsPrintable()
-		/*if tagData[0].IsPrintable() {
-			*dtype = string(tagData[0])
-		} else {
-			wrongType = true
-		}*/
 	case *[]string:
 		for _, v := range tagData {
 			*dtype = append(*dtype, string(v))
-			/*if v.IsPrintable() {
-				*dtype = append(*dtype, string(v))
-			} else {
-				wrongType = true
-				break
-			}*/
-
 		}
 	}
 	if wrongType {
@@ -79,13 +84,21 @@ func (ipd *IptcData) Scan(record, dataset uint8, dest interface{}) error {
 	return nil
 }
 
+func (ipd *IptcData) ScanEnvelope(tag IptcTag, dest interface{}) error {
+	return ipd.Scan(Envelope, tag, dest)
+}
+
+func (ipd *IptcData) ScanApplication(tag IptcTag, dest interface{}) error {
+	return ipd.Scan(Application, tag, dest)
+}
+
 func (ipd *IptcData) String() string {
 	if ipd.IsEmpty() {
 		return "No IPTC data"
 	}
 	buff := strings.Builder{}
 	for k, v := range ipd.raw {
-		name := ipd.TagName(k.RecordNumber, k.DatasetNumber)
+		name := IptcTagName(IptcRecord(k.RecordNumber), IptcTag(k.DatasetNumber))
 		str := []string{}
 		for _, data := range v {
 			str = append(str, string(data))
@@ -93,21 +106,4 @@ func (ipd *IptcData) String() string {
 		buff.WriteString(fmt.Sprintf("%s (%v,%v): [%s]\n", name, k.RecordNumber, k.DatasetNumber, strings.Join(str, ", ")))
 	}
 	return buff.String()
-}
-
-func (ipd *IptcData) TagName(record, dataset uint8) string {
-	var str string
-	var found bool
-	if record == IPTCEnvelop {
-		str, found = Iptc1Name[dataset]
-	} else if record == IPTCApplication {
-		str, found = Iptc2Name[dataset]
-	} else {
-		found = false //unneeded but nice for clarity
-	}
-	if found {
-		return str
-	} else {
-		return fmt.Sprintf("Unknown Tag. Record: %v, Dataset: %v", record, dataset)
-	}
 }

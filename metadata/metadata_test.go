@@ -32,7 +32,7 @@ func getEditor(fname string, t *testing.T) *MetaDataEditor {
 }
 
 func getMetaData(fname string, t *testing.T) *MetaData {
-	md, err := NewMetaDataFile(fname)
+	md, err := NewMetaDataFromFile(fname)
 	if err != nil {
 		t.Fatalf("Could not retrieve metadata for file: %v", err)
 	}
@@ -67,16 +67,16 @@ func TestParse(t *testing.T) {
 }
 
 func TestParseFile(t *testing.T) {
-	if _, err := NewMetaDataFile(NikonImg); err != nil {
+	if _, err := NewMetaDataFromFile(NikonImg); err != nil {
 		t.Errorf("Could not parse Image file: %v", err)
 	}
-	if _, err := NewMetaDataFile(NonImageFile); err == nil {
+	if _, err := NewMetaDataFromFile(NonImageFile); err == nil {
 		t.Errorf("Expected parse error")
 	} else if err != ParseImageErr {
 		t.Errorf("Expected error %v got error %v", ParseImageErr, err)
 	}
 	//non existent file
-	if _, err := NewMetaDataFile("somefile.jpg"); err == nil {
+	if _, err := NewMetaDataFromFile("somefile.jpg"); err == nil {
 		t.Errorf("Expected parse error")
 	}
 }

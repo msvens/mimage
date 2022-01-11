@@ -56,13 +56,13 @@ func TestIptcData_ScanApplicationTag(t *testing.T) {
 	iptcData := getIptcData(LeicaImg, t)
 	expObjectName := "Morning Fog"
 	ret := ""
-	if err := iptcData.ScanApplicationTag(Iptc2_ObjectName, &ret); err != nil {
+	if err := iptcData.ScanApplication(Application_ObjectName, &ret); err != nil {
 		t.Errorf("Expected IPTC Application Object Name to be set got: %v", err)
 	} else if ret != expObjectName {
 		t.Errorf("Expected %s got %s", expObjectName, ret)
 	}
 	//non existent tag
-	if err := iptcData.ScanApplicationTag(Iptc2_Keywords, &ret); err == nil {
+	if err := iptcData.ScanApplication(Application_Keywords, &ret); err == nil {
 		t.Errorf("Expected error got %s", ret)
 	} else if err != IptcTagNotFoundErr {
 		t.Errorf("Expected error %v got error %v", IptcTagNotFoundErr, err)
@@ -80,13 +80,13 @@ func TestIptcData_ScanIptcEnvelopTag(t *testing.T) {
 	//expObjectName := "Morning Fog"
 	expectedCharSet := []byte{27, 37, 71} //ESC%G (which is UTF
 	ret := []byte{}
-	if err := iptcData.ScanIptcEnvelopTag(Iptc1_CodedCharacterSet, &ret); err != nil {
+	if err := iptcData.ScanEnvelope(Envelope_CodedCharacterSet, &ret); err != nil {
 		t.Errorf("Expected CodedCharacterSet got error %v", err)
 	} else if bytes.Compare(ret, expectedCharSet) != 0 {
 		t.Errorf("Expected %v got %v", expectedCharSet, ret)
 	}
 	//non existent tag
-	if err := iptcData.ScanIptcEnvelopTag(Iptc1_Destination, &ret); err == nil {
+	if err := iptcData.ScanEnvelope(Envelope_Destination, &ret); err == nil {
 		t.Errorf("Expected error for non existing tag")
 	} else if err != IptcTagNotFoundErr {
 		t.Errorf("Expected error %v got error %v", IptcTagNotFoundErr, err)

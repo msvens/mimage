@@ -46,7 +46,7 @@ func generateExifTagValueSources(values []RawExifValues, exifs map[string]rawExi
 `)
 
 	for k, exif := range exifs {
-		b.WriteString(fmt.Sprintf("var %sValues = map[uint16]interface{}{\n", k))
+		b.WriteString(fmt.Sprintf("var %sValues = map[ExifTag]interface{}{\n", k))
 		for _, re := range exif.Tags {
 			if ev, found := findVal(re, k); found {
 				s, e := generateValueMap(ev, re)

@@ -1,14 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"github.com/msvens/mimage/generator"
-	"github.com/msvens/mimage/img"
-	"github.com/msvens/mimage/metadata"
-	"regexp"
-	"strings"
-	"time"
-)
+import "github.com/msvens/mimage/generator"
 
 func main() {
 
@@ -19,7 +11,7 @@ func main() {
 	//tryImageDesc()
 	//tryUserComment()
 	//trySegments()
-	tryMetaData()
+	//tryMetaData()
 	//tryParseExifToolExif()
 	/*m := map[interface{}]string{
 		uint(1): "one",
@@ -29,8 +21,11 @@ func main() {
 	fmt.Println(m[uint(1)])*/
 	//play with errors:
 	//generator.GenerateExifTags()
+	//generator.GenerateIptcTags()
+	generator.GenerateExifTags()
 }
 
+/*
 func tryParseExifToolExif() {
 	vals, err := generator.ParseExifValues()
 	if err != nil {
@@ -62,7 +57,9 @@ func tryCreateMetaData() {
 		fmt.Println(err)
 	}
 }
+*/
 
+/*
 func tryMetaData() {
 	fname := "./assets/leica.jpg"
 
@@ -72,16 +69,12 @@ func tryMetaData() {
 	}
 	if md != nil {
 		fmt.Println(md)
-		//fmt.Println(md.Summary().Title)
-		//fmt.Println(md.PrintIfd())
-		//fmt.Println(md.PrintIptc())
 	}
-	/*if md.HasXmp() {
-		b, _ := xmp.MarshalIndent(md.Xmp(), "", "  ")
-		fmt.Println(string(b))
-	}*/
 }
 
+*/
+
+/*
 func tryEditTags() {
 	source := "./assets/Leica.jpg"
 	dest := "/Users/mellowtech/imgtest/LeicaEdited.jpg"
@@ -122,7 +115,9 @@ func tryMetaDataCopy() {
 		fmt.Println(err)
 	}
 }
+*/
 
+/*
 func tryImageTransform() {
 
 	fname := "./assets/Leica.jpg"
@@ -142,7 +137,9 @@ func tryImageTransform() {
 		fmt.Println(err)
 	}
 }
+*/
 
+/*
 func tryRegExp() {
 	digit1 := "   uint16![,3   "
 	string1 := "strIng  [8]"
@@ -159,3 +156,4 @@ func tryRegExp() {
 	}
 
 }
+*/

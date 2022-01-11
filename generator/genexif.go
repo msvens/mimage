@@ -172,6 +172,8 @@ func generateExifTagSources(rawIfds map[string]rawExif) error {
 //Do not edit! This is an automatically generated file (see generator.GenerateExifTags()).
 //This file was generated based on https://www.exiv2.org/tags.html
 
+type ExifTag uint16
+
 
 `)
 
@@ -179,12 +181,12 @@ func generateExifTagSources(rawIfds map[string]rawExif) error {
 		//first generate constants. A constant is prefixed by IfdName, e.g. IFD_Make or Exif_ExposureTime
 		buff.WriteString(fmt.Sprintf("//%s Tag Ids\nconst(\n", k))
 		for _, t := range v.Tags {
-			buff.WriteString((fmt.Sprintf("  %s_%s uint16 = %#04x\n", k, t.Name, t.Id)))
+			buff.WriteString((fmt.Sprintf("  %s_%s ExifTag = %#04x\n", k, t.Name, t.Id)))
 		}
 		buff.WriteString(")\n\n")
 
 		//generate a id<->name mapping table
-		buff.WriteString(fmt.Sprintf("var %sName = map[uint16]string{\n", k))
+		buff.WriteString(fmt.Sprintf("var %sName = map[ExifTag]string{\n", k))
 		for _, t := range v.Tags {
 			buff.WriteString(fmt.Sprintf("  %s_%s: \"%s\",\n", k, t.Name, t.Name))
 		}

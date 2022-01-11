@@ -62,13 +62,13 @@ func (ec MetaDataSummary) String() string {
 	sb.WriteString(fmt.Sprintf("  Focal Length: %v\n", ec.FocalLength.Float32()))
 	sb.WriteString(fmt.Sprintf("  Focal Length 35MM: %v\n", ec.FocalLengthIn35mmFormat))
 	sb.WriteString(fmt.Sprintf("  Max Aperture Value: %v\n", ec.MaxApertureValue.Float32()))
-	sb.WriteString(fmt.Sprintf("  Flash Mode: %v\n", ExifValueStringNoErr(IfdExif, Exif_Flash, ec.FlashMode)))
+	sb.WriteString(fmt.Sprintf("  Flash Mode: %v\n", ExifValueString(IfdExif, Exif_Flash, ec.FlashMode)))
 	sb.WriteString(fmt.Sprintf("  Exposure Time: %v\n", ec.ExposureTime))
 	sb.WriteString(fmt.Sprintf("  Exposure Compensation: %v\n", ec.ExposureCompensation.Float32()))
-	sb.WriteString(fmt.Sprintf("  Exposure Program: %v\n", ExifValueStringNoErr(IfdExif, Exif_ExposureProgram, ec.ExposureProgram)))
+	sb.WriteString(fmt.Sprintf("  Exposure Program: %v\n", ExifValueString(IfdExif, Exif_ExposureProgram, ec.ExposureProgram)))
 	sb.WriteString(fmt.Sprintf("  Fnumber: %v\n", ec.FNumber.Float32()))
 	sb.WriteString(fmt.Sprintf("  ISO: %v\n", ec.ISO))
-	sb.WriteString(fmt.Sprintf("  ColorSpace: %v\n", ExifValueStringNoErr(IfdExif, Exif_ColorSpace, ec.ColorSpace)))
+	sb.WriteString(fmt.Sprintf("  ColorSpace: %v\n", ExifValueString(IfdExif, Exif_ColorSpace, ec.ColorSpace)))
 	sb.WriteString(fmt.Sprintf("  XResolution: %v\n", ec.XResolution))
 	sb.WriteString(fmt.Sprintf("  YResolution: %v\n", ec.YResolution))
 	sb.WriteString(fmt.Sprintf("  OriginalDate: %v\n", ec.OriginalDate))
@@ -102,7 +102,7 @@ func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
 	}
 }
 
-func NewMetaDataFile(filename string) (*MetaData, error) {
+func NewMetaDataFromFile(filename string) (*MetaData, error) {
 	if data, err := ioutil.ReadFile(filename); err != nil {
 		return nil, err
 	} else {
@@ -200,11 +200,11 @@ func (md *MetaData) String() string {
 func (md *MetaData) extractIPTC() error {
 	var err error
 
-	if e := md.iptcData.ScanApplicationTag(Iptc2_ObjectName, &md.summary.Title); e != nil && e != IptcTagNotFoundErr {
+	if e := md.iptcData.ScanApplication(Application_ObjectName, &md.summary.Title); e != nil && e != IptcTagNotFoundErr {
 		err = e
 	}
 
-	if e := md.iptcData.ScanApplicationTag(Iptc2_Keywords, &md.summary.Keywords); e != nil && e != IptcTagNotFoundErr {
+	if e := md.iptcData.ScanApplication(Application_Keywords, &md.summary.Keywords); e != nil && e != IptcTagNotFoundErr {
 		err = e
 	}
 
@@ -214,13 +214,13 @@ func (md *MetaData) extractIPTC() error {
 func (md *MetaData) extractExifTags() error {
 	var err error
 
-	scanR := func(tagId uint16, dest interface{}) {
+	scanR := func(tagId ExifTag, dest interface{}) {
 		e := md.exifData.ScanIfdRoot(tagId, dest)
 		if e != nil && e != IfdTagNotFoundErr {
 			err = e
 		}
 	}
-	scanE := func(tagId uint16, dest interface{}) {
+	scanE := func(tagId ExifTag, dest interface{}) {
 		e := md.exifData.ScanIfdExif(tagId, dest)
 		if e != nil && e != IfdTagNotFoundErr {
 			err = e

@@ -1,304 +1,311 @@
 package metadata
-
 //Do not edit! This is an automatically generated file (see generator.GenerateIptcTags()).
 //This file was generated based on https://exiftool.org/TagNames/IPTC.html
 
+
 //IPTC Records
-const (
-	IPTCEnvelop        uint8 = 1
-	IPTCApplication    uint8 = 2
-	IPTCNewsPhoto      uint8 = 3
-	IPTCPreObjectData  uint8 = 7
-	IPTCObjectData     uint8 = 8
-	IPTCPostObjectData uint8 = 9
-	IPTCFotoStation    uint8 = 240
+type IptcRecord uint8
+const(
+  Envelope IptcRecord = 1
+  Application IptcRecord = 2
+  NewsPhoto IptcRecord = 3
+  PreObjectData IptcRecord = 7
+  ObjectData IptcRecord = 8
+  PostObjectData IptcRecord = 9
+  FotoStation IptcRecord = 240
 )
 
-var IptcRecordName = map[uint8]string{
-	IPTCEnvelop:        "IPTCEnvelop",
-	IPTCApplication:    "IPTCApplication",
-	IPTCNewsPhoto:      "IPTCNewsPhoto",
-	IPTCPreObjectData:  "IPTCPreObjectData",
-	IPTCObjectData:     "IPTCObjectData",
-	IPTCPostObjectData: "IPTCPostObjectData",
-	IPTCFotoStation:    "IPTCFotoStation",
+var IptcRecordName = map[IptcRecord]string{
+  Envelope: "IPTCEnvelop",
+  Application: "IPTCApplication",
+  NewsPhoto: "IPTCNewsPhoto",
+  PreObjectData: "IPTCPreObjectData",
+  ObjectData: "IPTCObjectData",
+  PostObjectData: "IPTCPostObjectData",
+  FotoStation: "IPTCFotoStation",
 }
 
-//IPTCPreObjectData Tag Ids
-const (
-	Iptc7_SizeMode            uint8 = 10
-	Iptc7_MaxSubfileSize      uint8 = 20
-	Iptc7_ObjectSizeAnnounced uint8 = 90
-	Iptc7_MaximumObjectSize   uint8 = 95
+type IptcTag uint8
+
+
+//Envelope Tag Ids
+const(
+  Envelope_EnvelopeRecordVersion IptcTag = 0
+  Envelope_Destination IptcTag = 5
+  Envelope_FileFormat IptcTag = 20
+  Envelope_FileVersion IptcTag = 22
+  Envelope_ServiceIdentifier IptcTag = 30
+  Envelope_EnvelopeNumber IptcTag = 40
+  Envelope_ProductID IptcTag = 50
+  Envelope_EnvelopePriority IptcTag = 60
+  Envelope_DateSent IptcTag = 70
+  Envelope_TimeSent IptcTag = 80
+  Envelope_CodedCharacterSet IptcTag = 90
+  Envelope_UniqueObjectName IptcTag = 100
+  Envelope_ARMIdentifier IptcTag = 120
+  Envelope_ARMVersion IptcTag = 122
 )
 
-var Iptc7Name = map[uint8]string{
-	Iptc7_SizeMode:            "SizeMode",
-	Iptc7_MaxSubfileSize:      "MaxSubfileSize",
-	Iptc7_ObjectSizeAnnounced: "ObjectSizeAnnounced",
-	Iptc7_MaximumObjectSize:   "MaximumObjectSize",
+var IptcEnvelopeName = map[IptcTag]string{
+  Envelope_EnvelopeRecordVersion: "EnvelopeRecordVersion",
+  Envelope_Destination: "Destination",
+  Envelope_FileFormat: "FileFormat",
+  Envelope_FileVersion: "FileVersion",
+  Envelope_ServiceIdentifier: "ServiceIdentifier",
+  Envelope_EnvelopeNumber: "EnvelopeNumber",
+  Envelope_ProductID: "ProductID",
+  Envelope_EnvelopePriority: "EnvelopePriority",
+  Envelope_DateSent: "DateSent",
+  Envelope_TimeSent: "TimeSent",
+  Envelope_CodedCharacterSet: "CodedCharacterSet",
+  Envelope_UniqueObjectName: "UniqueObjectName",
+  Envelope_ARMIdentifier: "ARMIdentifier",
+  Envelope_ARMVersion: "ARMVersion",
 }
 
-//IPTCObjectData Tag Ids
-const (
-	Iptc8_SubFile uint8 = 10
+//Application Tag Ids
+const(
+  Application_ApplicationRecordVersion IptcTag = 0
+  Application_ObjectTypeReference IptcTag = 3
+  Application_ObjectAttributeReference IptcTag = 4
+  Application_ObjectName IptcTag = 5
+  Application_EditStatus IptcTag = 7
+  Application_EditorialUpdate IptcTag = 8
+  Application_Urgency IptcTag = 10
+  Application_SubjectReference IptcTag = 12
+  Application_Category IptcTag = 15
+  Application_SupplementalCategories IptcTag = 20
+  Application_FixtureIdentifier IptcTag = 22
+  Application_Keywords IptcTag = 25
+  Application_ContentLocationCode IptcTag = 26
+  Application_ContentLocationName IptcTag = 27
+  Application_ReleaseDate IptcTag = 30
+  Application_ReleaseTime IptcTag = 35
+  Application_ExpirationDate IptcTag = 37
+  Application_ExpirationTime IptcTag = 38
+  Application_SpecialInstructions IptcTag = 40
+  Application_ActionAdvised IptcTag = 42
+  Application_ReferenceService IptcTag = 45
+  Application_ReferenceDate IptcTag = 47
+  Application_ReferenceNumber IptcTag = 50
+  Application_DateCreated IptcTag = 55
+  Application_TimeCreated IptcTag = 60
+  Application_DigitalCreationDate IptcTag = 62
+  Application_DigitalCreationTime IptcTag = 63
+  Application_OriginatingProgram IptcTag = 65
+  Application_ProgramVersion IptcTag = 70
+  Application_ObjectCycle IptcTag = 75
+  Application_Byline IptcTag = 80
+  Application_BylineTitle IptcTag = 85
+  Application_City IptcTag = 90
+  Application_Sublocation IptcTag = 92
+  Application_ProvinceState IptcTag = 95
+  Application_CountryPrimaryLocationCode IptcTag = 100
+  Application_CountryPrimaryLocationName IptcTag = 101
+  Application_OriginalTransmissionReference IptcTag = 103
+  Application_Headline IptcTag = 105
+  Application_Credit IptcTag = 110
+  Application_Source IptcTag = 115
+  Application_CopyrightNotice IptcTag = 116
+  Application_Contact IptcTag = 118
+  Application_CaptionAbstract IptcTag = 120
+  Application_LocalCaption IptcTag = 121
+  Application_WriterEditor IptcTag = 122
+  Application_RasterizedCaption IptcTag = 125
+  Application_ImageType IptcTag = 130
+  Application_ImageOrientation IptcTag = 131
+  Application_LanguageIdentifier IptcTag = 135
+  Application_AudioType IptcTag = 150
+  Application_AudioSamplingRate IptcTag = 151
+  Application_AudioSamplingResolution IptcTag = 152
+  Application_AudioDuration IptcTag = 153
+  Application_AudioOutcue IptcTag = 154
+  Application_JobID IptcTag = 184
+  Application_MasterDocumentID IptcTag = 185
+  Application_ShortDocumentID IptcTag = 186
+  Application_UniqueDocumentID IptcTag = 187
+  Application_OwnerID IptcTag = 188
+  Application_ObjectPreviewFileFormat IptcTag = 200
+  Application_ObjectPreviewFileVersion IptcTag = 201
+  Application_ObjectPreviewData IptcTag = 202
+  Application_Prefs IptcTag = 221
+  Application_ClassifyState IptcTag = 225
+  Application_SimilarityIndex IptcTag = 228
+  Application_DocumentNotes IptcTag = 230
+  Application_DocumentHistory IptcTag = 231
+  Application_ExifCameraInfo IptcTag = 232
+  Application_CatalogSets IptcTag = 255
 )
 
-var Iptc8Name = map[uint8]string{
-	Iptc8_SubFile: "SubFile",
+var IptcApplicationName = map[IptcTag]string{
+  Application_ApplicationRecordVersion: "ApplicationRecordVersion",
+  Application_ObjectTypeReference: "ObjectTypeReference",
+  Application_ObjectAttributeReference: "ObjectAttributeReference",
+  Application_ObjectName: "ObjectName",
+  Application_EditStatus: "EditStatus",
+  Application_EditorialUpdate: "EditorialUpdate",
+  Application_Urgency: "Urgency",
+  Application_SubjectReference: "SubjectReference",
+  Application_Category: "Category",
+  Application_SupplementalCategories: "SupplementalCategories",
+  Application_FixtureIdentifier: "FixtureIdentifier",
+  Application_Keywords: "Keywords",
+  Application_ContentLocationCode: "ContentLocationCode",
+  Application_ContentLocationName: "ContentLocationName",
+  Application_ReleaseDate: "ReleaseDate",
+  Application_ReleaseTime: "ReleaseTime",
+  Application_ExpirationDate: "ExpirationDate",
+  Application_ExpirationTime: "ExpirationTime",
+  Application_SpecialInstructions: "SpecialInstructions",
+  Application_ActionAdvised: "ActionAdvised",
+  Application_ReferenceService: "ReferenceService",
+  Application_ReferenceDate: "ReferenceDate",
+  Application_ReferenceNumber: "ReferenceNumber",
+  Application_DateCreated: "DateCreated",
+  Application_TimeCreated: "TimeCreated",
+  Application_DigitalCreationDate: "DigitalCreationDate",
+  Application_DigitalCreationTime: "DigitalCreationTime",
+  Application_OriginatingProgram: "OriginatingProgram",
+  Application_ProgramVersion: "ProgramVersion",
+  Application_ObjectCycle: "ObjectCycle",
+  Application_Byline: "Byline",
+  Application_BylineTitle: "BylineTitle",
+  Application_City: "City",
+  Application_Sublocation: "Sublocation",
+  Application_ProvinceState: "ProvinceState",
+  Application_CountryPrimaryLocationCode: "CountryPrimaryLocationCode",
+  Application_CountryPrimaryLocationName: "CountryPrimaryLocationName",
+  Application_OriginalTransmissionReference: "OriginalTransmissionReference",
+  Application_Headline: "Headline",
+  Application_Credit: "Credit",
+  Application_Source: "Source",
+  Application_CopyrightNotice: "CopyrightNotice",
+  Application_Contact: "Contact",
+  Application_CaptionAbstract: "CaptionAbstract",
+  Application_LocalCaption: "LocalCaption",
+  Application_WriterEditor: "WriterEditor",
+  Application_RasterizedCaption: "RasterizedCaption",
+  Application_ImageType: "ImageType",
+  Application_ImageOrientation: "ImageOrientation",
+  Application_LanguageIdentifier: "LanguageIdentifier",
+  Application_AudioType: "AudioType",
+  Application_AudioSamplingRate: "AudioSamplingRate",
+  Application_AudioSamplingResolution: "AudioSamplingResolution",
+  Application_AudioDuration: "AudioDuration",
+  Application_AudioOutcue: "AudioOutcue",
+  Application_JobID: "JobID",
+  Application_MasterDocumentID: "MasterDocumentID",
+  Application_ShortDocumentID: "ShortDocumentID",
+  Application_UniqueDocumentID: "UniqueDocumentID",
+  Application_OwnerID: "OwnerID",
+  Application_ObjectPreviewFileFormat: "ObjectPreviewFileFormat",
+  Application_ObjectPreviewFileVersion: "ObjectPreviewFileVersion",
+  Application_ObjectPreviewData: "ObjectPreviewData",
+  Application_Prefs: "Prefs",
+  Application_ClassifyState: "ClassifyState",
+  Application_SimilarityIndex: "SimilarityIndex",
+  Application_DocumentNotes: "DocumentNotes",
+  Application_DocumentHistory: "DocumentHistory",
+  Application_ExifCameraInfo: "ExifCameraInfo",
+  Application_CatalogSets: "CatalogSets",
 }
 
-//IPTCPostObjectData Tag Ids
-const (
-	Iptc9_ConfirmedObjectSize uint8 = 10
+//NewsPhoto Tag Ids
+const(
+  NewsPhoto_NewsPhotoVersion IptcTag = 0
+  NewsPhoto_IPTCPictureNumber IptcTag = 10
+  NewsPhoto_IPTCImageWidth IptcTag = 20
+  NewsPhoto_IPTCImageHeight IptcTag = 30
+  NewsPhoto_IPTCPixelWidth IptcTag = 40
+  NewsPhoto_IPTCPixelHeight IptcTag = 50
+  NewsPhoto_SupplementalType IptcTag = 55
+  NewsPhoto_ColorRepresentation IptcTag = 60
+  NewsPhoto_InterchangeColorSpace IptcTag = 64
+  NewsPhoto_ColorSequence IptcTag = 65
+  NewsPhoto_ICC_Profile IptcTag = 66
+  NewsPhoto_ColorCalibrationMatrix IptcTag = 70
+  NewsPhoto_LookupTable IptcTag = 80
+  NewsPhoto_NumIndexEntries IptcTag = 84
+  NewsPhoto_ColorPalette IptcTag = 85
+  NewsPhoto_IPTCBitsPerSample IptcTag = 86
+  NewsPhoto_SampleStructure IptcTag = 90
+  NewsPhoto_ScanningDirection IptcTag = 100
+  NewsPhoto_IPTCImageRotation IptcTag = 102
+  NewsPhoto_DataCompressionMethod IptcTag = 110
+  NewsPhoto_QuantizationMethod IptcTag = 120
+  NewsPhoto_EndPoints IptcTag = 125
+  NewsPhoto_ExcursionTolerance IptcTag = 130
+  NewsPhoto_BitsPerComponent IptcTag = 135
+  NewsPhoto_MaximumDensityRange IptcTag = 140
+  NewsPhoto_GammaCompensatedValue IptcTag = 145
 )
 
-var Iptc9Name = map[uint8]string{
-	Iptc9_ConfirmedObjectSize: "ConfirmedObjectSize",
+var IptcNewsPhotoName = map[IptcTag]string{
+  NewsPhoto_NewsPhotoVersion: "NewsPhotoVersion",
+  NewsPhoto_IPTCPictureNumber: "IPTCPictureNumber",
+  NewsPhoto_IPTCImageWidth: "IPTCImageWidth",
+  NewsPhoto_IPTCImageHeight: "IPTCImageHeight",
+  NewsPhoto_IPTCPixelWidth: "IPTCPixelWidth",
+  NewsPhoto_IPTCPixelHeight: "IPTCPixelHeight",
+  NewsPhoto_SupplementalType: "SupplementalType",
+  NewsPhoto_ColorRepresentation: "ColorRepresentation",
+  NewsPhoto_InterchangeColorSpace: "InterchangeColorSpace",
+  NewsPhoto_ColorSequence: "ColorSequence",
+  NewsPhoto_ICC_Profile: "ICC_Profile",
+  NewsPhoto_ColorCalibrationMatrix: "ColorCalibrationMatrix",
+  NewsPhoto_LookupTable: "LookupTable",
+  NewsPhoto_NumIndexEntries: "NumIndexEntries",
+  NewsPhoto_ColorPalette: "ColorPalette",
+  NewsPhoto_IPTCBitsPerSample: "IPTCBitsPerSample",
+  NewsPhoto_SampleStructure: "SampleStructure",
+  NewsPhoto_ScanningDirection: "ScanningDirection",
+  NewsPhoto_IPTCImageRotation: "IPTCImageRotation",
+  NewsPhoto_DataCompressionMethod: "DataCompressionMethod",
+  NewsPhoto_QuantizationMethod: "QuantizationMethod",
+  NewsPhoto_EndPoints: "EndPoints",
+  NewsPhoto_ExcursionTolerance: "ExcursionTolerance",
+  NewsPhoto_BitsPerComponent: "BitsPerComponent",
+  NewsPhoto_MaximumDensityRange: "MaximumDensityRange",
+  NewsPhoto_GammaCompensatedValue: "GammaCompensatedValue",
 }
 
-//IPTCFotoStation Tag Ids
-const ()
-
-var Iptc240Name = map[uint8]string{}
-
-//IPTCEnvelope Tag Ids
-const (
-	Iptc1_EnvelopeRecordVersion uint8 = 0
-	Iptc1_Destination           uint8 = 5
-	Iptc1_FileFormat            uint8 = 20
-	Iptc1_FileVersion           uint8 = 22
-	Iptc1_ServiceIdentifier     uint8 = 30
-	Iptc1_EnvelopeNumber        uint8 = 40
-	Iptc1_ProductID             uint8 = 50
-	Iptc1_EnvelopePriority      uint8 = 60
-	Iptc1_DateSent              uint8 = 70
-	Iptc1_TimeSent              uint8 = 80
-	Iptc1_CodedCharacterSet     uint8 = 90
-	Iptc1_UniqueObjectName      uint8 = 100
-	Iptc1_ARMIdentifier         uint8 = 120
-	Iptc1_ARMVersion            uint8 = 122
+//PreObjectData Tag Ids
+const(
+  PreObjectData_SizeMode IptcTag = 10
+  PreObjectData_MaxSubfileSize IptcTag = 20
+  PreObjectData_ObjectSizeAnnounced IptcTag = 90
+  PreObjectData_MaximumObjectSize IptcTag = 95
 )
 
-var Iptc1Name = map[uint8]string{
-	Iptc1_EnvelopeRecordVersion: "EnvelopeRecordVersion",
-	Iptc1_Destination:           "Destination",
-	Iptc1_FileFormat:            "FileFormat",
-	Iptc1_FileVersion:           "FileVersion",
-	Iptc1_ServiceIdentifier:     "ServiceIdentifier",
-	Iptc1_EnvelopeNumber:        "EnvelopeNumber",
-	Iptc1_ProductID:             "ProductID",
-	Iptc1_EnvelopePriority:      "EnvelopePriority",
-	Iptc1_DateSent:              "DateSent",
-	Iptc1_TimeSent:              "TimeSent",
-	Iptc1_CodedCharacterSet:     "CodedCharacterSet",
-	Iptc1_UniqueObjectName:      "UniqueObjectName",
-	Iptc1_ARMIdentifier:         "ARMIdentifier",
-	Iptc1_ARMVersion:            "ARMVersion",
+var IptcPreObjectDataName = map[IptcTag]string{
+  PreObjectData_SizeMode: "SizeMode",
+  PreObjectData_MaxSubfileSize: "MaxSubfileSize",
+  PreObjectData_ObjectSizeAnnounced: "ObjectSizeAnnounced",
+  PreObjectData_MaximumObjectSize: "MaximumObjectSize",
 }
 
-//IPTCApplication Tag Ids
-const (
-	Iptc2_ApplicationRecordVersion      uint8 = 0
-	Iptc2_ObjectTypeReference           uint8 = 3
-	Iptc2_ObjectAttributeReference      uint8 = 4
-	Iptc2_ObjectName                    uint8 = 5
-	Iptc2_EditStatus                    uint8 = 7
-	Iptc2_EditorialUpdate               uint8 = 8
-	Iptc2_Urgency                       uint8 = 10
-	Iptc2_SubjectReference              uint8 = 12
-	Iptc2_Category                      uint8 = 15
-	Iptc2_SupplementalCategories        uint8 = 20
-	Iptc2_FixtureIdentifier             uint8 = 22
-	Iptc2_Keywords                      uint8 = 25
-	Iptc2_ContentLocationCode           uint8 = 26
-	Iptc2_ContentLocationName           uint8 = 27
-	Iptc2_ReleaseDate                   uint8 = 30
-	Iptc2_ReleaseTime                   uint8 = 35
-	Iptc2_ExpirationDate                uint8 = 37
-	Iptc2_ExpirationTime                uint8 = 38
-	Iptc2_SpecialInstructions           uint8 = 40
-	Iptc2_ActionAdvised                 uint8 = 42
-	Iptc2_ReferenceService              uint8 = 45
-	Iptc2_ReferenceDate                 uint8 = 47
-	Iptc2_ReferenceNumber               uint8 = 50
-	Iptc2_DateCreated                   uint8 = 55
-	Iptc2_TimeCreated                   uint8 = 60
-	Iptc2_DigitalCreationDate           uint8 = 62
-	Iptc2_DigitalCreationTime           uint8 = 63
-	Iptc2_OriginatingProgram            uint8 = 65
-	Iptc2_ProgramVersion                uint8 = 70
-	Iptc2_ObjectCycle                   uint8 = 75
-	Iptc2_Byline                        uint8 = 80
-	Iptc2_BylineTitle                   uint8 = 85
-	Iptc2_City                          uint8 = 90
-	Iptc2_Sublocation                   uint8 = 92
-	Iptc2_ProvinceState                 uint8 = 95
-	Iptc2_CountryPrimaryLocationCode    uint8 = 100
-	Iptc2_CountryPrimaryLocationName    uint8 = 101
-	Iptc2_OriginalTransmissionReference uint8 = 103
-	Iptc2_Headline                      uint8 = 105
-	Iptc2_Credit                        uint8 = 110
-	Iptc2_Source                        uint8 = 115
-	Iptc2_CopyrightNotice               uint8 = 116
-	Iptc2_Contact                       uint8 = 118
-	Iptc2_CaptionAbstract               uint8 = 120
-	Iptc2_LocalCaption                  uint8 = 121
-	Iptc2_WriterEditor                  uint8 = 122
-	Iptc2_RasterizedCaption             uint8 = 125
-	Iptc2_ImageType                     uint8 = 130
-	Iptc2_ImageOrientation              uint8 = 131
-	Iptc2_LanguageIdentifier            uint8 = 135
-	Iptc2_AudioType                     uint8 = 150
-	Iptc2_AudioSamplingRate             uint8 = 151
-	Iptc2_AudioSamplingResolution       uint8 = 152
-	Iptc2_AudioDuration                 uint8 = 153
-	Iptc2_AudioOutcue                   uint8 = 154
-	Iptc2_JobID                         uint8 = 184
-	Iptc2_MasterDocumentID              uint8 = 185
-	Iptc2_ShortDocumentID               uint8 = 186
-	Iptc2_UniqueDocumentID              uint8 = 187
-	Iptc2_OwnerID                       uint8 = 188
-	Iptc2_ObjectPreviewFileFormat       uint8 = 200
-	Iptc2_ObjectPreviewFileVersion      uint8 = 201
-	Iptc2_ObjectPreviewData             uint8 = 202
-	Iptc2_Prefs                         uint8 = 221
-	Iptc2_ClassifyState                 uint8 = 225
-	Iptc2_SimilarityIndex               uint8 = 228
-	Iptc2_DocumentNotes                 uint8 = 230
-	Iptc2_DocumentHistory               uint8 = 231
-	Iptc2_ExifCameraInfo                uint8 = 232
-	Iptc2_CatalogSets                   uint8 = 255
+//ObjectData Tag Ids
+const(
+  ObjectData_SubFile IptcTag = 10
 )
 
-var Iptc2Name = map[uint8]string{
-	Iptc2_ApplicationRecordVersion:      "ApplicationRecordVersion",
-	Iptc2_ObjectTypeReference:           "ObjectTypeReference",
-	Iptc2_ObjectAttributeReference:      "ObjectAttributeReference",
-	Iptc2_ObjectName:                    "ObjectName",
-	Iptc2_EditStatus:                    "EditStatus",
-	Iptc2_EditorialUpdate:               "EditorialUpdate",
-	Iptc2_Urgency:                       "Urgency",
-	Iptc2_SubjectReference:              "SubjectReference",
-	Iptc2_Category:                      "Category",
-	Iptc2_SupplementalCategories:        "SupplementalCategories",
-	Iptc2_FixtureIdentifier:             "FixtureIdentifier",
-	Iptc2_Keywords:                      "Keywords",
-	Iptc2_ContentLocationCode:           "ContentLocationCode",
-	Iptc2_ContentLocationName:           "ContentLocationName",
-	Iptc2_ReleaseDate:                   "ReleaseDate",
-	Iptc2_ReleaseTime:                   "ReleaseTime",
-	Iptc2_ExpirationDate:                "ExpirationDate",
-	Iptc2_ExpirationTime:                "ExpirationTime",
-	Iptc2_SpecialInstructions:           "SpecialInstructions",
-	Iptc2_ActionAdvised:                 "ActionAdvised",
-	Iptc2_ReferenceService:              "ReferenceService",
-	Iptc2_ReferenceDate:                 "ReferenceDate",
-	Iptc2_ReferenceNumber:               "ReferenceNumber",
-	Iptc2_DateCreated:                   "DateCreated",
-	Iptc2_TimeCreated:                   "TimeCreated",
-	Iptc2_DigitalCreationDate:           "DigitalCreationDate",
-	Iptc2_DigitalCreationTime:           "DigitalCreationTime",
-	Iptc2_OriginatingProgram:            "OriginatingProgram",
-	Iptc2_ProgramVersion:                "ProgramVersion",
-	Iptc2_ObjectCycle:                   "ObjectCycle",
-	Iptc2_Byline:                        "Byline",
-	Iptc2_BylineTitle:                   "BylineTitle",
-	Iptc2_City:                          "City",
-	Iptc2_Sublocation:                   "Sublocation",
-	Iptc2_ProvinceState:                 "ProvinceState",
-	Iptc2_CountryPrimaryLocationCode:    "CountryPrimaryLocationCode",
-	Iptc2_CountryPrimaryLocationName:    "CountryPrimaryLocationName",
-	Iptc2_OriginalTransmissionReference: "OriginalTransmissionReference",
-	Iptc2_Headline:                      "Headline",
-	Iptc2_Credit:                        "Credit",
-	Iptc2_Source:                        "Source",
-	Iptc2_CopyrightNotice:               "CopyrightNotice",
-	Iptc2_Contact:                       "Contact",
-	Iptc2_CaptionAbstract:               "CaptionAbstract",
-	Iptc2_LocalCaption:                  "LocalCaption",
-	Iptc2_WriterEditor:                  "WriterEditor",
-	Iptc2_RasterizedCaption:             "RasterizedCaption",
-	Iptc2_ImageType:                     "ImageType",
-	Iptc2_ImageOrientation:              "ImageOrientation",
-	Iptc2_LanguageIdentifier:            "LanguageIdentifier",
-	Iptc2_AudioType:                     "AudioType",
-	Iptc2_AudioSamplingRate:             "AudioSamplingRate",
-	Iptc2_AudioSamplingResolution:       "AudioSamplingResolution",
-	Iptc2_AudioDuration:                 "AudioDuration",
-	Iptc2_AudioOutcue:                   "AudioOutcue",
-	Iptc2_JobID:                         "JobID",
-	Iptc2_MasterDocumentID:              "MasterDocumentID",
-	Iptc2_ShortDocumentID:               "ShortDocumentID",
-	Iptc2_UniqueDocumentID:              "UniqueDocumentID",
-	Iptc2_OwnerID:                       "OwnerID",
-	Iptc2_ObjectPreviewFileFormat:       "ObjectPreviewFileFormat",
-	Iptc2_ObjectPreviewFileVersion:      "ObjectPreviewFileVersion",
-	Iptc2_ObjectPreviewData:             "ObjectPreviewData",
-	Iptc2_Prefs:                         "Prefs",
-	Iptc2_ClassifyState:                 "ClassifyState",
-	Iptc2_SimilarityIndex:               "SimilarityIndex",
-	Iptc2_DocumentNotes:                 "DocumentNotes",
-	Iptc2_DocumentHistory:               "DocumentHistory",
-	Iptc2_ExifCameraInfo:                "ExifCameraInfo",
-	Iptc2_CatalogSets:                   "CatalogSets",
+var IptcObjectDataName = map[IptcTag]string{
+  ObjectData_SubFile: "SubFile",
 }
 
-//IPTCNewsPhoto Tag Ids
-const (
-	Iptc3_NewsPhotoVersion       uint8 = 0
-	Iptc3_IPTCPictureNumber      uint8 = 10
-	Iptc3_IPTCImageWidth         uint8 = 20
-	Iptc3_IPTCImageHeight        uint8 = 30
-	Iptc3_IPTCPixelWidth         uint8 = 40
-	Iptc3_IPTCPixelHeight        uint8 = 50
-	Iptc3_SupplementalType       uint8 = 55
-	Iptc3_ColorRepresentation    uint8 = 60
-	Iptc3_InterchangeColorSpace  uint8 = 64
-	Iptc3_ColorSequence          uint8 = 65
-	Iptc3_ICC_Profile            uint8 = 66
-	Iptc3_ColorCalibrationMatrix uint8 = 70
-	Iptc3_LookupTable            uint8 = 80
-	Iptc3_NumIndexEntries        uint8 = 84
-	Iptc3_ColorPalette           uint8 = 85
-	Iptc3_IPTCBitsPerSample      uint8 = 86
-	Iptc3_SampleStructure        uint8 = 90
-	Iptc3_ScanningDirection      uint8 = 100
-	Iptc3_IPTCImageRotation      uint8 = 102
-	Iptc3_DataCompressionMethod  uint8 = 110
-	Iptc3_QuantizationMethod     uint8 = 120
-	Iptc3_EndPoints              uint8 = 125
-	Iptc3_ExcursionTolerance     uint8 = 130
-	Iptc3_BitsPerComponent       uint8 = 135
-	Iptc3_MaximumDensityRange    uint8 = 140
-	Iptc3_GammaCompensatedValue  uint8 = 145
+//PostObjectData Tag Ids
+const(
+  PostObjectData_ConfirmedObjectSize IptcTag = 10
 )
 
-var Iptc3Name = map[uint8]string{
-	Iptc3_NewsPhotoVersion:       "NewsPhotoVersion",
-	Iptc3_IPTCPictureNumber:      "IPTCPictureNumber",
-	Iptc3_IPTCImageWidth:         "IPTCImageWidth",
-	Iptc3_IPTCImageHeight:        "IPTCImageHeight",
-	Iptc3_IPTCPixelWidth:         "IPTCPixelWidth",
-	Iptc3_IPTCPixelHeight:        "IPTCPixelHeight",
-	Iptc3_SupplementalType:       "SupplementalType",
-	Iptc3_ColorRepresentation:    "ColorRepresentation",
-	Iptc3_InterchangeColorSpace:  "InterchangeColorSpace",
-	Iptc3_ColorSequence:          "ColorSequence",
-	Iptc3_ICC_Profile:            "ICC_Profile",
-	Iptc3_ColorCalibrationMatrix: "ColorCalibrationMatrix",
-	Iptc3_LookupTable:            "LookupTable",
-	Iptc3_NumIndexEntries:        "NumIndexEntries",
-	Iptc3_ColorPalette:           "ColorPalette",
-	Iptc3_IPTCBitsPerSample:      "IPTCBitsPerSample",
-	Iptc3_SampleStructure:        "SampleStructure",
-	Iptc3_ScanningDirection:      "ScanningDirection",
-	Iptc3_IPTCImageRotation:      "IPTCImageRotation",
-	Iptc3_DataCompressionMethod:  "DataCompressionMethod",
-	Iptc3_QuantizationMethod:     "QuantizationMethod",
-	Iptc3_EndPoints:              "EndPoints",
-	Iptc3_ExcursionTolerance:     "ExcursionTolerance",
-	Iptc3_BitsPerComponent:       "BitsPerComponent",
-	Iptc3_MaximumDensityRange:    "MaximumDensityRange",
-	Iptc3_GammaCompensatedValue:  "GammaCompensatedValue",
+var IptcPostObjectDataName = map[IptcTag]string{
+  PostObjectData_ConfirmedObjectSize: "ConfirmedObjectSize",
 }
+
+//FotoStation Tag Ids
+const(
+)
+
+var IptcFotoStationName = map[IptcTag]string{
+}
+

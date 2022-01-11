@@ -26,23 +26,23 @@ type rawIptcTag struct {
 }
 
 var recordSections = map[string]string{
-	"EnvelopeRecord":    "IPTCEnvelope",
-	"ApplicationRecord": "IPTCApplication",
-	"NewsPhoto":         "IPTCNewsPhoto",
-	"PreObjectData":     "IPTCPreObjectData",
-	"ObjectData":        "IPTCObjectData",
-	"PostObjectData":    "IPTCPostObjectData",
-	"FotoStation":       "IPTCFotoStation",
+	"EnvelopeRecord":    "Envelope",
+	"ApplicationRecord": "Application",
+	"NewsPhoto":         "NewsPhoto",
+	"PreObjectData":     "PreObjectData",
+	"ObjectData":        "ObjectData",
+	"PostObjectData":    "PostObjectData",
+	"FotoStation":       "FotoStation",
 }
 
 var recordNameMapping = map[string]uint8{
-	"IPTCEnvelope":       1,
-	"IPTCApplication":    2,
-	"IPTCNewsPhoto":      3,
-	"IPTCPreObjectData":  7,
-	"IPTCObjectData":     8,
-	"IPTCPostObjectData": 9,
-	"IPTCFotoStation":    240,
+	"Envelope":       1,
+	"Application":    2,
+	"NewsPhoto":      3,
+	"PreObjectData":  7,
+	"ObjectData":     8,
+	"PostObjectData": 9,
+	"FotoStation":    240,
 }
 
 //Digitis and strins can have length specifiers (min,max)
@@ -99,25 +99,28 @@ func generateIptcTagSources(rawIptcs map[string]iptcRecord) error {
 `)
 
 	buff.WriteString(`//IPTC Records
+type IptcRecord uint8
 const(
-  IPTCEnvelop uint8 = 1
-  IPTCApplication uint8 = 2
-  IPTCNewsPhoto uint8 = 3
-  IPTCPreObjectData uint8 = 7
-  IPTCObjectData uint8 = 8
-  IPTCPostObjectData uint8 = 9
-  IPTCFotoStation uint8 = 240
+  Envelope IptcRecord = 1
+  Application IptcRecord = 2
+  NewsPhoto IptcRecord = 3
+  PreObjectData IptcRecord = 7
+  ObjectData IptcRecord = 8
+  PostObjectData IptcRecord = 9
+  FotoStation IptcRecord = 240
 )
 
-var IptcRecordName = map[IPTCRecord]string{
-  IPTCEnvelop: "IPTCEnvelop",
-  IPTCApplication: "IPTCApplication",
-  IPTCNewsPhoto: "IPTCNewsPhoto",
-  IPTCPreObjectData: "IPTCPreObjectData",
-  IPTCObjectData: "IPTCObjectData",
-  IPTCPostObjectData: "IPTCPostObjectData",
-  IPTCFotoStation: "IPTCFotoStation",
+var IptcRecordName = map[IptcRecord]string{
+  Envelope: "IPTCEnvelop",
+  Application: "IPTCApplication",
+  NewsPhoto: "IPTCNewsPhoto",
+  PreObjectData: "IPTCPreObjectData",
+  ObjectData: "IPTCObjectData",
+  PostObjectData: "IPTCPostObjectData",
+  FotoStation: "IPTCFotoStation",
 }
+
+type IptcTag uint8
 
 
 `)
@@ -125,13 +128,13 @@ var IptcRecordName = map[IPTCRecord]string{
 		//first generate constants. A constant is prefixed by IfdName, e.g. IFD_Make or Exif_ExposureTime
 		buff.WriteString(fmt.Sprintf("//%s Tag Ids\nconst(\n", k))
 		for _, t := range v.Records {
-			buff.WriteString((fmt.Sprintf("  Iptc%v_%s uint8 = %v\n", v.Id, t.Name, t.Id)))
+			buff.WriteString((fmt.Sprintf("  %s_%s IptcTag = %v\n", k, t.Name, t.Id)))
 		}
 		buff.WriteString(")\n\n")
 		//create id <-> name mapping
-		buff.WriteString(fmt.Sprintf("var Iptc%vName = map[uint8]string{\n", v.Id))
+		buff.WriteString(fmt.Sprintf("var Iptc%sName = map[IptcTag]string{\n", k))
 		for _, t := range v.Records {
-			buff.WriteString(fmt.Sprintf("  Iptc%v_%s: \"%s\",\n", v.Id, t.Name, t.Name))
+			buff.WriteString(fmt.Sprintf("  %s_%s: \"%s\",\n", k, t.Name, t.Name))
 		}
 		buff.WriteString("}\n\n")
 	}

@@ -82,7 +82,7 @@ func NewLensInfoFromRational(vals []exifcommon.Rational) (LensInfo, error) {
 	return ret, nil
 }
 
-func (li LensInfo) toExif() []exifcommon.Rational {
+func (li LensInfo) toRational() []exifcommon.Rational {
 	return []exifcommon.Rational{li.MinFocalLength.toRational(), li.MaxFocalLength.toRational(),
 		li.MinFNumberMinFocalLength.toRational(), li.MinFNumberMaxFocalLength.toRational()}
 }
@@ -91,47 +91,3 @@ func (li LensInfo) String() string {
 	return fmt.Sprintf("[%v,%v,%v,%v]", li.MinFocalLength, li.MaxFocalLength,
 		li.MinFNumberMinFocalLength, li.MinFNumberMaxFocalLength)
 }
-
-/*
-const (
-	IfdByte      uint16 = 1
-	IfdAscii     uint16 = 2
-	IfdShort     uint16 = 3
-	IfdLong      uint16 = 4
-	IfdRational  uint16 = 5
-	IfdUndefined uint16 = 7
-	IfdSLong     uint16 = 9
-	IfdSRational uint16 = 10
-)
-
-var IfdTypeId = map[string]uint16{
-	"BYTE":      IfdByte,
-	"ASCII":     IfdAscii,
-	"SHORT":     IfdShort,
-	"LONG":      IfdLong,
-	"RATIONAL":  IfdRational,
-	"UNDEFINED": IfdUndefined,
-	"SLONG":     IfdSLong,
-	"SRATIONAL": IfdSRational,
-}
-
-var IfdTypeName = map[uint16]string{
-	IfdByte:      "BYTE",
-	IfdAscii:     "ASCII",
-	IfdShort:     "SHORT",
-	IfdLong:      "LONG",
-	IfdRational:  "RATIONAL",
-	IfdUndefined: "UNDEFINED",
-	IfdSLong:     "SLONG",
-	IfdSRational: "SRATIONAL",
-}
-
-func IfdType(str string) uint16 {
-	s := strings.ToUpper(strings.TrimSpace(str))
-	if id, found := IfdTypeId[s]; found {
-		return id
-	} else {
-		return IfdUndefined
-	}
-}
-*/
