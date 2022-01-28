@@ -62,13 +62,13 @@ func (ec MetaDataSummary) String() string {
 	sb.WriteString(fmt.Sprintf("  Focal Length: %v\n", ec.FocalLength.Float32()))
 	sb.WriteString(fmt.Sprintf("  Focal Length 35MM: %v\n", ec.FocalLengthIn35mmFormat))
 	sb.WriteString(fmt.Sprintf("  Max Aperture Value: %v\n", ec.MaxApertureValue.Float32()))
-	sb.WriteString(fmt.Sprintf("  Flash Mode: %v\n", ExifValueString(IfdExif, Exif_Flash, ec.FlashMode)))
+	sb.WriteString(fmt.Sprintf("  Flash Mode: %v\n", ExifValueString(ExifIFD, ExifIFD_Flash, ec.FlashMode)))
 	sb.WriteString(fmt.Sprintf("  Exposure Time: %v\n", ec.ExposureTime))
 	sb.WriteString(fmt.Sprintf("  Exposure Compensation: %v\n", ec.ExposureCompensation.Float32()))
-	sb.WriteString(fmt.Sprintf("  Exposure Program: %v\n", ExifValueString(IfdExif, Exif_ExposureProgram, ec.ExposureProgram)))
+	sb.WriteString(fmt.Sprintf("  Exposure Program: %v\n", ExifValueString(ExifIFD, ExifIFD_ExposureProgram, ec.ExposureProgram)))
 	sb.WriteString(fmt.Sprintf("  Fnumber: %v\n", ec.FNumber.Float32()))
 	sb.WriteString(fmt.Sprintf("  ISO: %v\n", ec.ISO))
-	sb.WriteString(fmt.Sprintf("  ColorSpace: %v\n", ExifValueString(IfdExif, Exif_ColorSpace, ec.ColorSpace)))
+	sb.WriteString(fmt.Sprintf("  ColorSpace: %v\n", ExifValueString(ExifIFD, ExifIFD_ColorSpace, ec.ColorSpace)))
 	sb.WriteString(fmt.Sprintf("  XResolution: %v\n", ec.XResolution))
 	sb.WriteString(fmt.Sprintf("  YResolution: %v\n", ec.YResolution))
 	sb.WriteString(fmt.Sprintf("  OriginalDate: %v\n", ec.OriginalDate))
@@ -200,11 +200,11 @@ func (md *MetaData) String() string {
 func (md *MetaData) extractIPTC() error {
 	var err error
 
-	if e := md.iptcData.ScanApplication(Application_ObjectName, &md.summary.Title); e != nil && e != IptcTagNotFoundErr {
+	if e := md.iptcData.ScanApplication(IPTCApplication_ObjectName, &md.summary.Title); e != nil && e != IptcTagNotFoundErr {
 		err = e
 	}
 
-	if e := md.iptcData.ScanApplication(Application_Keywords, &md.summary.Keywords); e != nil && e != IptcTagNotFoundErr {
+	if e := md.iptcData.ScanApplication(IPTCApplication_Keywords, &md.summary.Keywords); e != nil && e != IptcTagNotFoundErr {
 		err = e
 	}
 
@@ -229,22 +229,22 @@ func (md *MetaData) extractExifTags() error {
 
 	scanR(IFD_Make, &md.summary.CameraMake)
 	scanR(IFD_Model, &md.summary.CameraModel)
-	scanE(Exif_LensSpecification, &md.summary.LensInfo)
+	scanE(ExifIFD_LensInfo, &md.summary.LensInfo)
 	if md.summary.LensInfo == (LensInfo{}) {
-		scanR(IFD_LensInfo, &md.summary.LensInfo)
+		scanR(IFD_DNGLensInfo, &md.summary.LensInfo)
 	}
-	scanE(Exif_LensModel, &md.summary.LensModel)
-	scanE(Exif_LensMake, &md.summary.LensMake)
-	scanE(Exif_FocalLength, &md.summary.FocalLength)
-	scanE(Exif_FocalLengthIn35mmFilm, &md.summary.FocalLengthIn35mmFormat)
-	scanE(Exif_MaxApertureValue, &md.summary.MaxApertureValue)
-	scanE(Exif_Flash, &md.summary.FlashMode)
-	scanE(Exif_ExposureTime, &md.summary.ExposureTime)
-	scanE(Exif_ExposureBiasValue, &md.summary.ExposureCompensation)
-	scanE(Exif_ExposureProgram, &md.summary.ExposureProgram)
-	scanE(Exif_FNumber, &md.summary.FNumber)
-	scanE(Exif_ISOSpeedRatings, &md.summary.ISO)
-	scanE(Exif_ColorSpace, &md.summary.ColorSpace)
+	scanE(ExifIFD_LensModel, &md.summary.LensModel)
+	scanE(ExifIFD_LensMake, &md.summary.LensMake)
+	scanE(ExifIFD_FocalLength, &md.summary.FocalLength)
+	scanE(ExifIFD_FocalLengthIn35mmFormat, &md.summary.FocalLengthIn35mmFormat)
+	scanE(ExifIFD_MaxApertureValue, &md.summary.MaxApertureValue)
+	scanE(ExifIFD_Flash, &md.summary.FlashMode)
+	scanE(ExifIFD_ExposureTime, &md.summary.ExposureTime)
+	scanE(ExifIFD_ExposureCompensation, &md.summary.ExposureCompensation)
+	scanE(ExifIFD_ExposureProgram, &md.summary.ExposureProgram)
+	scanE(ExifIFD_FNumber, &md.summary.FNumber)
+	scanE(ExifIFD_ISO, &md.summary.ISO)
+	scanE(ExifIFD_ColorSpace, &md.summary.ColorSpace)
 	scanR(IFD_XResolution, &md.summary.XResolution)
 	scanR(IFD_YResolution, &md.summary.YResolution)
 	scanR(IFD_Software, &md.summary.Software)
@@ -253,7 +253,7 @@ func (md *MetaData) extractExifTags() error {
 	_ = md.exifData.ScanExifDate(ModifyDate, &md.summary.ModifyDate)
 
 	//GPSInfo
-	if md.exifData.HasIfd(IfdGpsInfo) {
+	if md.exifData.HasIfd(GpsIFD) {
 		md.summary.GPSInfo, _ = md.exifData.GpsInfo()
 	}
 	return err

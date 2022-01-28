@@ -19,7 +19,7 @@ var IfdUndefinedTypeErr = errors.New("Tag type undefined")
 const ExifDateTime = "2006:01:02 15:04:05"
 const ExifDateTimeOffset = "2006:01:02 15:04:05 -07:00"
 
-func exifDataTime(dt string, offset string) (time.Time, error) {
+func exifDateTime(dt string, offset string) (time.Time, error) {
 	if offset == "" {
 		return time.Parse(ExifDateTime, dt)
 	} else {
@@ -33,6 +33,7 @@ const (
 	DigitizedDate
 )
 
+/*
 type IfdIndex int
 
 const (
@@ -50,7 +51,9 @@ var IfdPaths = map[IfdIndex]string{
 	IfdIop:       "IFD/Exif/Iop",
 	IfdThumbnail: "IFD1",
 }
+*/
 
+/*
 var ifdValueMap = map[IfdIndex]map[ExifTag]interface{}{
 	IfdRoot:      IFDValues,
 	IfdExif:      ExifValues,
@@ -58,182 +61,307 @@ var ifdValueMap = map[IfdIndex]map[ExifTag]interface{}{
 	IfdIop:       IopValues,
 	IfdThumbnail: IFDValues,
 }
+*/
 
-func ExifTagName(index IfdIndex, tagId ExifTag) string {
-	var name string
-	var found bool
-	switch index {
-	case IfdRoot, IfdThumbnail:
-		name, found = IFDName[tagId]
-	case IfdExif:
-		name, found = ExifName[tagId]
-	case IfdIop:
-		name, found = IopName[tagId]
-	case IfdGpsInfo:
-		name, found = GPSInfoName[tagId]
-	}
+func ExifTagName(index ExifIndex, tag ExifTag) string {
+	tagDesc, found := ExifTagDescriptions[ExifIndexTag{Index: index, Tag: tag}]
 	if found {
-		return name
+		return tagDesc.Name
 	} else {
-		return fmt.Sprintf("Unknown Ifd Tag: %v", tagId)
+		return fmt.Sprintf("Unknown Ifd Tag: %v", tag)
 	}
 }
 
-func ExifValueIsAllowed(index IfdIndex, tagId ExifTag, value interface{}) bool {
-	ifdValueMap, found := ifdValueMap[index]
+func ExifValueIsAllowed(index ExifIndex, tag ExifTag, value interface{}) bool {
+	tagDesc, found := ExifTagDescriptions[ExifIndexTag{index, tag}]
 	if !found {
 		return false
 	}
-	tagValues, found := ifdValueMap[tagId]
-	if !found {
-		return false
-	}
-	switch dtype := value.(type) {
-	case uint16:
-		if m, ok := tagValues.(map[uint16]string); !ok {
+	switch tagDesc.Type {
+	case ExifString:
+		if v, ok := value.(string); !ok {
 			return false
 		} else {
-			_, f := m[dtype]
-			return f
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[string]string)
+			_, found = vals[v]
+			return found
 		}
-	case int16:
-		if m, ok := tagValues.(map[int16]string); !ok {
+	case ExifUint8:
+		if v, ok := value.(uint8); !ok {
 			return false
 		} else {
-			_, f := m[dtype]
-			return f
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[uint8]string)
+			_, found = vals[v]
+			return found
 		}
-	case uint32:
-		if m, ok := tagValues.(map[uint32]string); !ok {
+	case ExifUint16:
+		if v, ok := value.(uint16); !ok {
 			return false
 		} else {
-			_, f := m[dtype]
-			return f
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[uint16]string)
+			_, found = vals[v]
+			return found
 		}
-	case int32:
-		if m, ok := tagValues.(map[int32]string); !ok {
+	case ExifUint32:
+		if v, ok := value.(uint32); !ok {
 			return false
 		} else {
-			_, f := m[dtype]
-			return f
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[uint32]string)
+			_, found = vals[v]
+			return found
 		}
-	case string:
-		if m, ok := tagValues.(map[string]string); !ok {
+	case ExifInt16:
+		if v, ok := value.(int16); !ok {
 			return false
 		} else {
-			_, f := m[dtype]
-			return f
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[int16]string)
+			_, found = vals[v]
+			return found
 		}
-	case Rat:
-		if m, ok := tagValues.(map[Rat]string); !ok {
+	case ExifInt32:
+		if v, ok := value.(int32); !ok {
 			return false
 		} else {
-			_, f := m[dtype]
-			return f
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[int32]string)
+			_, found = vals[v]
+			return found
 		}
-	case URat:
-		if m, ok := tagValues.(map[URat]string); !ok {
+	case ExifRational:
+		if v, ok := value.(Rat); !ok {
 			return false
 		} else {
-			_, f := m[dtype]
-			return f
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[Rat]string)
+			_, found = vals[v]
+			return found
 		}
+	case ExifUrational:
+		if v, ok := value.(URat); !ok {
+			return false
+		} else {
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[URat]string)
+			_, found = vals[v]
+			return found
+		}
+	case ExifFloat:
+		if v, ok := value.(float32); !ok {
+			return false
+		} else {
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[float32]string)
+			_, found = vals[v]
+			return found
+		}
+	case ExifDouble:
+		if v, ok := value.(float64); !ok {
+			return false
+		} else {
+			if tagDesc.Values == nil {
+				return true
+			}
+			vals := tagDesc.Values.(map[float64]string)
+			_, found = vals[v]
+			return found
+		}
+	case ExifUndef:
+		_, ok := value.([]byte)
+		return ok
 	default:
 		return false
 	}
+	//return false
 }
 
-func ExifValueString(index IfdIndex, tagId ExifTag, value interface{}) string {
-	if v, err := ExifValueStringErr(index, tagId, value); err == nil {
+func ExifValueString(index ExifIndex, tag ExifTag, value interface{}) string {
+	if v, err := ExifValueStringErr(index, tag, value); err == nil {
 		return v
 	} else {
 		return "undefined"
 	}
 }
 
-func ExifValueStringErr(index IfdIndex, tagId ExifTag, value interface{}) (string, error) {
-	ifdValueMap, found := ifdValueMap[index]
+func ExifValueStringErr(index ExifIndex, tag ExifTag, value interface{}) (string, error) {
+	tagDesc, found := ExifTagDescriptions[ExifIndexTag{index, tag}]
 	if !found {
 		return "", IfdTagNotFoundErr
 	}
-	tagValues, found := ifdValueMap[tagId]
-	if !found {
-		return "", IfdTagNotFoundErr
-	}
-	switch dtype := value.(type) {
-	case uint16:
-		if m, ok := tagValues.(map[uint16]string); !ok {
+	var ret = ""
+	switch tagDesc.Type {
+	case ExifString:
+		if v, ok := value.(string); !ok {
 			return "", IfdUndefinedTypeErr
 		} else {
-			if v, f := m[dtype]; f {
-				return v, nil
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[string]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
 			} else {
 				return "", IfdValueNotFoundErr
 			}
 		}
-	case int16:
-		if m, ok := tagValues.(map[int16]string); !ok {
+	case ExifUint8:
+		if v, ok := value.(uint8); !ok {
 			return "", IfdUndefinedTypeErr
 		} else {
-			if v, f := m[dtype]; f {
-				return v, nil
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[uint8]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
 			} else {
 				return "", IfdValueNotFoundErr
 			}
 		}
-	case uint32:
-		if m, ok := tagValues.(map[uint32]string); !ok {
+	case ExifUint16:
+		if v, ok := value.(uint16); !ok {
 			return "", IfdUndefinedTypeErr
 		} else {
-			if v, f := m[dtype]; f {
-				return v, nil
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[uint16]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
 			} else {
 				return "", IfdValueNotFoundErr
 			}
 		}
-	case int32:
-		if m, ok := tagValues.(map[int32]string); !ok {
+	case ExifUint32:
+		if v, ok := value.(uint32); !ok {
 			return "", IfdUndefinedTypeErr
 		} else {
-			if v, f := m[dtype]; f {
-				return v, nil
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[uint32]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
 			} else {
 				return "", IfdValueNotFoundErr
 			}
 		}
-	case string:
-		if m, ok := tagValues.(map[string]string); !ok {
+	case ExifInt16:
+		if v, ok := value.(int16); !ok {
 			return "", IfdUndefinedTypeErr
 		} else {
-			if v, f := m[dtype]; f {
-				return v, nil
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[int16]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
 			} else {
 				return "", IfdValueNotFoundErr
 			}
 		}
-	case Rat:
-		if m, ok := tagValues.(map[Rat]string); !ok {
+	case ExifInt32:
+		if v, ok := value.(int32); !ok {
 			return "", IfdUndefinedTypeErr
 		} else {
-			if v, f := m[dtype]; f {
-				return v, nil
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[int32]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
 			} else {
 				return "", IfdValueNotFoundErr
 			}
 		}
-	case URat:
-		if m, ok := tagValues.(map[URat]string); !ok {
+	case ExifRational:
+		if v, ok := value.(Rat); !ok {
 			return "", IfdUndefinedTypeErr
 		} else {
-			if v, f := m[dtype]; f {
-				return v, nil
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[Rat]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
 			} else {
 				return "", IfdValueNotFoundErr
 			}
+		}
+	case ExifUrational:
+		if v, ok := value.(URat); !ok {
+			return "", IfdUndefinedTypeErr
+		} else {
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[URat]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
+			} else {
+				return "", IfdValueNotFoundErr
+			}
+		}
+	case ExifFloat:
+		if v, ok := value.(float32); !ok {
+			return "", IfdUndefinedTypeErr
+		} else {
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[float32]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
+			} else {
+				return "", IfdValueNotFoundErr
+			}
+		}
+	case ExifDouble:
+		if v, ok := value.(float64); !ok {
+			return "", IfdUndefinedTypeErr
+		} else {
+			if tagDesc.Values == nil {
+				return "", IfdValueNotFoundErr
+			}
+			vals := tagDesc.Values.(map[float64]string)
+			if ret, found = vals[v]; found {
+				return ret, nil
+			} else {
+				return "", IfdValueNotFoundErr
+			}
+		}
+	case ExifUndef:
+		if _, ok := value.([]byte); ok {
+			return "", IfdValueNotFoundErr
+		} else {
+			return "", IfdUndefinedTypeErr
 		}
 	default:
 		return "", IfdUndefinedTypeErr
 	}
+
 }
 
 type ExifData struct {
@@ -267,7 +395,7 @@ func (ed *ExifData) IsEmpty() bool {
 }
 
 func (ed *ExifData) GpsInfo() (*exif.GpsInfo, error) {
-	gpsIfd := ed.Ifd(IfdGpsInfo)
+	gpsIfd := ed.Ifd(GpsIFD)
 	if gpsIfd == nil {
 		return nil, IfdTagNotFoundErr
 	} else {
@@ -288,31 +416,31 @@ func (ed *ExifData) GetIfdImageDescription() (string, error) {
 //MetaDataEditor method
 func (ed *ExifData) GetIfdUserComment() (string, error) {
 	ret := exifundefined.Tag9286UserComment{}
-	err := ed.ScanIfdExif(Exif_UserComment, &ret)
+	err := ed.ScanIfdExif(ExifIFD_UserComment, &ret)
 	return string(ret.EncodingBytes), err
 }
 
-func (ed *ExifData) HasIfd(index IfdIndex) bool {
+func (ed *ExifData) HasIfd(index ExifIndex) bool {
 	if ed.IsEmpty() {
 		return false
 	}
-	_, found := ed.rawExif.Lookup[IfdPaths[index]]
+	_, found := ed.rawExif.Lookup[IFDPaths[index]]
 	return found
 }
 
-func (ed *ExifData) Ifd(index IfdIndex) *exif.Ifd {
+func (ed *ExifData) Ifd(index ExifIndex) *exif.Ifd {
 	if ed.IsEmpty() {
 		return nil
 	}
-	return ed.rawExif.Lookup[IfdPaths[index]]
+	return ed.rawExif.Lookup[IFDPaths[index]]
 }
 
-func (ed *ExifData) Scan(ifdIndex IfdIndex, tagId ExifTag, dest interface{}) error {
+func (ed *ExifData) Scan(ifdIndex ExifIndex, tagId ExifTag, dest interface{}) error {
 	if ed.IsEmpty() {
 		return NoExifErr
 	}
 
-	ifd, found := ed.rawExif.Lookup[IfdPaths[ifdIndex]]
+	ifd, found := ed.rawExif.Lookup[IFDPaths[ifdIndex]]
 	if !found {
 		return IfdTagNotFoundErr
 	}
@@ -472,29 +600,29 @@ func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 	var err error
 	switch dateTag {
 	case OriginalDate:
-		if err = ed.ScanIfdExif(Exif_DateTimeOriginal, &t); err != nil {
+		if err = ed.ScanIfdExif(ExifIFD_DateTimeOriginal, &t); err != nil {
 			return err
 		}
-		_ = ed.ScanIfdExif(Exif_OffsetTimeOriginal, &o) //dont care about offset errors
-		*dest, err = exifDataTime(t, o)
+		_ = ed.ScanIfdExif(ExifIFD_OffsetTimeOriginal, &o) //dont care about offset errors
+		*dest, err = exifDateTime(t, o)
 		if err != nil {
 			return err
 		}
 	case ModifyDate:
-		if err = ed.ScanIfdRoot(IFD_DateTime, &t); err != nil {
+		if err = ed.ScanIfdRoot(IFD_ModifyDate, &t); err != nil {
 			return err
 		}
-		_ = ed.ScanIfdExif(Exif_OffsetTime, &o) //dont care about offset errors
-		*dest, err = exifDataTime(t, o)
+		_ = ed.ScanIfdExif(ExifIFD_OffsetTime, &o) //dont care about offset errors
+		*dest, err = exifDateTime(t, o)
 		if err != nil {
 			return err
 		}
 	case DigitizedDate:
-		if err = ed.ScanIfdExif(Exif_DateTimeDigitized, &t); err != nil {
+		if err = ed.ScanIfdExif(ExifIFD_CreateDate, &t); err != nil {
 			return err
 		}
-		_ = ed.ScanIfdExif(Exif_OffsetTimeDigitized, &o) //dont care about offset errors
-		*dest, err = exifDataTime(t, o)
+		_ = ed.ScanIfdExif(ExifIFD_OffsetTimeDigitized, &o) //dont care about offset errors
+		*dest, err = exifDateTime(t, o)
 		if err != nil {
 			return err
 		}
@@ -504,20 +632,20 @@ func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 	return nil
 }
 
-func (ed *ExifData) ScanIfdExif(tagId ExifTag, dest interface{}) error {
-	return ed.Scan(IfdExif, tagId, dest)
+func (ed *ExifData) ScanIfdExif(tag ExifTag, dest interface{}) error {
+	return ed.Scan(ExifIFD, tag, dest)
 }
 
 func (ed *ExifData) ScanIfdIop(tagId ExifTag, dest interface{}) error {
-	return ed.Scan(IfdIop, tagId, dest)
+	return ed.Scan(InteropIFD, tagId, dest)
 }
 
 func (ed *ExifData) ScanIfdRoot(tagId ExifTag, dest interface{}) error {
-	return ed.Scan(IfdRoot, tagId, dest)
+	return ed.Scan(RootIFD, tagId, dest)
 }
 
 func (ed *ExifData) ScanIfdThumbnail(tagId ExifTag, dest interface{}) error {
-	return ed.Scan(IfdThumbnail, tagId, dest)
+	return ed.Scan(ThumbnailIFD, tagId, dest)
 }
 
 func (ed *ExifData) String() string {

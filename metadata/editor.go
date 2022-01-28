@@ -302,7 +302,7 @@ func (mde *MetaDataEditor) MetaData() (*MetaData, error) {
 
 func (mde *MetaDataEditor) SetExifTag(id ExifTag, value interface{}) error {
 
-	exifIb, err := exif.GetOrCreateIbFromRootIb(mde.rootIb, IfdPaths[IfdExif])
+	exifIb, err := exif.GetOrCreateIbFromRootIb(mde.rootIb, IFDPaths[ExifIFD])
 	if err != nil {
 		return err
 	} else {
@@ -363,24 +363,24 @@ func (mde *MetaDataEditor) SetExifDate(dateTag ExifDate, time time.Time) error {
 	offset := exifOffsetString(time)
 	switch dateTag {
 	case OriginalDate:
-		if err = mde.SetExifTag(Exif_DateTimeOriginal, time); err != nil {
+		if err = mde.SetExifTag(ExifIFD_DateTimeOriginal, time); err != nil {
 			return err
 		}
-		if err = mde.SetExifTag(Exif_OffsetTimeOriginal, offset); err != nil {
+		if err = mde.SetExifTag(ExifIFD_OffsetTimeOriginal, offset); err != nil {
 			return err
 		}
 	case ModifyDate:
-		if err = mde.SetIfdTag(IFD_DateTime, time); err != nil {
+		if err = mde.SetIfdTag(IFD_ModifyDate, time); err != nil {
 			return err
 		}
-		if err = mde.SetExifTag(Exif_OffsetTime, offset); err != nil {
+		if err = mde.SetExifTag(ExifIFD_OffsetTime, offset); err != nil {
 			return err
 		}
 	case DigitizedDate:
-		if err = mde.SetExifTag(Exif_DateTimeDigitized, time); err != nil {
+		if err = mde.SetExifTag(ExifIFD_CreateDate, time); err != nil {
 			return err
 		}
-		if err = mde.SetExifTag(Exif_OffsetTimeDigitized, offset); err != nil {
+		if err = mde.SetExifTag(ExifIFD_OffsetTimeDigitized, offset); err != nil {
 			return err
 		}
 	default:
@@ -398,7 +398,7 @@ func (mde *MetaDataEditor) SetUserComment(comment string) error {
 		EncodingType:  exifundefined.TagUndefinedType_9286_UserComment_Encoding_UNICODE,
 		EncodingBytes: []byte(comment),
 	}
-	return mde.SetExifTag(Exif_UserComment, uc)
+	return mde.SetExifTag(ExifIFD_UserComment, uc)
 }
 
 func (md *MetaDataEditor) CommitExifChanges() error {

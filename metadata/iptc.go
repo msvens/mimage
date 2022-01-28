@@ -17,6 +17,16 @@ type IptcData struct {
 }
 
 func IptcTagName(record IptcRecord, tag IptcTag) string {
+	if desc, found := IptcTagDescriptions[IptcRecordTag{Record: record, Tag: tag}]; found {
+		return desc.Name
+	} else {
+		return fmt.Sprintf("Unknown Tag. Record: %v, Dataset: %v", record, tag)
+	}
+
+}
+
+/*
+func IptcTagName(record IptcRecord, tag IptcTag) string {
 	var str string
 	var found bool
 	switch record {
@@ -40,7 +50,7 @@ func IptcTagName(record IptcRecord, tag IptcTag) string {
 	} else {
 		return fmt.Sprintf("Unknown Tag. Record: %v, Dataset: %v", record, tag)
 	}
-}
+}*/
 
 func NewIptcData(segments *jpegstructure.SegmentList) (*IptcData, error) {
 	raw, err := segments.Iptc() //dont care about the error
@@ -85,11 +95,11 @@ func (ipd *IptcData) Scan(record IptcRecord, tag IptcTag, dest interface{}) erro
 }
 
 func (ipd *IptcData) ScanEnvelope(tag IptcTag, dest interface{}) error {
-	return ipd.Scan(Envelope, tag, dest)
+	return ipd.Scan(IPTCEnvelope, tag, dest)
 }
 
 func (ipd *IptcData) ScanApplication(tag IptcTag, dest interface{}) error {
-	return ipd.Scan(Application, tag, dest)
+	return ipd.Scan(IPTCApplication, tag, dest)
 }
 
 func (ipd *IptcData) String() string {
@@ -101,7 +111,7 @@ func (ipd *IptcData) String() string {
 		name := IptcTagName(IptcRecord(k.RecordNumber), IptcTag(k.DatasetNumber))
 		str := []string{}
 		for _, data := range v {
-			str = append(str, string(data))
+			str = append(str, data.String())
 		}
 		buff.WriteString(fmt.Sprintf("%s (%v,%v): [%s]\n", name, k.RecordNumber, k.DatasetNumber, strings.Join(str, ", ")))
 	}

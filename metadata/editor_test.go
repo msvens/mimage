@@ -361,12 +361,12 @@ func TestMetaDataEditor_SetExifTag(t *testing.T) {
 
 	expectedFocalLength := URat{350, 10}
 	mde := getEditor(LeicaImg, t)
-	if err := mde.SetExifTag(Exif_FocalLength, expectedFocalLength); err != nil {
+	if err := mde.SetExifTag(ExifIFD_FocalLength, expectedFocalLength); err != nil {
 		t.Fatalf("Could not set exif tag: %v", err)
 	}
 	md := editorMD(mde, t)
 	focalLength := URat{}
-	md.exifData.ScanIfdExif(Exif_FocalLength, &focalLength)
+	md.exifData.ScanIfdExif(ExifIFD_FocalLength, &focalLength)
 	if focalLength != expectedFocalLength {
 		t.Errorf("expected focalLength %v got %v", expectedFocalLength, focalLength)
 	}
@@ -390,12 +390,12 @@ func TestMetaDataEditor_SetIfdTag(t *testing.T) {
 		t.Fatalf("Expected Lens Info to not be zero")
 	}
 
-	if err := mde.SetIfdTag(IFD_LensInfo, expectedLensInfo); err != nil {
+	if err := mde.SetIfdTag(IFD_DNGLensInfo, expectedLensInfo); err != nil {
 		t.Fatalf("Could not set ifd tag: %v", err)
 	}
 	md = editorMD(mde, t)
 	lensInfo := LensInfo{}
-	md.exifData.ScanIfdRoot(IFD_LensInfo, &lensInfo)
+	md.exifData.ScanIfdRoot(IFD_DNGLensInfo, &lensInfo)
 	if lensInfo != expectedLensInfo {
 		t.Errorf("expected %v got %v", expectedLensInfo, lensInfo)
 	}
@@ -448,10 +448,10 @@ func TestMetaDataEditor_SetExifAndXmp(t *testing.T) {
 		model := getXmpModel(t)
 
 		e.SetXmp(model)
-		if err := e.SetIfdTag(IFD_LensInfo, expectedLensInfo); err != nil {
+		if err := e.SetIfdTag(IFD_DNGLensInfo, expectedLensInfo); err != nil {
 			t.Errorf("Could not set ifd tag for %s: %v", assetName, err)
 		}
-		if err := e.SetExifTag(Exif_FocalLength, expectedFocalLength); err != nil {
+		if err := e.SetExifTag(ExifIFD_FocalLength, expectedFocalLength); err != nil {
 			t.Errorf("Could not set exif tag for %s: %v", assetName, err)
 		}
 		md := editorMD(e, t)
@@ -473,12 +473,12 @@ func TestMetaDataEditor_SetExifAndXmp(t *testing.T) {
 			t.Errorf("Expected Dublin Core Xmp data got nil")
 		}
 		focalLength := URat{}
-		md.exifData.ScanIfdExif(Exif_FocalLength, &focalLength)
+		md.exifData.ScanIfdExif(ExifIFD_FocalLength, &focalLength)
 		if focalLength != expectedFocalLength {
 			t.Errorf("expected focalLength for %s: %v got %v", assetName, expectedFocalLength, focalLength)
 		}
 		lensInfo := LensInfo{}
-		md.exifData.ScanIfdRoot(IFD_LensInfo, &lensInfo)
+		md.exifData.ScanIfdRoot(IFD_DNGLensInfo, &lensInfo)
 		if lensInfo != expectedLensInfo {
 			t.Errorf("expected lensInfo for %s: %v got %v", assetName, expectedLensInfo, lensInfo)
 		}

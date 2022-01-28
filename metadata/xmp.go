@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
@@ -64,9 +65,14 @@ func (xd XmpData) String() string {
 	if xd.IsEmpty() {
 		return "No XMP Data"
 	}
-	if bytes, err := xmp.MarshalIndent(xd.rawXmp, "", "  "); err != nil {
+	if bytes, err := json.MarshalIndent(xd.rawXmp, "", "  "); err != nil {
 		return fmt.Sprintf("Could not marshal xmp document: %v", err)
 	} else {
 		return string(bytes)
 	}
+	/*if bytes, err := xmp.MarshalIndent(xd.rawXmp, "", "  "); err != nil {
+		return fmt.Sprintf("Could not marshal xmp document: %v", err)
+	} else {
+		return string(bytes)
+	}*/
 }
