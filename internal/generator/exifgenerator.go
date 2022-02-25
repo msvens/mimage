@@ -106,7 +106,7 @@ type ExifTagDesc struct {
 `
 
 //Align types and adds type/description info to tags from exiv2 json. Sorts the file based on TagId
-func AlignExifToolJson() error {
+func GenerateMasterExifJson() error {
 	b, err := ioutil.ReadFile("assets/exiftool-exiftags.json")
 	if err != nil {
 		return err
@@ -148,13 +148,14 @@ func AlignExifToolJson() error {
 	for _, v := range exifMap {
 		tagNames := map[string]bool{}
 		for _, t := range v {
+			t.Name = alignName(t.Name)
 			t.Ifd = alignIFD(t.Ifd)
 			t.Writable = alignType(*t, exivIdMaps)
 			t.Description = alignDesc(*t, exivIdMaps)
 			if _, found := tagNames[t.Ifd+t.Name]; found == true {
-				fmt.Println("found duplicate")
+				//fmt.Println("found duplicate")
 				t.Name = fmt.Sprintf("%s_%#04x", t.Name, t.Id)
-				fmt.Println("found duplicate: ", t.Name)
+				//fmt.Println("found duplicate: ", t.Name)
 			} else {
 				tagNames[t.Ifd+t.Name] = true
 			}
@@ -207,14 +208,12 @@ func alignType(tag etExifTag, exivMaps map[string]map[uint16]rawExifTag) string 
 	case "double":
 		return "ExifDouble"
 	}
-
-	if ret == "ExifUndef" {
-		if exivType, found := exivMaps[tag.Ifd][tag.Id]; found {
-			if ret != exivType.TypeName {
-				ret = exivType.TypeName
-			}
+	if exivType, found := exivMaps[tag.Ifd][tag.Id]; found {
+		if ret != exivType.TypeName {
+			ret = exivType.TypeName
 		}
 	}
+
 	return ret
 }
 
@@ -230,8 +229,12 @@ func alignIFD(rawIfd string) string {
 	}
 }
 
-func GenerateExifTagsFromExifTool() error {
-	raw, err := readExifToolExifJson()
+func alignName(rawName string) string {
+	return strings.Replace(rawName, "-", "", -1)
+}
+
+func GenerateExifTagsFromMasterExifJson() error {
+	raw, err := readMasterExifJson()
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -245,8 +248,8 @@ func GenerateExifTagsFromExifTool() error {
 	sb.WriteString(exifIndexSrc)
 	sb.WriteString(exifTypeConstSrc)
 	sb.WriteString(exifTagDescSrc)
-	generateExifConstants(raw, &sb)
-	generateExifTagDescriptions(raw, &sb)
+	_ = generateExifConstants(raw, &sb)
+	_ = generateExifTagDescriptions(raw, &sb)
 
 	err = ioutil.WriteFile("./metadata/genexif.go", []byte(sb.String()), 0644)
 	return err
@@ -435,7 +438,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 	return buff.String()
 }
 
-func readExifToolExifJson() (map[string][]etExifTag, error) {
+func readMasterExifJson() (map[string][]etExifTag, error) {
 	b, err := ioutil.ReadFile("assets/master-exiftags.json")
 	if err != nil {
 		return nil, err

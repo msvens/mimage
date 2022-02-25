@@ -93,7 +93,6 @@ type MetaData struct {
 
 func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
 	jmp := jpegstructure.NewJpegMediaParser()
-
 	if intfc, err := jmp.ParseBytes(data); err != nil {
 		return nil, ParseImageErr
 	} else {
@@ -117,14 +116,17 @@ func NewMetaData(data []byte) (*MetaData, error) {
 		return nil, err
 	}
 
-	var exifErr, xmpErr error
+	var exifErr, xmpErr, iptcErr error
 
 	ret.exifData, exifErr = NewExifData(segments)
 	if exifErr != nil && exifErr != NoExifErr {
 		return nil, exifErr
 	}
 
-	ret.iptcData, _ = NewIptcData(segments)
+	ret.iptcData, iptcErr = NewIptcData(segments)
+	if iptcErr != nil && iptcErr != NoIptcErr {
+		return nil, iptcErr
+	}
 
 	ret.xmpData, xmpErr = NewXmpData(segments)
 	if xmpErr != nil && xmpErr != NoXmpErr {
@@ -199,15 +201,8 @@ func (md *MetaData) String() string {
 
 func (md *MetaData) extractIPTC() error {
 	var err error
-
-	if e := md.iptcData.ScanApplication(IPTCApplication_ObjectName, &md.summary.Title); e != nil && e != IptcTagNotFoundErr {
-		err = e
-	}
-
-	if e := md.iptcData.ScanApplication(IPTCApplication_Keywords, &md.summary.Keywords); e != nil && e != IptcTagNotFoundErr {
-		err = e
-	}
-
+	md.summary.Title = md.iptcData.GetTitle()
+	md.summary.Keywords = md.iptcData.GetKeywords()
 	return err
 }
 
@@ -261,27 +256,19 @@ func (md *MetaData) extractExifTags() error {
 
 func (md *MetaData) extractXmp() error {
 
-	if dcm := md.xmpData.DublinCore(); dcm != nil {
-		if md.summary.Title == "" {
-			md.summary.Title = dcm.Title.Default()
-		}
-		if len(md.summary.Keywords) == 0 {
-			md.summary.Keywords = dcm.Subject
-		}
+	if md.summary.Title == "" {
+		md.summary.Title = md.xmpData.GetTitle()
 	}
-	if basem := md.xmpData.Base(); basem != nil {
-		if md.summary.Rating == 0 {
-			md.summary.Rating = uint16(basem.Rating)
-		}
-		if md.summary.Software == "" {
-			md.summary.Software = basem.CreatorTool.String()
-		}
+	if len(md.summary.Keywords) == 0 {
+		md.summary.Keywords = md.xmpData.GetKeywords()
+	}
+	if md.summary.Rating == 0 {
+		md.summary.Rating = md.xmpData.GetRating()
 	}
 	if psm := md.xmpData.PhotoShop(); psm != nil {
 		md.summary.City = psm.City
 		md.summary.Country = psm.Country
 		md.summary.State = psm.State
 	}
-
 	return nil
 }

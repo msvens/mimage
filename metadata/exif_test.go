@@ -100,33 +100,37 @@ func TestExifValueString(t *testing.T) {
 
 }
 
+//Todo: Create an asset image that has ImageDesc and UserComment already stored
 func TestExifData_GetIfdImageDescription(t *testing.T) {
-	//Todo: Create an asset image that has ImageDesc and UserComment already stored
 	ed := getExifData(LeicaImg, t)
 	if desc, err := ed.GetIfdImageDescription(); err == nil {
 		t.Errorf("Did not expect any image description got %s", desc)
 	} else if err != IfdTagNotFoundErr {
 		t.Errorf("Expected err %v got %v", IfdTagNotFoundErr, err)
 	}
-	mde := getEditor(LeicaImg, t)
-	mde.SetImageDescription("some description")
-	ed = editorMD(mde, t).exifData
+	je := getJpegEditor(LeicaImg, t)
+	if err := je.Exif().SetImageDescription("some description"); err != nil {
+		t.Errorf("Could not set image description: %v", err)
+	}
+	ed = jpegEditorMD(je, t).exifData
 	if _, err := ed.GetIfdImageDescription(); err != nil {
 		t.Errorf("Expected description got error %v", err)
 	}
 }
 
+//Todo: Create an asset image that has ImageDesc and UserComment already stored
 func TestExifData_GetIfdUserComment(t *testing.T) {
-	//Todo: Create an asset image that has ImageDesc and UserComment already stored
 	ed := getExifData(LeicaImg, t)
 	if desc, err := ed.GetIfdUserComment(); err == nil {
 		t.Errorf("Did not expect any user comment got %s", desc)
 	} else if err != IfdTagNotFoundErr {
 		t.Errorf("Expected err %v got %v", IfdTagNotFoundErr, err)
 	}
-	mde := getEditor(LeicaImg, t)
-	mde.SetUserComment("some comment")
-	ed = editorMD(mde, t).exifData
+	je := getJpegEditor(LeicaImg, t)
+	if err := je.Exif().SetUserComment("some comment"); err != nil {
+		t.Errorf("Could not set user comment: %v", err)
+	}
+	ed = jpegEditorMD(je, t).exifData
 	if _, err := ed.GetIfdUserComment(); err != nil {
 		t.Errorf("Expected user comment got error %v", err)
 	}

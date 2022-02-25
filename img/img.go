@@ -154,15 +154,15 @@ func saveWithExif(srcBytes []byte, dstImage image.Image, opt Options, fileName s
 	if err != nil {
 		return err
 	}
-	mde, err := metadata.NewMetaDataEditor(dstBytes.Bytes())
+	mde, err := metadata.NewJpegEditor(dstBytes.Bytes())
 	if err != nil {
 		return err
 	}
-	err = mde.CopyMetaData(srcBytes, metadata.CopyAll)
+	err = mde.CopyMetaData(srcBytes)
 	if err != nil {
 		return err
 	}
-	err = mde.SetExifDate(metadata.ModifyDate, time.Now())
+	err = mde.Exif().SetDate(metadata.ModifyDate, time.Now())
 	if err != nil {
 		return err
 	}

@@ -10,7 +10,6 @@ const AssetPath = "../assets/"
 const LeicaImg = AssetPath + "leica.jpg"
 const NoExifImg = AssetPath + "noexif.jpg"
 const NikonImg = AssetPath + "nikon.jpg"
-const CanonImg = AssetPath + "canon.jpg"
 const GPSImg = AssetPath + "gps.jpg"
 const NonImageFile = AssetPath + "exiftool-leica-g1.json"
 const XmpFile = AssetPath + "xmp.xml"
@@ -23,14 +22,6 @@ func getAssetBytes(fname string, t *testing.T) []byte {
 	return b
 }
 
-func getEditor(fname string, t *testing.T) *MetaDataEditor {
-	mde, err := NewMetaDataEditorFile(fname)
-	if err != nil {
-		t.Fatalf("Could not retrieve editor for file: %v", err)
-	}
-	return mde
-}
-
 func getMetaData(fname string, t *testing.T) *MetaData {
 	md, err := NewMetaDataFromFile(fname)
 	if err != nil {
@@ -39,13 +30,15 @@ func getMetaData(fname string, t *testing.T) *MetaData {
 	return md
 }
 
-func editorMD(mde *MetaDataEditor, t *testing.T) *MetaData {
-	md, err := mde.MetaData()
+/*
+func editorMD(je *JpegEditor, t *testing.T) *MetaData {
+	md, err := je.MetaData()
 	if err != nil {
 		t.Fatalf("Could not get metadata ")
 	}
 	return md
 }
+*/
 
 func TestParse(t *testing.T) {
 	data := getAssetBytes(NikonImg, t)

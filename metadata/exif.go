@@ -27,41 +27,13 @@ func exifDateTime(dt string, offset string) (time.Time, error) {
 	}
 }
 
+type ExifDate int
+
 const (
 	OriginalDate ExifDate = iota
 	ModifyDate
 	DigitizedDate
 )
-
-/*
-type IfdIndex int
-
-const (
-	IfdRoot IfdIndex = iota
-	IfdExif
-	IfdGpsInfo
-	IfdIop
-	IfdThumbnail
-)
-
-var IfdPaths = map[IfdIndex]string{
-	IfdRoot:      "IFD",
-	IfdExif:      "IFD/Exif",
-	IfdGpsInfo:   "IFD/GPSInfo",
-	IfdIop:       "IFD/Exif/Iop",
-	IfdThumbnail: "IFD1",
-}
-*/
-
-/*
-var ifdValueMap = map[IfdIndex]map[ExifTag]interface{}{
-	IfdRoot:      IFDValues,
-	IfdExif:      ExifValues,
-	IfdGpsInfo:   GPSInfoValues,
-	IfdIop:       IopValues,
-	IfdThumbnail: IFDValues,
-}
-*/
 
 func ExifTagName(index ExifIndex, tag ExifTag) string {
 	tagDesc, found := ExifTagDescriptions[ExifIndexTag{Index: index, Tag: tag}]
@@ -574,7 +546,7 @@ func (ed *ExifData) Scan(ifdIndex ExifIndex, tagId ExifTag, dest interface{}) er
 		if entry.TagType() == exifcommon.TypeUndefined {
 			v, ok := value.(exifundefined.Tag9286UserComment)
 			if !ok {
-				fmt.Errorf("Cannot recognise User Comment Type")
+				return fmt.Errorf("Cannot recognise User Comment Type")
 			} else {
 				*dtype = v
 			}

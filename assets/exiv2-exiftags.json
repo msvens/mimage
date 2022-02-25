@@ -796,7 +796,7 @@
       "id": 269,
       "name": "DocumentName",
       "typeName": "ExifString",
-      "description": "The name of the document from which this image was scanned"
+      "description": "The name of the document from which this image was scanned."
     },
     {
       "id": 270,
@@ -863,6 +863,24 @@
       "name": "PlanarConfiguration",
       "typeName": "ExifUint16",
       "description": "Indicates whether pixel components are recorded in a chunky or planar format. In JPEG compressed files a JPEG marker is used instead of this tag. If this field does not exist, the TIFF default of 1 (chunky) is assumed."
+    },
+    {
+      "id": 285,
+      "name": "PageName",
+      "typeName": "ExifString",
+      "description": "The name of the page from which this image was scanned."
+    },
+    {
+      "id": 286,
+      "name": "XPosition",
+      "typeName": "ExifUrational",
+      "description": "X position of the image. The X offset in ResolutionUnits of the left side of the image, with respect to the left side of the page."
+    },
+    {
+      "id": 287,
+      "name": "YPosition",
+      "typeName": "ExifUrational",
+      "description": "Y position of the image. The Y offset in ResolutionUnits of the top of the image, with respect to the top of the page. In the TIFF coordinate scheme, the positive Y direction is down, so that YPosition is always positive."
     },
     {
       "id": 290,
@@ -2161,6 +2179,12 @@
       "description": "When the CalibrationIlluminant3 tag is set to 255 (Other), then the IlluminantData3 tag is required and specifies the data for the third illuminant. Otherwise, this tag is ignored. The format of the data is the same as IlluminantData1."
     },
     {
+      "id": 52536,
+      "name": "MaskSubArea",
+      "typeName": "ExifUint32",
+      "description": "This tag identifies the crop rectangle of this IFD's mask, relative to the main image."
+    },
+    {
       "id": 52537,
       "name": "ProfileHueSatMapData3",
       "typeName": "ExifUndef",
@@ -2171,6 +2195,12 @@
       "name": "ReductionMatrix3",
       "typeName": "ExifRational",
       "description": "ReductionMatrix3 defines a dimensionality reduction matrix for use as the first stage in converting color camera native space values to XYZ values, under the third calibration illuminant. This tag may only be used if ColorPlanes is greater than 3. The matrix is stored in row scan order."
+    },
+    {
+      "id": 52539,
+      "name": "RGBTables",
+      "typeName": "ExifUndef",
+      "description": "This tag specifies color transforms that can be applied to masked image regions. Color transforms are specified using RGB-to-RGB color lookup tables. These tables are associated with Semantic Masks to limit the color transform to a sub-region of the image. The overall color transform is a linear combination of the color tables, weighted by their corresponding Semantic Masks."
     }
   ]
 }

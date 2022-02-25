@@ -2,52 +2,112 @@ package metadata
 
 import (
 	"bytes"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
-	"trimmer.io/go-xmp/xmp"
 )
 
-func getXmpModel(t *testing.T) *xmp.Document {
-	bytes := getAssetBytes(XmpFile, t)
-	model := &xmp.Document{}
-	err := xmp.Unmarshal(bytes, model)
+func getJpegEditor(fname string, t *testing.T) *JpegEditor {
+	je, err := NewJpegEditorFile(fname)
 	if err != nil {
-		t.Fatalf("Could not parse XMP Document %s ", err.Error())
+		t.Fatalf("Could not retrieve editor for file: %v", err)
 	}
-	return model
+	return je
 }
 
-func TestNewMetaDataEditor(t *testing.T) {
-
+func reloadJpegEditor(je *JpegEditor, fatal bool, t *testing.T) *JpegEditor {
+	b, err := je.Bytes()
+	if err != nil {
+		if fatal {
+			t.Fatalf("Could not get bytes from jpegEditor: %v", err)
+		} else {
+			t.Errorf("Could not get bytes from jpegEditor: %v", err)
+		}
+	}
+	ret, err := NewJpegEditor(b)
+	if err != nil {
+		if fatal {
+			t.Fatalf("Could not get bytes from jpegEditor: %v", err)
+		} else {
+			t.Errorf("Could not get bytes from jpegEditor: %v", err)
+		}
+	}
+	return ret
 }
 
-func TestNewMetaDataEditorFile(t *testing.T) {
-
+func jpegEditorMD(je *JpegEditor, t *testing.T) *MetaData {
+	md, err := je.MetaData()
+	if err != nil {
+		t.Fatalf("Could not get metadata ")
+	}
+	return md
 }
 
-func TestMetaDataEditor_Bytes(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
+func cmpDates(t1, t2 time.Time) bool {
+	if t1.Year() != t2.Year() {
+		return false
+	}
+	if t1.Month() != t2.Month() {
+		return false
+	}
+	if t1.Day() != t2.Day() {
+		return false
+	}
+	if t1.Hour() != t2.Hour() {
+		return false
+	}
+	if t1.Minute() != t2.Minute() {
+		return false
+	}
+	return t1.Second() == t2.Second()
+}
+
+func TestNewJpegEditor(t *testing.T) {
+	assets := []string{LeicaImg, NoExifImg}
+	for _, asset := range assets {
+		if b, err := ioutil.ReadFile(asset); err != nil {
+			t.Errorf("Could not read file: %s error %v", asset, err)
+		} else {
+			if _, err1 := NewJpegEditor(b); err1 != nil {
+				t.Errorf("Could not open editor for bytes: %s error %v", asset, err1)
+			}
+		}
+	}
+}
+
+func TestNewJpegEditorFile(t *testing.T) {
+	assets := []string{LeicaImg, NoExifImg}
+	for _, asset := range assets {
+		if _, err := NewJpegEditorFile(asset); err != nil {
+			t.Errorf("Could not open editor for file: %s error %v", asset, err)
+		}
+	}
+}
+
+func TestJpegEditor_Bytes(t *testing.T) {
+	je := getJpegEditor(LeicaImg, t)
 	var b []byte
 	var err error
 
 	//Test 1: Just write bytes and read them back again
-	if b, err = mde.Bytes(); err != nil {
+	if b, err = je.Bytes(); err != nil {
 		t.Errorf(err.Error())
 	} else {
-		mde, err = NewMetaDataEditor(b)
+		je, err = NewJpegEditor(b)
 		if err != nil {
 			t.Errorf("Could not open editor from written bytes: %s", err.Error())
 		}
 
 	}
 	//Test 2: Write bytes after an edit
-	err = mde.SetExifDate(ModifyDate, time.Now())
-	if b, err = mde.Bytes(); err != nil {
+	err = je.Exif().SetDate(ModifyDate, time.Now())
+	if b, err = je.Bytes(); err != nil {
 		t.Errorf(err.Error())
 	} else {
-		mde, err = NewMetaDataEditor(b)
+		je, err = NewJpegEditor(b)
 		if err != nil {
 			t.Errorf("Could not open editor from written bytes: %s", err.Error())
 		}
@@ -55,69 +115,58 @@ func TestMetaDataEditor_Bytes(t *testing.T) {
 
 }
 
-//Simpler test as TestMetaDataEditor_CopyMetaData tests this in more detail
-func TestMetaDataEditor_CopyMetaDataFile(t *testing.T) {
-	mde := getEditor(NoExifImg, t)
-	if err := mde.CopyMetaDataFile(LeicaImg, CopyAll); err != nil {
-		t.Fatalf("Could not copy metadata from file: %v", err)
-	}
-	md := editorMD(mde, t)
-	if md.xmpData.IsEmpty() {
-		t.Errorf("Expected XMP Section")
-	}
-	if md.iptcData.IsEmpty() {
-		t.Errorf("Expected IPTC Section")
-	}
-	if md.exifData.IsEmpty() {
-		t.Errorf("Expected Exif Section")
-	}
-	//test with a file that does not exist.
-	if err := mde.CopyMetaDataFile("someDummyFile.jpg", CopyAll); err == nil {
-		t.Errorf("Expected to fail when copying non existent file")
-	}
-
-}
-
-func TestMetaDataEditor_CopyMetaData(t *testing.T) {
+func TestJpegEditor_CopyMetaData(t *testing.T) {
 	sourceBytes := getAssetBytes(LeicaImg, t)
 	destBytes := getAssetBytes(NoExifImg, t)
 
-	destMde, err := NewMetaDataEditor(destBytes)
+	destJe, err := NewJpegEditor(destBytes)
 	if err != nil {
 		t.Fatalf("could not open dest editor: %v", err)
 	}
-	err = destMde.CopyMetaData(sourceBytes, CopyAll)
+	err = destJe.CopyMetaData(sourceBytes)
 	if err != nil {
 		t.Fatalf("could not copy metadata: %v", err)
 	}
-	sourceMde, err := NewMetaDataEditor(sourceBytes)
+	//reopen dest
+	b, err := destJe.Bytes()
+	if err != nil {
+		t.Fatalf("Could not write dest after copy: %v", err)
+	}
+	destJe, err = NewJpegEditor(b)
+	if err != nil {
+		t.Fatalf("Could not reopen jpegeditor after copy: %v", err)
+	}
+
+	sourceJe, err := NewJpegEditor(sourceBytes)
 	if err != nil {
 		t.Fatalf("could not open source editor")
 	}
 
 	//check exif:
-	_, sourceSeq, e1 := sourceMde.sl.FindExif()
-	_, destSeq, e2 := destMde.sl.FindExif()
+	_, sourceSeq, e1 := sourceJe.sl.FindExif()
+	_, destSeq, e2 := destJe.sl.FindExif()
 
 	if e1 != nil || e2 != nil {
+		fmt.Println(e1)
+		fmt.Println(e2)
 		t.Errorf("could not find source exif segement or dest exif segment")
 	} else if bytes.Compare(sourceSeq.Data, destSeq.Data) != 0 {
 		t.Errorf("exif segments are not the same")
 	}
 
-	//check xmp:
-	_, sourceSeq, e1 = sourceMde.sl.FindXmp()
-	_, destSeq, e2 = destMde.sl.FindXmp()
+	//check XmpEditor:
+	_, sourceSeq, e1 = sourceJe.sl.FindXmp()
+	_, destSeq, e2 = destJe.sl.FindXmp()
 
 	if e1 != nil || e2 != nil {
-		t.Errorf("could not find source xmp segement or dest exif segment")
+		t.Errorf("could not find source XmpEditor segement or dest exif segment")
 	} else if bytes.Compare(sourceSeq.Data, destSeq.Data) != 0 {
-		t.Errorf("xmp segments are not the same")
+		t.Errorf("XmpEditor segments are not the same")
 	}
 
-	//check xmp:
-	_, sourceSeq, e1 = sourceMde.sl.FindIptc()
-	_, destSeq, e2 = destMde.sl.FindIptc()
+	//check iptc:
+	_, sourceSeq, e1 = sourceJe.sl.FindIptc()
+	_, destSeq, e2 = destJe.sl.FindIptc()
 
 	if e1 != nil || e2 != nil {
 		t.Errorf("could not find source iptc segement or dest exif segment")
@@ -127,150 +176,120 @@ func TestMetaDataEditor_CopyMetaData(t *testing.T) {
 
 }
 
-func TestMetaDataEditor_DropAll(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
-	err := mde.DropAll()
+func TestJpegEditor_DropExif(t *testing.T) {
+	je := getJpegEditor(LeicaImg, t)
+	err := je.DropExif()
 	if err != nil {
 		t.Fatalf("error droppging all metadata: %v", err)
 	}
-	//make sure segments are dropped
-	if mde.HasIptc() {
+
+	//now write and reopen and make sure no metadata exists
+	b, err := je.Bytes()
+	if err != nil {
+		t.Fatalf("could not write bytes after dropping metadata: %v", err)
+	}
+	var md *MetaData
+	if md, err = NewMetaData(b); err != nil {
+		t.Fatalf("could not open metadata after dropping metadata: %v ", err)
+	}
+	if !md.exifData.IsEmpty() {
+		t.Errorf("Image still contains exifData")
+	}
+	if md.xmpData.IsEmpty() {
+		t.Errorf("Image should contain Xmp data")
+	}
+	if md.iptcData.IsEmpty() {
+		t.Errorf("Image should contain IPTC data")
+	}
+}
+
+func TestJpegEditor_DropIptc(t *testing.T) {
+	je := getJpegEditor(LeicaImg, t)
+	err := je.DropIptc()
+	if err != nil {
+		t.Fatalf("error droppging all metadata: %v", err)
+	}
+
+	//now write and reopen and make sure no metadata exists
+	b, err := je.Bytes()
+	if err != nil {
+		t.Fatalf("could not write bytes after dropping metadata: %v", err)
+	}
+	var md *MetaData
+	if md, err = NewMetaData(b); err != nil {
+		t.Fatalf("could not open metadata after dropping metadata: %v ", err)
+	}
+	if md.exifData.IsEmpty() {
+		t.Errorf("Image should contain exifData")
+	}
+	if md.xmpData.IsEmpty() {
+		t.Errorf("Image should contain Xmp data")
+	}
+	if !md.iptcData.IsEmpty() {
 		t.Errorf("Image still contains IPTC data")
 	}
-	if mde.HasExif() {
-		t.Errorf("Image still contains EXIF data")
-	}
-	if mde.HasXmp() {
-		t.Errorf("Image still contains XMP data")
-	}
-	//now write and reopen and make sure
-	b, err := mde.Bytes()
+
+}
+
+func TestJpegEditor_DropMetaData(t *testing.T) {
+	je := getJpegEditor(LeicaImg, t)
+	err := je.DropMetaData()
 	if err != nil {
-		t.Fatalf("could not write bytes after drop metadata: %v", err)
+		t.Fatalf("error droppging all metadata: %v", err)
 	}
-	mde, err = NewMetaDataEditor(b)
+
+	//now write and reopen and make sure no metadata exists
+	b, err := je.Bytes()
 	if err != nil {
-		t.Fatalf("could not open editor afater dropping metadata: %v ", err)
+		t.Fatalf("could not write bytes after dropping metadata: %v", err)
 	}
-	if mde.HasIptc() {
+	var md *MetaData
+	if md, err = NewMetaData(b); err != nil {
+		t.Fatalf("could not open metadata after dropping metadata: %v ", err)
+	}
+	if !md.exifData.IsEmpty() {
+		t.Errorf("Image still contains Exif data after writing bytes")
+	}
+	if !md.xmpData.IsEmpty() {
+		t.Errorf("Image still contains Xmp data after writing bytes")
+	}
+	if !md.iptcData.IsEmpty() {
 		t.Errorf("Image still contains IPTC data after writing bytes")
 	}
-	if mde.HasExif() {
-		t.Errorf("Image still contains EXIF data after writing bytes")
-	}
-	if mde.HasXmp() {
-		t.Errorf("Image still contains XMP data after writing bytes")
-	}
+
 }
 
-func TestMetaDataEditor_DropIptc(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
-	err := mde.DropIptc()
+func TestJpegEditor_DropXmp(t *testing.T) {
+	je := getJpegEditor(LeicaImg, t)
+	err := je.DropXmp()
 	if err != nil {
-		t.Fatalf("error droppging iptc data: %v", err)
+		t.Fatalf("error droppging all metadata: %v", err)
 	}
-	//make sure segments are dropped
-	if mde.HasIptc() {
-		t.Errorf("Image still contains IPTC data")
-	}
-	//now write and reopen and make sure
-	b, err := mde.Bytes()
+
+	//now write and reopen and make sure no metadata exists
+	b, err := je.Bytes()
 	if err != nil {
-		t.Fatalf("could not write bytes after drop iptc: %v", err)
+		t.Fatalf("could not write bytes after dropping metadata: %v", err)
 	}
-	mde, err = NewMetaDataEditor(b)
-	if err != nil {
-		t.Fatalf("could not open editor after dropping iptc: %v ", err)
+	var md *MetaData
+	if md, err = NewMetaData(b); err != nil {
+		t.Fatalf("could not open metadata after dropping metadata: %v ", err)
 	}
-	if mde.HasIptc() {
-		t.Errorf("Image still contains IPTC data after writing bytes")
+	if md.exifData.IsEmpty() {
+		t.Errorf("Image should contain exifData")
 	}
+	if !md.xmpData.IsEmpty() {
+		t.Errorf("Image still contains Xmp data")
+	}
+	if md.iptcData.IsEmpty() {
+		t.Errorf("Image should contain IPTC data")
+	}
+
 }
 
-func TestMetaDataEditor_DropXmp(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
-	err := mde.DropXmp()
-	if err != nil {
-		t.Fatalf("error droppging xmp data: %v", err)
-	}
-	//make sure segments are dropped
-	if mde.HasXmp() {
-		t.Errorf("Image still contains IPTC data")
-	}
-	//now write and reopen and make sure
-	b, err := mde.Bytes()
-	if err != nil {
-		t.Fatalf("could not write bytes after drop xmp: %v", err)
-	}
-	mde, err = NewMetaDataEditor(b)
-	if err != nil {
-		t.Fatalf("could not open editor after dropping xmp: %v ", err)
-	}
-	if mde.HasXmp() {
-		t.Errorf("Image still contains IPTC data after writing bytes")
-	}
-}
-
-func TestMetaDataEditor_DropExif(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
-	err := mde.DropExif()
-	if err != nil {
-		t.Fatalf("error droppging exif data: %v", err)
-	}
-	//make sure segments are dropped
-	if mde.HasExif() {
-		t.Errorf("Image still contains Exif data")
-	}
-	//now write and reopen and make sure
-	b, err := mde.Bytes()
-	if err != nil {
-		t.Fatalf("could not write bytes after drop exif: %v", err)
-	}
-	mde, err = NewMetaDataEditor(b)
-	if err != nil {
-		t.Fatalf("could not open editor after dropping exif: %v ", err)
-	}
-	if mde.HasExif() {
-		t.Errorf("Image still contains IPTC data after writing bytes")
-	}
-}
-
-func TestMetaDataEditor_HasExif(t *testing.T) {
-	withMetaData := getEditor(LeicaImg, t)
-	noMetaData := getEditor(NoExifImg, t)
-	if !withMetaData.HasExif() {
-		t.Errorf("expected exif")
-	}
-	if noMetaData.HasExif() {
-		t.Errorf("expected no exif")
-	}
-}
-
-func TestMetaDataEditor_HasIptc(t *testing.T) {
-	withMetaData := getEditor(LeicaImg, t)
-	noMetaData := getEditor(NoExifImg, t)
-	if !withMetaData.HasIptc() {
-		t.Errorf("expected iptc")
-	}
-	if noMetaData.HasIptc() {
-		t.Errorf("expected no iptc")
-	}
-}
-
-func TestMetaDataEditor_HasXmp(t *testing.T) {
-	withMetaData := getEditor(LeicaImg, t)
-	noMetaData := getEditor(NoExifImg, t)
-	if !withMetaData.HasXmp() {
-		t.Errorf("expected xmp")
-	}
-	if noMetaData.HasXmp() {
-		t.Errorf("expected no xmp")
-	}
-}
-
-func TestMetaDataEditor_MetaData(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
-	md, err := mde.MetaData()
+func TestJpegEditor_MetaData(t *testing.T) {
+	je := getJpegEditor(LeicaImg, t)
+	md, err := je.MetaData()
 	expectedTitle := "Morning Fog"
 	expectedCameraModel := "LEICA Q2"
 
@@ -296,233 +315,15 @@ func TestMetaDataEditor_MetaData(t *testing.T) {
 
 }
 
-func TestMetaDataEditor_SetExifDate(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
-	tnow := time.Now()
-	tnow = tnow.Truncate(1 * time.Second)
-	dates := []ExifDate{OriginalDate, ModifyDate, DigitizedDate}
-	for _, dt := range dates {
-		if err := mde.SetExifDate(dt, tnow); err != nil {
-			t.Errorf("Could not set date: %v got error %v", dt, err)
-		}
-	}
-	md := editorMD(mde, t)
-	if cmpDates(tnow, md.Summary().OriginalDate) {
-		t.Errorf("Expected %v got %v", tnow, md.Summary().OriginalDate)
-	}
-	if cmpDates(tnow, md.Summary().ModifyDate) {
-		t.Errorf("Expected %v got %v", tnow, md.Summary().ModifyDate)
-	}
-}
-
-func TestMetaDataEditor_CommitExifChanges(t *testing.T) {
-	var err error
-	mde := getEditor(LeicaImg, t)
-	md := editorMD(mde, t)
-	model := md.Summary().CameraModel
-	newModel := "A new model"
-
-	//change model
-	mde.SetIfdTag(IFD_Model, newModel)
-
-	//load meta data again. It should not have changed the underlying segments
-	out := new(bytes.Buffer)
-	if err = mde.sl.Write(out); err != nil {
-		t.Fatalf("Could not write segments: %v", err)
-	}
-	if md, err = NewMetaData(out.Bytes()); err != nil {
-		t.Fatalf("Could not read metadata: %v", err)
-	}
-	if model != md.Summary().CameraModel {
-		t.Errorf("Expected %s got %s", model, md.Summary().CameraModel)
-	}
-
-	//now commit changes
-	if err := mde.CommitExifChanges(); err != nil {
-		t.Fatalf("Could not commit changes: %v", err)
-	}
-
-	//write bytes again
-	out = new(bytes.Buffer)
-	if err = mde.sl.Write(out); err != nil {
-		t.Fatalf("Could not write segments: %v", err)
-	}
-	if md, err = NewMetaData(out.Bytes()); err != nil {
-		t.Fatalf("Could not read metadata: %v", err)
-	}
-	if newModel != md.Summary().CameraModel {
-		t.Errorf("Expected %s got %s", newModel, md.Summary().CameraModel)
-	}
-}
-
-func TestMetaDataEditor_SetExifTag(t *testing.T) {
-
-	//TODO: make sure to cover all various types as well non-happy paths
-
-	expectedFocalLength := URat{350, 10}
-	mde := getEditor(LeicaImg, t)
-	if err := mde.SetExifTag(ExifIFD_FocalLength, expectedFocalLength); err != nil {
-		t.Fatalf("Could not set exif tag: %v", err)
-	}
-	md := editorMD(mde, t)
-	focalLength := URat{}
-	md.exifData.ScanIfdExif(ExifIFD_FocalLength, &focalLength)
-	if focalLength != expectedFocalLength {
-		t.Errorf("expected focalLength %v got %v", expectedFocalLength, focalLength)
-	}
-}
-
-func TestMetaDataEditor_SetIfdTag(t *testing.T) {
-
-	//TODO: make sure to cover all various types as well non-happy paths
-	//TODO: this this is broken. Fix so its pulling the actual lens info value and not the summary which
-	//will default to Exif_LensSpecification
-	expectedLensInfo := LensInfo{
-		MinFocalLength:           URat{2800, 100},
-		MaxFocalLength:           URat{2800, 100},
-		MinFNumberMinFocalLength: URat{392, 256},
-		MinFNumberMaxFocalLength: URat{500, 256},
-	}
-	mde := getEditor(LeicaImg, t)
-	md := editorMD(mde, t)
-
-	if expectedLensInfo.MinFocalLength.IsZero() {
-		t.Fatalf("Expected Lens Info to not be zero")
-	}
-
-	if err := mde.SetIfdTag(IFD_DNGLensInfo, expectedLensInfo); err != nil {
-		t.Fatalf("Could not set ifd tag: %v", err)
-	}
-	md = editorMD(mde, t)
-	lensInfo := LensInfo{}
-	md.exifData.ScanIfdRoot(IFD_DNGLensInfo, &lensInfo)
-	if lensInfo != expectedLensInfo {
-		t.Errorf("expected %v got %v", expectedLensInfo, lensInfo)
-	}
-
-}
-
-func TestMetaDataEditor_SetImageDescription(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
-	expImageDescription := "A new Image Description"
-	if err := mde.SetImageDescription(expImageDescription); err != nil {
-		t.Fatalf("Could not set Image Description: %v", err)
-	}
-	md := editorMD(mde, t)
-	ret, err := md.exifData.GetIfdImageDescription()
-	if err != nil {
-		t.Fatalf("Could not get Image Description from Metadata: %v", err)
-	} else if ret != expImageDescription {
-		t.Fatalf("Expected %s got %s", expImageDescription, ret)
-	}
-}
-
-func TestMetaDataEditor_SetUserComment(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
-	expUserComment := "A new User Comment"
-	if err := mde.SetUserComment(expUserComment); err != nil {
-		t.Fatalf("Could not set User Comment: %v", err)
-	}
-	md := editorMD(mde, t)
-	ret, err := md.exifData.GetIfdUserComment()
-	if err != nil {
-		t.Fatalf("Could not get Image Comment from Metadata: %v", err)
-	} else if ret != expUserComment {
-		t.Fatalf("Expected %s go %s", expUserComment, ret)
-	}
-}
-
-func TestMetaDataEditor_SetExifAndXmp(t *testing.T) {
-	expectedFocalLength := URat{350, 10}
-	expectedLensInfo := LensInfo{
-		MinFocalLength:           URat{2800, 100},
-		MaxFocalLength:           URat{2800, 100},
-		MinFNumberMinFocalLength: URat{392, 256},
-		MinFNumberMaxFocalLength: URat{500, 256},
-	}
-	expTitle := "New Title"
-	expKeywords := []string{"keyword 1", "keyword 2"}
-
-	testSetExifXmp := func(assetName string, t *testing.T) {
-		e := getEditor(assetName, t)
-		model := getXmpModel(t)
-
-		e.SetXmp(model)
-		if err := e.SetIfdTag(IFD_DNGLensInfo, expectedLensInfo); err != nil {
-			t.Errorf("Could not set ifd tag for %s: %v", assetName, err)
-		}
-		if err := e.SetExifTag(ExifIFD_FocalLength, expectedFocalLength); err != nil {
-			t.Errorf("Could not set exif tag for %s: %v", assetName, err)
-		}
-		md := editorMD(e, t)
-
-		//now verify
-		if dcm := md.xmpData.DublinCore(); dcm != nil {
-			if dcm.Title.Default() != expTitle {
-				t.Errorf("Expected title for %s: %s got %s", assetName, expTitle, dcm.Title.Default())
-			}
-			if len(dcm.Subject) != len(expKeywords) {
-				t.Errorf("Expected number of keywords for %s: %v got %v", assetName, len(expKeywords), len(dcm.Subject))
-			}
-			for _, kv := range dcm.Subject {
-				if kv != expKeywords[0] && kv != expKeywords[1] {
-					t.Errorf("Did not find expected keyword for %s: %s", assetName, kv)
-				}
-			}
-		} else {
-			t.Errorf("Expected Dublin Core Xmp data got nil")
-		}
-		focalLength := URat{}
-		md.exifData.ScanIfdExif(ExifIFD_FocalLength, &focalLength)
-		if focalLength != expectedFocalLength {
-			t.Errorf("expected focalLength for %s: %v got %v", assetName, expectedFocalLength, focalLength)
-		}
-		lensInfo := LensInfo{}
-		md.exifData.ScanIfdRoot(IFD_DNGLensInfo, &lensInfo)
-		if lensInfo != expectedLensInfo {
-			t.Errorf("expected lensInfo for %s: %v got %v", assetName, expectedLensInfo, lensInfo)
-		}
-	}
-	testSetExifXmp(NoExifImg, t)
-	testSetExifXmp(LeicaImg, t)
-
-}
-
-func TestMetaDataEditor_SetXmp(t *testing.T) {
-
-	model := getXmpModel(t)
-	expTitle := "New Title"
-	expKeywords := []string{"keyword 1", "keyword 2"}
-
-	mde := getEditor(NoExifImg, t)
-	if err := mde.SetXmp(model); err != nil {
-		t.Fatalf("Could not set xmp model")
-	}
-	md := editorMD(mde, t)
-	if dcm := md.xmpData.DublinCore(); dcm != nil {
-		if dcm.Title.Default() != expTitle {
-			t.Errorf("Expected title %s got %s", expTitle, dcm.Title.Default())
-		}
-		if len(dcm.Subject) != len(expKeywords) {
-			t.Errorf("Expected %v keywords got %v", len(expKeywords), len(dcm.Subject))
-		}
-		for _, kv := range dcm.Subject {
-			if kv != expKeywords[0] && kv != expKeywords[1] {
-				t.Errorf("Did not find expected keyword %s", kv)
-			}
-		}
-	} else {
-		t.Errorf("Expected Dublin Core Xmp data got nil")
-	}
-}
-
-func TestMetaDataEditor_WriteFile(t *testing.T) {
-	mde := getEditor(LeicaImg, t)
+func TestJpegEditor_WriteFile(t *testing.T) {
+	je := getJpegEditor(LeicaImg, t)
 	//make a change
 	expImageDesc := "This is a new description"
-	mde.SetImageDescription(expImageDesc)
+	if err := je.Exif().SetImageDescription(expImageDesc); err != nil {
+		t.Fatalf("Coul not set image description: %v", err)
+	}
 	out := filepath.Join(os.TempDir(), "TestWriteFile.jpg")
-	if err := mde.WriteFile(out); err != nil {
+	if err := je.WriteFile(out); err != nil {
 		t.Fatalf("Could not write file: %v", err)
 	}
 	//now reopen
@@ -539,28 +340,9 @@ func TestMetaDataEditor_WriteFile(t *testing.T) {
 
 	//test wrong file extension
 	wrongOut := filepath.Join(os.TempDir(), "TestWriteFile.png")
-	if err := mde.WriteFile(wrongOut); err == nil {
+	if err := je.WriteFile(wrongOut); err == nil {
 		t.Errorf("Write file should not accept a png extension")
 	} else if err != JpegWrongFileExtErr {
 		t.Errorf("Expecteded error %v got %v", JpegWrongFileExtErr, err)
 	}
-}
-
-func cmpDates(t1, t2 time.Time) bool {
-	if t1.Year() != t2.Year() {
-		return false
-	}
-	if t1.Month() != t2.Month() {
-		return false
-	}
-	if t1.Day() != t2.Day() {
-		return false
-	}
-	if t1.Hour() != t2.Hour() {
-		return false
-	}
-	if t1.Minute() != t2.Minute() {
-		return false
-	}
-	return t1.Second() == t2.Second()
 }

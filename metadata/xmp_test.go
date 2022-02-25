@@ -19,10 +19,10 @@ func TestXmpData_IsEmpty(t *testing.T) {
 	xmp := getXmpData(LeicaImg, t)
 	noXmp := getXmpData(NoExifImg, t)
 	if xmp.IsEmpty() {
-		t.Errorf("Expected xmp data")
+		t.Errorf("Expected XmpEditor data")
 	}
 	if !noXmp.IsEmpty() {
-		t.Errorf("Expected no xmp data")
+		t.Errorf("Expected no XmpEditor data")
 	}
 
 }

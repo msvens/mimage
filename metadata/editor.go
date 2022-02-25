@@ -3,435 +3,263 @@ package metadata
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"github.com/dsoprea/go-exif/v3"
-	exifcommon "github.com/dsoprea/go-exif/v3/common"
-	exifundefined "github.com/dsoprea/go-exif/v3/undefined"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"io/ioutil"
 	"path/filepath"
-	"time"
-	xmpbase "trimmer.io/go-xmp/models/xmp_base"
-	xmpmm "trimmer.io/go-xmp/models/xmp_mm"
-	"trimmer.io/go-xmp/xmp"
 )
-
-const EditorSoftware = "github.com/msvens/mexif (go-exif)"
-const XmpEditorSoftware = "github.com/msvens/mexif (go-xmp)"
 
 var JpegWrongFileExtErr = errors.New("File does not end with .jpg or .jpeg")
 
-var xmpPrefix = []byte("http://ns.adobe.com/xap/1.0/\000")
-
-type ExifDate int
-
-type CopyFlag uint8
-
-const (
-	EXIF CopyFlag = 1 << iota
-	XMP
-	IPTC
-)
-
-const CopyAll = EXIF | XMP | IPTC
-
-func exifOffsetString(t time.Time) string {
-	_, offset := t.Zone()
-	sign := '+'
-	if offset < 0 {
-		sign = '-'
-		offset = -offset
-	}
-	h := offset / 3600
-	m := (offset % 3600) / 60
-	return fmt.Sprintf("%c%02v:%02v", sign, h, m)
+type JpegEditor struct {
+	sl *jpegstructure.SegmentList
+	xe *XmpEditor
+	ee *ExifEditor
+	ie *IptcEditor
 }
 
-type MetaDataEditor struct {
-	sl        *jpegstructure.SegmentList
-	rootIb    *exif.IfdBuilder
-	dirtyExif bool
-}
-
-func NewMetaDataEditorFile(fileName string) (*MetaDataEditor, error) {
+func NewJpegEditorFile(fileName string) (*JpegEditor, error) {
 	if b, err := ioutil.ReadFile(fileName); err != nil {
 		return nil, err
 	} else {
-		return NewMetaDataEditor(b)
-	}
-}
-func NewMetaDataEditor(imgSource []byte) (*MetaDataEditor, error) {
-	if segments, err := parseJpegBytes(imgSource); err != nil {
-		return nil, err
-	} else {
-		if rootIb, e1 := segments.ConstructExifBuilder(); e1 != nil {
-			return nil, e1
-		} else {
-			return &MetaDataEditor{segments, rootIb, false}, nil
-		}
+		return NewJpegEditor(b)
 	}
 }
 
-func (mde *MetaDataEditor) Bytes() ([]byte, error) {
-	if err := mde.setExif(); err != nil {
-		return nil, err
+func NewJpegEditor(data []byte) (*JpegEditor, error) {
+	var err error
+	ret := JpegEditor{}
+	if ret.sl, err = parseJpegBytes(data); err != nil {
+		return &ret, err
+	}
+	if ret.xe, err = NewXmpEditor(ret.sl); err != nil && err != NoXmpErr {
+		return &ret, err
+	}
+	if ret.ee, err = NewExifEditor(ret.sl); err != nil {
+		return &ret, err
+	}
+	if ret.ie, err = NewIptcEditor(ret.sl); err != nil {
+		return &ret, err
+	}
+	return &ret, nil
+}
+
+func (je *JpegEditor) appendSegment(idx int, s *jpegstructure.Segment) {
+	newS := je.sl.Segments()
+	newS = append(newS[:idx+1], newS[idx:]...)
+	newS[idx] = s
+	je.sl = jpegstructure.NewSegmentList(newS)
+}
+
+func (je *JpegEditor) Bytes() ([]byte, error) {
+	if je.ie.IsDirty() {
+		if err := je.setIptc(); err != nil {
+			return nil, err
+		}
+	}
+	if je.xe.IsDirty() {
+		if err := je.setXmp(); err != nil {
+			return nil, err
+		}
+	}
+	if je.ee.IsDirty() {
+		if err := je.setExif(); err != nil {
+			return nil, err
+		}
 	}
 	out := new(bytes.Buffer)
-	if err := mde.sl.Write(out); err != nil {
+	if err := je.sl.Write(out); err != nil {
 		return nil, err
 	} else {
 		return out.Bytes(), nil
 	}
 }
 
-func (mde *MetaDataEditor) SetXmp(doc *xmp.Document) error {
-	//change creator tool:
-	t := time.Now()
-	base := xmpbase.FindModel(doc)
-	if base != nil {
-		base.CreatorTool = XmpEditorSoftware
-		base.ModifyDate = xmp.NewDate(t)
-	}
-	mm := xmpmm.FindModel(doc)
-	if mm != nil {
-		re := xmpmm.ResourceEvent{}
-		re.Action = xmpmm.ActionSaved
-		re.SoftwareAgent = XmpEditorSoftware
-		re.When = xmp.NewDate(t)
-		mm.AddHistory(&re)
-	}
-	buff := bytes.Buffer{}
-	buff.Write(xmpPrefix)
-	xmpBytes, err := xmp.Marshal(doc)
-	if err != nil {
-		return err
-	}
-	buff.Write(xmpBytes)
-
-	_, s, err := mde.sl.FindXmp()
-	if err == nil { //replace existing xmp data
-		s.Data = buff.Bytes()
-		return nil
-	} else if err == jpegstructure.ErrNoXmp { //add xmp data
-		xmpS := &jpegstructure.Segment{MarkerId: jpegstructure.MARKER_APP1, Data: buff.Bytes()}
-		mde.appendSegment(1, xmpS)
-		return nil
-	} else {
-		return err
-	}
-}
-
-func (mde *MetaDataEditor) CopyMetaData(sourceImg []byte, sections CopyFlag) error {
+func (je *JpegEditor) CopyMetaData(sourceImg []byte) error {
 	sl, err := parseJpegBytes(sourceImg)
 	if err != nil {
 		return err
 	}
-	if sections&IPTC != 0 {
-		if err = mde.copyIptc(sl); err != nil {
-			return err
-		}
+	//copy iptc
+	if err = je.DropIptc(); err != nil {
+		return err
 	}
-	if sections&XMP != 0 {
-		if err = mde.copyXmp(sl); err != nil {
-			return err
-		}
+	if _, s, e := sl.FindIptc(); e == nil {
+		je.appendSegment(1, s)
+	} else if e != jpegstructure.ErrNoIptc {
+		return e
 	}
-	if sections&EXIF != 0 {
-		if err = mde.copyExif(sl); err != nil {
+
+	//copy XmpEditor
+	if err = je.DropXmp(); err != nil {
+		return err
+	}
+	if _, s, e := sl.FindXmp(); e == nil {
+		je.appendSegment(1, s)
+		if je.xe, err = NewXmpEditor(sl); err != nil {
 			return err
 		}
+	} else if e != jpegstructure.ErrNoXmp {
+		return e
+	}
+	//copy exif
+	if err = je.DropExif(); err != nil {
+		return err
+	}
+	if _, s, e := sl.FindExif(); e == nil {
+		je.appendSegment(1, s)
+		if je.ee, err = NewExifEditor(sl); err != nil {
+			return err
+		}
+	} else if !errors.Is(e, exif.ErrNoExif) {
+		return e
 	}
 	return nil
 }
 
-func (mde *MetaDataEditor) CopyMetaDataFile(sourceImg string, sections CopyFlag) error {
-	if b, err := ioutil.ReadFile(sourceImg); err != nil {
-		return err
-	} else {
-		return mde.CopyMetaData(b, sections)
-	}
-}
-
-func (mde *MetaDataEditor) copyExif(sl *jpegstructure.SegmentList) error {
-	if mde.HasExif() {
-		if err := mde.DropExif(); err != nil {
-			return err
-		}
-	}
-	if _, s, e := sl.FindExif(); e == nil {
-		mde.appendSegment(1, s)
-		if rib, e1 := mde.sl.ConstructExifBuilder(); e1 != nil {
-			return e1
-		} else {
-			mde.rootIb = rib
-			mde.dirtyExif = false
-			return nil
-		}
-
-	} else if e == exif.ErrNoExif {
-		return nil
-	} else {
-		return e
-	}
-}
-
-func (mde *MetaDataEditor) copyIptc(sl *jpegstructure.SegmentList) error {
-	if mde.HasIptc() {
-		if err := mde.DropIptc(); err != nil {
-			return err
-		}
-	}
-	if _, s, e := sl.FindIptc(); e == nil {
-		mde.appendSegment(1, s)
-		return nil
-	} else if e == jpegstructure.ErrNoIptc {
-		return nil
-	} else {
-		return e
-	}
-
-}
-
-func (mde *MetaDataEditor) copyXmp(sl *jpegstructure.SegmentList) error {
-	if mde.HasXmp() {
-		if err := mde.DropXmp(); err != nil {
-			return err
-		}
-	}
-	if _, s, e := sl.FindXmp(); e == nil {
-		mde.appendSegment(1, s)
-		return nil
-	} else if e == jpegstructure.ErrNoXmp {
-		return nil
-	} else {
-		return e
-	}
-}
-
-func (mde *MetaDataEditor) appendSegment(idx int, s *jpegstructure.Segment) {
-	newS := mde.sl.Segments()
-	newS = append(newS[:idx+1], newS[idx:]...)
-	newS[idx] = s
-	mde.sl = jpegstructure.NewSegmentList(newS)
-}
-
-func (mde *MetaDataEditor) DropAll() error {
-	if err := mde.DropExif(); err != nil {
+func (je *JpegEditor) DropMetaData() error {
+	if err := je.DropExif(); err != nil {
 		return err
 	}
-	if err := mde.DropIptc(); err != nil {
+	if err := je.DropIptc(); err != nil {
 		return err
 	}
-	return mde.DropXmp()
+	return je.DropXmp()
 }
 
-func (mde *MetaDataEditor) DropExif() error {
-	_, err := mde.sl.DropExif()
-	if rbi, err := mde.sl.ConstructExifBuilder(); err != nil {
+func (je *JpegEditor) DropExif() error {
+	if _, err := je.sl.DropExif(); err != nil {
 		return err
-	} else {
-		mde.rootIb = rbi
-		mde.dirtyExif = false
-
 	}
-	return err
+	return je.ee.Clear(false)
 }
 
-func (mde *MetaDataEditor) DropXmp() error {
-	i, _, err := mde.sl.FindXmp()
+func (je *JpegEditor) DropXmp() error {
+	i, _, err := je.sl.FindXmp()
 	if err == nil {
-		segments := mde.sl.Segments()
+		segments := je.sl.Segments()
 		segments = append(segments[:i], segments[i+1:]...)
-		mde.sl = jpegstructure.NewSegmentList(segments)
+		je.sl = jpegstructure.NewSegmentList(segments)
+		je.xe.Clear(false)
 		return nil
 	} else if err == jpegstructure.ErrNoXmp {
+		je.xe.Clear(false)
 		return nil
 	} else {
 		return err
 	}
 }
 
-func (mde *MetaDataEditor) DropIptc() error {
-	i, _, err := mde.sl.FindIptc()
+func (je *JpegEditor) DropIptc() error {
+	i, _, err := je.sl.FindIptc()
 	if err == nil {
-		segments := mde.sl.Segments()
+		segments := je.sl.Segments()
 		segments = append(segments[:i], segments[i+1:]...)
-		mde.sl = jpegstructure.NewSegmentList(segments)
+		je.sl = jpegstructure.NewSegmentList(segments)
 	} else if err == jpegstructure.ErrNoIptc {
 		return nil
 	}
 	return nil
 }
 
-func (mde *MetaDataEditor) PrintSegments() {
-	mde.sl.Print()
+func (je JpegEditor) Exif() *ExifEditor {
+	return je.ee
 }
 
-func (mde *MetaDataEditor) HasExif() bool {
-	if _, _, err := mde.sl.FindExif(); err != nil {
-		return false
-	} else {
-		return true
-	}
-}
-
-func (mde *MetaDataEditor) HasIptc() bool {
-	if _, _, err := mde.sl.FindIptc(); err != nil {
-		return false
-	} else {
-		return true
-	}
-}
-
-func (mde *MetaDataEditor) HasXmp() bool {
-	if _, _, err := mde.sl.FindXmp(); err != nil {
-		return false
-	} else {
-		return true
-	}
+func (je JpegEditor) Iptc() *IptcEditor {
+	return je.ie
 }
 
 //Retrives a metadata struct based on this editor. Will commit any changes first
-func (mde *MetaDataEditor) MetaData() (*MetaData, error) {
-	if b, e := mde.Bytes(); e != nil {
+func (je *JpegEditor) MetaData() (*MetaData, error) {
+	if b, e := je.Bytes(); e != nil {
 		return nil, e
 	} else {
 		return NewMetaData(b)
 	}
 }
 
-func (mde *MetaDataEditor) SetExifTag(id ExifTag, value interface{}) error {
-
-	exifIb, err := exif.GetOrCreateIbFromRootIb(mde.rootIb, IFDPaths[ExifIFD])
+func (je *JpegEditor) setIptc() error {
+	//MarkerId: MARKER_APP13
+	iptcBytes, err := je.ie.Bytes()
 	if err != nil {
 		return err
+	}
+	if je.ie.SegmentIndex() != -1 {
+		s := je.sl.Segments()[je.ie.SegmentIndex()]
+		s.Data = iptcBytes
+		return nil
 	} else {
-		if err := exifIb.SetStandard(uint16(id), toGoExifValue(value)); err != nil {
+		iptcS := &jpegstructure.Segment{MarkerId: jpegstructure.MARKER_APP13, Data: iptcBytes}
+		je.appendSegment(1, iptcS)
+		je.ie.segmentIdx = 1
+		return nil
+	}
+	/*
+		iptcBytes, err := je.ie.Bytes(true)
+		if err != nil {
 			return err
 		}
-	}
-	mde.dirtyExif = true
-	return nil
+		_, s, err := je.sl.FindIptc()
+		if err == nil {
+			fmt.Println("replacing bytes...")
+			fmt.Println(s.MarkerId,len(s.Data), len(iptcBytes))
+
+			s.Data = iptcBytes
+			return nil
+		} else if err == jpegstructure.ErrNoIptc {
+			iptcS := &jpegstructure.Segment{MarkerId: jpegstructure.MARKER_APP13, Data: iptcBytes}
+			je.appendSegment(1, iptcS)
+			return nil
+		} else {
+			return err
+		}
+	*/
 }
 
-func (mde *MetaDataEditor) SetIfdTag(id ExifTag, value interface{}) error {
-	if err := mde.rootIb.SetStandard(uint16(id), toGoExifValue(value)); err != nil {
+func (je *JpegEditor) setXmp() error {
+	xmpBytes, err := je.xe.Bytes(true)
+	if err != nil {
 		return err
+	}
+	_, s, err := je.sl.FindXmp()
+	if err == nil { //replace existing XmpEditor data
+		s.Data = xmpBytes
+		return nil
+	} else if err == jpegstructure.ErrNoXmp { //add XmpEditor data
+		xmpS := &jpegstructure.Segment{MarkerId: jpegstructure.MARKER_APP1, Data: xmpBytes}
+		je.appendSegment(1, xmpS)
+		return nil
 	} else {
-		mde.dirtyExif = true
-		return nil
+		return err
 	}
 }
 
-func toGoExifValue(value interface{}) interface{} {
-	switch t := value.(type) {
-	case uint16:
-		return []uint16{t}
-	case uint32:
-		return []uint32{t}
-	case float32:
-		return []float32{t}
-	case float64:
-		return []float64{t}
-	case int32:
-		return []int32{t}
-	case URat:
-		return []exifcommon.Rational{{Denominator: t.Denominator, Numerator: t.Numerator}}
-	case Rat:
-		return []exifcommon.SignedRational{{Denominator: t.Denominator, Numerator: t.Numerator}}
-	case []URat:
-		var ret []exifcommon.Rational
-		for _, v := range t {
-			ret = append(ret, exifcommon.Rational{Denominator: v.Denominator, Numerator: v.Numerator})
-		}
-		return ret
-	case []Rat:
-		var ret []exifcommon.SignedRational
-		for _, v := range t {
-			ret = append(ret, exifcommon.SignedRational{Denominator: v.Denominator, Numerator: v.Numerator})
-		}
-		return ret
-	case LensInfo:
-		return t.toRational()
-	default:
-		return t
+func (je *JpegEditor) setExif() error {
+	if _, err := je.sl.DropExif(); err != nil {
+		return err
 	}
-}
-
-func (mde *MetaDataEditor) SetExifDate(dateTag ExifDate, time time.Time) error {
-	var err error
-	offset := exifOffsetString(time)
-	switch dateTag {
-	case OriginalDate:
-		if err = mde.SetExifTag(ExifIFD_DateTimeOriginal, time); err != nil {
-			return err
-		}
-		if err = mde.SetExifTag(ExifIFD_OffsetTimeOriginal, offset); err != nil {
-			return err
-		}
-	case ModifyDate:
-		if err = mde.SetIfdTag(IFD_ModifyDate, time); err != nil {
-			return err
-		}
-		if err = mde.SetExifTag(ExifIFD_OffsetTime, offset); err != nil {
-			return err
-		}
-	case DigitizedDate:
-		if err = mde.SetExifTag(ExifIFD_CreateDate, time); err != nil {
-			return err
-		}
-		if err = mde.SetExifTag(ExifIFD_OffsetTimeDigitized, offset); err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("Unknown date to set: %v", dateTag)
-	}
-	return nil
-}
-
-func (mde *MetaDataEditor) SetImageDescription(description string) error {
-	return mde.SetIfdTag(IFD_ImageDescription, description)
-}
-
-func (mde *MetaDataEditor) SetUserComment(comment string) error {
-	uc := exifundefined.Tag9286UserComment{
-		EncodingType:  exifundefined.TagUndefinedType_9286_UserComment_Encoding_UNICODE,
-		EncodingBytes: []byte(comment),
-	}
-	return mde.SetExifTag(ExifIFD_UserComment, uc)
-}
-
-func (md *MetaDataEditor) CommitExifChanges() error {
-	return md.setExif()
-}
-
-func (mde *MetaDataEditor) setExif() error {
-	if mde.dirtyExif {
-		if err := mde.SetIfdTag(IFD_Software, EditorSoftware); err != nil {
-			return err
-		}
-		if _, err := mde.sl.DropExif(); err != nil {
-			return err
-		}
-		if err := mde.sl.SetExif(mde.rootIb); err != nil {
-			return err
-		}
-		mde.dirtyExif = false
-		return nil
+	builder, _ := je.ee.IfdBuilder()
+	if err := je.sl.SetExif(builder); err != nil {
+		return err
 	}
 	return nil
 }
 
 //Writes this image to file by first commiting all edits. Any existing
 //file will be truncated. Destination needs to have jpg or jpeg extension
-func (mde *MetaDataEditor) WriteFile(dest string) error {
+func (je *JpegEditor) WriteFile(dest string) error {
 	//make sure dest has the right file extension
 	if filepath.Ext(dest) != ".jpg" && filepath.Ext(dest) != ".jpeg" {
 		return JpegWrongFileExtErr
 	}
-	if out, err := mde.Bytes(); err != nil {
+	if out, err := je.Bytes(); err != nil {
 		return err
 	} else {
 		return ioutil.WriteFile(dest, out, 0644)
 	}
+}
+
+func (je JpegEditor) Xmp() *XmpEditor {
+	return je.xe
 }

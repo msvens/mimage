@@ -34,24 +34,149 @@ const (
 )
 
 const (
+	IPTCObjectData     IptcRecord = 8
+	IPTCPostObjectData IptcRecord = 9
+	IPTCPreObjectData  IptcRecord = 7
 	IPTCApplication    IptcRecord = 2
 	IPTCEnvelope       IptcRecord = 1
 	IPTCFotoStation    IptcRecord = 240
 	IPTCNewsPhoto      IptcRecord = 3
-	IPTCObjectData     IptcRecord = 8
-	IPTCPostObjectData IptcRecord = 9
-	IPTCPreObjectData  IptcRecord = 7
 )
 
 var IptcRecordName = map[IptcRecord]string{
+	IPTCPostObjectData: "IPTCPostObjectData",
+	IPTCPreObjectData:  "IPTCPreObjectData",
 	IPTCApplication:    "IPTCApplication",
 	IPTCEnvelope:       "IPTCEnvelope",
 	IPTCFotoStation:    "IPTCFotoStation",
 	IPTCNewsPhoto:      "IPTCNewsPhoto",
 	IPTCObjectData:     "IPTCObjectData",
-	IPTCPostObjectData: "IPTCPostObjectData",
-	IPTCPreObjectData:  "IPTCPreObjectData",
 }
+
+//IPTCApplication tag constants
+const (
+	IPTCApplication_ObjectPreviewData             IptcTag = 202
+	IPTCApplication_ShortDocumentID               IptcTag = 186
+	IPTCApplication_MasterDocumentID              IptcTag = 185
+	IPTCApplication_ExpirationDate                IptcTag = 37
+	IPTCApplication_AudioSamplingRate             IptcTag = 151
+	IPTCApplication_CountryPrimaryLocationCode    IptcTag = 100
+	IPTCApplication_UniqueDocumentID              IptcTag = 187
+	IPTCApplication_SimilarityIndex               IptcTag = 228
+	IPTCApplication_ReferenceService              IptcTag = 45
+	IPTCApplication_Keywords                      IptcTag = 25
+	IPTCApplication_WriterEditor                  IptcTag = 122
+	IPTCApplication_ProgramVersion                IptcTag = 70
+	IPTCApplication_OriginalTransmissionReference IptcTag = 103
+	IPTCApplication_DocumentNotes                 IptcTag = 230
+	IPTCApplication_Byline                        IptcTag = 80
+	IPTCApplication_OriginatingProgram            IptcTag = 65
+	IPTCApplication_DateCreated                   IptcTag = 55
+	IPTCApplication_ReleaseTime                   IptcTag = 35
+	IPTCApplication_ExpirationTime                IptcTag = 38
+	IPTCApplication_ImageType                     IptcTag = 130
+	IPTCApplication_ContentLocationCode           IptcTag = 26
+	IPTCApplication_Category                      IptcTag = 15
+	IPTCApplication_ExifCameraInfo                IptcTag = 232
+	IPTCApplication_CaptionAbstract               IptcTag = 120
+	IPTCApplication_CopyrightNotice               IptcTag = 116
+	IPTCApplication_ContentLocationName           IptcTag = 27
+	IPTCApplication_ReferenceDate                 IptcTag = 47
+	IPTCApplication_EditorialUpdate               IptcTag = 8
+	IPTCApplication_Source                        IptcTag = 115
+	IPTCApplication_EditStatus                    IptcTag = 7
+	IPTCApplication_ObjectPreviewFileFormat       IptcTag = 200
+	IPTCApplication_ProvinceState                 IptcTag = 95
+	IPTCApplication_CatalogSets                   IptcTag = 255
+	IPTCApplication_JobID                         IptcTag = 184
+	IPTCApplication_ActionAdvised                 IptcTag = 42
+	IPTCApplication_FixtureIdentifier             IptcTag = 22
+	IPTCApplication_AudioOutcue                   IptcTag = 154
+	IPTCApplication_ObjectPreviewFileVersion      IptcTag = 201
+	IPTCApplication_ObjectAttributeReference      IptcTag = 4
+	IPTCApplication_Contact                       IptcTag = 118
+	IPTCApplication_Credit                        IptcTag = 110
+	IPTCApplication_AudioSamplingResolution       IptcTag = 152
+	IPTCApplication_City                          IptcTag = 90
+	IPTCApplication_TimeCreated                   IptcTag = 60
+	IPTCApplication_ReferenceNumber               IptcTag = 50
+	IPTCApplication_ReleaseDate                   IptcTag = 30
+	IPTCApplication_RasterizedCaption             IptcTag = 125
+	IPTCApplication_ImageOrientation              IptcTag = 131
+	IPTCApplication_Urgency                       IptcTag = 10
+	IPTCApplication_LocalCaption                  IptcTag = 121
+	IPTCApplication_LanguageIdentifier            IptcTag = 135
+	IPTCApplication_Prefs                         IptcTag = 221
+	IPTCApplication_SpecialInstructions           IptcTag = 40
+	IPTCApplication_SupplementalCategories        IptcTag = 20
+	IPTCApplication_ApplicationRecordVersion      IptcTag = 0
+	IPTCApplication_ObjectCycle                   IptcTag = 75
+	IPTCApplication_ClassifyState                 IptcTag = 225
+	IPTCApplication_DocumentHistory               IptcTag = 231
+	IPTCApplication_AudioDuration                 IptcTag = 153
+	IPTCApplication_Sublocation                   IptcTag = 92
+	IPTCApplication_BylineTitle                   IptcTag = 85
+	IPTCApplication_Headline                      IptcTag = 105
+	IPTCApplication_DigitalCreationDate           IptcTag = 62
+	IPTCApplication_CountryPrimaryLocationName    IptcTag = 101
+	IPTCApplication_AudioType                     IptcTag = 150
+	IPTCApplication_DigitalCreationTime           IptcTag = 63
+	IPTCApplication_ObjectName                    IptcTag = 5
+	IPTCApplication_ObjectTypeReference           IptcTag = 3
+	IPTCApplication_OwnerID                       IptcTag = 188
+	IPTCApplication_SubjectReference              IptcTag = 12
+)
+
+//IPTCEnvelope tag constants
+const (
+	IPTCEnvelope_ProductID             IptcTag = 50
+	IPTCEnvelope_EnvelopePriority      IptcTag = 60
+	IPTCEnvelope_ServiceIdentifier     IptcTag = 30
+	IPTCEnvelope_FileVersion           IptcTag = 22
+	IPTCEnvelope_EnvelopeNumber        IptcTag = 40
+	IPTCEnvelope_FileFormat            IptcTag = 20
+	IPTCEnvelope_EnvelopeRecordVersion IptcTag = 0
+	IPTCEnvelope_ARMVersion            IptcTag = 122
+	IPTCEnvelope_DateSent              IptcTag = 70
+	IPTCEnvelope_UniqueObjectName      IptcTag = 100
+	IPTCEnvelope_Destination           IptcTag = 5
+	IPTCEnvelope_TimeSent              IptcTag = 80
+	IPTCEnvelope_ARMIdentifier         IptcTag = 120
+	IPTCEnvelope_CodedCharacterSet     IptcTag = 90
+)
+
+//IPTCFotoStation tag constants
+const ()
+
+//IPTCNewsPhoto tag constants
+const (
+	IPTCNewsPhoto_QuantizationMethod     IptcTag = 120
+	IPTCNewsPhoto_ColorPalette           IptcTag = 85
+	IPTCNewsPhoto_InterchangeColorSpace  IptcTag = 64
+	IPTCNewsPhoto_IPTCImageWidth         IptcTag = 20
+	IPTCNewsPhoto_ExcursionTolerance     IptcTag = 130
+	IPTCNewsPhoto_NewsPhotoVersion       IptcTag = 0
+	IPTCNewsPhoto_NumIndexEntries        IptcTag = 84
+	IPTCNewsPhoto_IPTCPixelWidth         IptcTag = 40
+	IPTCNewsPhoto_ColorSequence          IptcTag = 65
+	IPTCNewsPhoto_SupplementalType       IptcTag = 55
+	IPTCNewsPhoto_IPTCImageRotation      IptcTag = 102
+	IPTCNewsPhoto_MaximumDensityRange    IptcTag = 140
+	IPTCNewsPhoto_SampleStructure        IptcTag = 90
+	IPTCNewsPhoto_ScanningDirection      IptcTag = 100
+	IPTCNewsPhoto_DataCompressionMethod  IptcTag = 110
+	IPTCNewsPhoto_GammaCompensatedValue  IptcTag = 145
+	IPTCNewsPhoto_ICC_Profile            IptcTag = 66
+	IPTCNewsPhoto_BitsPerComponent       IptcTag = 135
+	IPTCNewsPhoto_LookupTable            IptcTag = 80
+	IPTCNewsPhoto_IPTCPictureNumber      IptcTag = 10
+	IPTCNewsPhoto_ColorCalibrationMatrix IptcTag = 70
+	IPTCNewsPhoto_EndPoints              IptcTag = 125
+	IPTCNewsPhoto_IPTCBitsPerSample      IptcTag = 86
+	IPTCNewsPhoto_IPTCPixelHeight        IptcTag = 50
+	IPTCNewsPhoto_ColorRepresentation    IptcTag = 60
+	IPTCNewsPhoto_IPTCImageHeight        IptcTag = 30
+)
 
 //IPTCObjectData tag constants
 const (
@@ -65,197 +190,17 @@ const (
 
 //IPTCPreObjectData tag constants
 const (
-	IPTCPreObjectData_MaximumObjectSize   IptcTag = 95
 	IPTCPreObjectData_MaxSubfileSize      IptcTag = 20
-	IPTCPreObjectData_ObjectSizeAnnounced IptcTag = 90
 	IPTCPreObjectData_SizeMode            IptcTag = 10
-)
-
-//IPTCApplication tag constants
-const (
-	IPTCApplication_TimeCreated                   IptcTag = 60
-	IPTCApplication_ActionAdvised                 IptcTag = 42
-	IPTCApplication_ClassifyState                 IptcTag = 225
-	IPTCApplication_SupplementalCategories        IptcTag = 20
-	IPTCApplication_BylineTitle                   IptcTag = 85
-	IPTCApplication_CatalogSets                   IptcTag = 255
-	IPTCApplication_ReferenceService              IptcTag = 45
-	IPTCApplication_AudioOutcue                   IptcTag = 154
-	IPTCApplication_ApplicationRecordVersion      IptcTag = 0
-	IPTCApplication_AudioSamplingRate             IptcTag = 151
-	IPTCApplication_LocalCaption                  IptcTag = 121
-	IPTCApplication_ObjectName                    IptcTag = 5
-	IPTCApplication_CountryPrimaryLocationCode    IptcTag = 100
-	IPTCApplication_DocumentHistory               IptcTag = 231
-	IPTCApplication_ObjectAttributeReference      IptcTag = 4
-	IPTCApplication_EditorialUpdate               IptcTag = 8
-	IPTCApplication_LanguageIdentifier            IptcTag = 135
-	IPTCApplication_SimilarityIndex               IptcTag = 228
-	IPTCApplication_DateCreated                   IptcTag = 55
-	IPTCApplication_OriginalTransmissionReference IptcTag = 103
-	IPTCApplication_Category                      IptcTag = 15
-	IPTCApplication_ProvinceState                 IptcTag = 95
-	IPTCApplication_Headline                      IptcTag = 105
-	IPTCApplication_SubjectReference              IptcTag = 12
-	IPTCApplication_Sublocation                   IptcTag = 92
-	IPTCApplication_ReleaseDate                   IptcTag = 30
-	IPTCApplication_ShortDocumentID               IptcTag = 186
-	IPTCApplication_ObjectPreviewFileVersion      IptcTag = 201
-	IPTCApplication_JobID                         IptcTag = 184
-	IPTCApplication_ObjectCycle                   IptcTag = 75
-	IPTCApplication_ImageType                     IptcTag = 130
-	IPTCApplication_ReferenceDate                 IptcTag = 47
-	IPTCApplication_CopyrightNotice               IptcTag = 116
-	IPTCApplication_ContentLocationCode           IptcTag = 26
-	IPTCApplication_EditStatus                    IptcTag = 7
-	IPTCApplication_DigitalCreationTime           IptcTag = 63
-	IPTCApplication_AudioDuration                 IptcTag = 153
-	IPTCApplication_Source                        IptcTag = 115
-	IPTCApplication_WriterEditor                  IptcTag = 122
-	IPTCApplication_ReferenceNumber               IptcTag = 50
-	IPTCApplication_AudioSamplingResolution       IptcTag = 152
-	IPTCApplication_OwnerID                       IptcTag = 188
-	IPTCApplication_CaptionAbstract               IptcTag = 120
-	IPTCApplication_AudioType                     IptcTag = 150
-	IPTCApplication_DocumentNotes                 IptcTag = 230
-	IPTCApplication_ExpirationDate                IptcTag = 37
-	IPTCApplication_CountryPrimaryLocationName    IptcTag = 101
-	IPTCApplication_MasterDocumentID              IptcTag = 185
-	IPTCApplication_DigitalCreationDate           IptcTag = 62
-	IPTCApplication_ExpirationTime                IptcTag = 38
-	IPTCApplication_FixtureIdentifier             IptcTag = 22
-	IPTCApplication_ExifCameraInfo                IptcTag = 232
-	IPTCApplication_Byline                        IptcTag = 80
-	IPTCApplication_SpecialInstructions           IptcTag = 40
-	IPTCApplication_Keywords                      IptcTag = 25
-	IPTCApplication_Contact                       IptcTag = 118
-	IPTCApplication_OriginatingProgram            IptcTag = 65
-	IPTCApplication_UniqueDocumentID              IptcTag = 187
-	IPTCApplication_ObjectPreviewData             IptcTag = 202
-	IPTCApplication_ObjectTypeReference           IptcTag = 3
-	IPTCApplication_ImageOrientation              IptcTag = 131
-	IPTCApplication_ObjectPreviewFileFormat       IptcTag = 200
-	IPTCApplication_ProgramVersion                IptcTag = 70
-	IPTCApplication_Prefs                         IptcTag = 221
-	IPTCApplication_Credit                        IptcTag = 110
-	IPTCApplication_ContentLocationName           IptcTag = 27
-	IPTCApplication_ReleaseTime                   IptcTag = 35
-	IPTCApplication_City                          IptcTag = 90
-	IPTCApplication_Urgency                       IptcTag = 10
-	IPTCApplication_RasterizedCaption             IptcTag = 125
-)
-
-//IPTCEnvelope tag constants
-const (
-	IPTCEnvelope_ServiceIdentifier     IptcTag = 30
-	IPTCEnvelope_UniqueObjectName      IptcTag = 100
-	IPTCEnvelope_Destination           IptcTag = 5
-	IPTCEnvelope_EnvelopeRecordVersion IptcTag = 0
-	IPTCEnvelope_FileFormat            IptcTag = 20
-	IPTCEnvelope_EnvelopePriority      IptcTag = 60
-	IPTCEnvelope_CodedCharacterSet     IptcTag = 90
-	IPTCEnvelope_DateSent              IptcTag = 70
-	IPTCEnvelope_FileVersion           IptcTag = 22
-	IPTCEnvelope_EnvelopeNumber        IptcTag = 40
-	IPTCEnvelope_TimeSent              IptcTag = 80
-	IPTCEnvelope_ARMIdentifier         IptcTag = 120
-	IPTCEnvelope_ProductID             IptcTag = 50
-	IPTCEnvelope_ARMVersion            IptcTag = 122
-)
-
-//IPTCFotoStation tag constants
-const ()
-
-//IPTCNewsPhoto tag constants
-const (
-	IPTCNewsPhoto_GammaCompensatedValue  IptcTag = 145
-	IPTCNewsPhoto_ColorCalibrationMatrix IptcTag = 70
-	IPTCNewsPhoto_ICC_Profile            IptcTag = 66
-	IPTCNewsPhoto_DataCompressionMethod  IptcTag = 110
-	IPTCNewsPhoto_IPTCPictureNumber      IptcTag = 10
-	IPTCNewsPhoto_SampleStructure        IptcTag = 90
-	IPTCNewsPhoto_EndPoints              IptcTag = 125
-	IPTCNewsPhoto_IPTCImageHeight        IptcTag = 30
-	IPTCNewsPhoto_IPTCBitsPerSample      IptcTag = 86
-	IPTCNewsPhoto_ExcursionTolerance     IptcTag = 130
-	IPTCNewsPhoto_ScanningDirection      IptcTag = 100
-	IPTCNewsPhoto_InterchangeColorSpace  IptcTag = 64
-	IPTCNewsPhoto_IPTCPixelWidth         IptcTag = 40
-	IPTCNewsPhoto_LookupTable            IptcTag = 80
-	IPTCNewsPhoto_IPTCImageRotation      IptcTag = 102
-	IPTCNewsPhoto_BitsPerComponent       IptcTag = 135
-	IPTCNewsPhoto_ColorSequence          IptcTag = 65
-	IPTCNewsPhoto_SupplementalType       IptcTag = 55
-	IPTCNewsPhoto_IPTCPixelHeight        IptcTag = 50
-	IPTCNewsPhoto_IPTCImageWidth         IptcTag = 20
-	IPTCNewsPhoto_ColorRepresentation    IptcTag = 60
-	IPTCNewsPhoto_ColorPalette           IptcTag = 85
-	IPTCNewsPhoto_MaximumDensityRange    IptcTag = 140
-	IPTCNewsPhoto_QuantizationMethod     IptcTag = 120
-	IPTCNewsPhoto_NewsPhotoVersion       IptcTag = 0
-	IPTCNewsPhoto_NumIndexEntries        IptcTag = 84
+	IPTCPreObjectData_ObjectSizeAnnounced IptcTag = 90
+	IPTCPreObjectData_MaximumObjectSize   IptcTag = 95
 )
 
 //IPTC Tag Descriptions
 var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
-	IptcRecordTag{IPTCNewsPhoto, 145}: IptcTagDesc{
-		Id:         145,
-		Name:       "GammaCompensatedValue",
-		Type:       IptcUint16,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 70}: IptcTagDesc{
-		Id:         70,
-		Name:       "ColorCalibrationMatrix",
-		Type:       IptcUndef,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   false,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 66}: IptcTagDesc{
-		Id:         66,
-		Name:       "ICC_Profile",
-		Type:       IptcUndef,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   false,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 110}: IptcTagDesc{
-		Id:         110,
-		Name:       "DataCompressionMethod",
-		Type:       IptcUint32,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 10}: IptcTagDesc{
-		Id:         10,
-		Name:       "IPTCPictureNumber",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 90}: IptcTagDesc{
-		Id:         90,
-		Name:       "SampleStructure",
+	IptcRecordTag{IPTCNewsPhoto, 120}: IptcTagDesc{
+		Id:         120,
+		Name:       "QuantizationMethod",
 		Type:       IptcUint8,
 		MinLength:  0,
 		MaxLength:  0,
@@ -263,14 +208,19 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Repeatable: false,
 		Writable:   true,
 		Values: map[uint8]string{
-			0: "OrthogonalConstangSampling",
-			1: "Orthogonal4-2-2Sampling",
-			2: "CompressionDependent",
+			4: "AP Domestic Analogue",
+			5: "Compression Method Specific",
+			6: "Color Space Specific",
+			7: "Gamma Compensated",
+			0: "Linear Reflectance/Transmittance",
+			1: "Linear Density",
+			2: "IPTC Ref B",
+			3: "Linear Dot Percent",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 125}: IptcTagDesc{
-		Id:         125,
-		Name:       "EndPoints",
+	IptcRecordTag{IPTCNewsPhoto, 85}: IptcTagDesc{
+		Id:         85,
+		Name:       "ColorPalette",
 		Type:       IptcUndef,
 		MinLength:  0,
 		MaxLength:  0,
@@ -279,21 +229,30 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   false,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 30}: IptcTagDesc{
-		Id:         30,
-		Name:       "IPTCImageHeight",
-		Type:       IptcUint16,
+	IptcRecordTag{IPTCNewsPhoto, 64}: IptcTagDesc{
+		Id:         64,
+		Name:       "InterchangeColorSpace",
+		Type:       IptcUint8,
 		MinLength:  0,
 		MaxLength:  0,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
-		Values:     nil,
+		Values: map[uint8]string{
+			6: "Lab (K) CIE",
+			7: "YCbCr",
+			8: "sRGB",
+			1: "X,Y,Z CIE",
+			2: "RGB SMPTE",
+			3: "Y,U,V (K) (D65)",
+			4: "RGB Device Dependent",
+			5: "CMY (K) Device Dependent",
+		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 86}: IptcTagDesc{
-		Id:         86,
-		Name:       "IPTCBitsPerSample",
-		Type:       IptcUint8,
+	IptcRecordTag{IPTCNewsPhoto, 20}: IptcTagDesc{
+		Id:         20,
+		Name:       "IPTCImageWidth",
+		Type:       IptcUint16,
 		MinLength:  0,
 		MaxLength:  0,
 		Mandatory:  false,
@@ -315,49 +274,20 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			1: "Allowed",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 100}: IptcTagDesc{
-		Id:         100,
-		Name:       "ScanningDirection",
-		Type:       IptcUint8,
+	IptcRecordTag{IPTCNewsPhoto, 0}: IptcTagDesc{
+		Id:         0,
+		Name:       "NewsPhotoVersion",
+		Type:       IptcUint16,
 		MinLength:  0,
 		MaxLength:  0,
-		Mandatory:  false,
+		Mandatory:  true,
 		Repeatable: false,
 		Writable:   true,
-		Values: map[uint8]string{
-			6: "Top-Bottom, R-L",
-			7: "Bottom-Top, R-L",
-			0: "L-R, Top-Bottom",
-			1: "R-L, Top-Bottom",
-			2: "L-R, Bottom-Top",
-			3: "R-L, Bottom-Top",
-			4: "Top-Bottom, L-R",
-			5: "Bottom-Top, L-R",
-		},
+		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 64}: IptcTagDesc{
-		Id:         64,
-		Name:       "InterchangeColorSpace",
-		Type:       IptcUint8,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values: map[uint8]string{
-			7: "YCbCr",
-			8: "sRGB",
-			1: "X,Y,Z CIE",
-			2: "RGB SMPTE",
-			3: "Y,U,V (K) (D65)",
-			4: "RGB Device Dependent",
-			5: "CMY (K) Device Dependent",
-			6: "Lab (K) CIE",
-		},
-	},
-	IptcRecordTag{IPTCNewsPhoto, 40}: IptcTagDesc{
-		Id:         40,
-		Name:       "IPTCPixelWidth",
+	IptcRecordTag{IPTCNewsPhoto, 84}: IptcTagDesc{
+		Id:         84,
+		Name:       "NumIndexEntries",
 		Type:       IptcUint16,
 		MinLength:  0,
 		MaxLength:  0,
@@ -366,37 +296,10 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 80}: IptcTagDesc{
-		Id:         80,
-		Name:       "LookupTable",
-		Type:       IptcUndef,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   false,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 102}: IptcTagDesc{
-		Id:         102,
-		Name:       "IPTCImageRotation",
-		Type:       IptcUint8,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values: map[uint8]string{
-			0: "0",
-			1: "90",
-			2: "180",
-			3: "270",
-		},
-	},
-	IptcRecordTag{IPTCNewsPhoto, 135}: IptcTagDesc{
-		Id:         135,
-		Name:       "BitsPerComponent",
-		Type:       IptcUint8,
+	IptcRecordTag{IPTCNewsPhoto, 40}: IptcTagDesc{
+		Id:         40,
+		Name:       "IPTCPixelWidth",
+		Type:       IptcUint16,
 		MinLength:  0,
 		MaxLength:  0,
 		Mandatory:  false,
@@ -425,15 +328,31 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Repeatable: false,
 		Writable:   true,
 		Values: map[uint8]string{
+			1: "Reduced Resolution Image",
 			2: "Logo",
 			3: "Rasterized Caption",
 			0: "Main Image",
-			1: "Reduced Resolution Image",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 50}: IptcTagDesc{
-		Id:         50,
-		Name:       "IPTCPixelHeight",
+	IptcRecordTag{IPTCNewsPhoto, 102}: IptcTagDesc{
+		Id:         102,
+		Name:       "IPTCImageRotation",
+		Type:       IptcUint8,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values: map[uint8]string{
+			3: "270",
+			0: "0",
+			1: "90",
+			2: "180",
+		},
+	},
+	IptcRecordTag{IPTCNewsPhoto, 140}: IptcTagDesc{
+		Id:         140,
+		Name:       "MaximumDensityRange",
 		Type:       IptcUint16,
 		MinLength:  0,
 		MaxLength:  0,
@@ -442,9 +361,143 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 20}: IptcTagDesc{
-		Id:         20,
-		Name:       "IPTCImageWidth",
+	IptcRecordTag{IPTCNewsPhoto, 90}: IptcTagDesc{
+		Id:         90,
+		Name:       "SampleStructure",
+		Type:       IptcUint8,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values: map[uint8]string{
+			0: "OrthogonalConstangSampling",
+			1: "Orthogonal4-2-2Sampling",
+			2: "CompressionDependent",
+		},
+	},
+	IptcRecordTag{IPTCNewsPhoto, 100}: IptcTagDesc{
+		Id:         100,
+		Name:       "ScanningDirection",
+		Type:       IptcUint8,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values: map[uint8]string{
+			0: "L-R, Top-Bottom",
+			1: "R-L, Top-Bottom",
+			2: "L-R, Bottom-Top",
+			3: "R-L, Bottom-Top",
+			4: "Top-Bottom, L-R",
+			5: "Bottom-Top, L-R",
+			6: "Top-Bottom, R-L",
+			7: "Bottom-Top, R-L",
+		},
+	},
+	IptcRecordTag{IPTCNewsPhoto, 110}: IptcTagDesc{
+		Id:         110,
+		Name:       "DataCompressionMethod",
+		Type:       IptcUint32,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 145}: IptcTagDesc{
+		Id:         145,
+		Name:       "GammaCompensatedValue",
+		Type:       IptcUint16,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 66}: IptcTagDesc{
+		Id:         66,
+		Name:       "ICC_Profile",
+		Type:       IptcUndef,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   false,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 135}: IptcTagDesc{
+		Id:         135,
+		Name:       "BitsPerComponent",
+		Type:       IptcUint8,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 80}: IptcTagDesc{
+		Id:         80,
+		Name:       "LookupTable",
+		Type:       IptcUndef,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   false,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 10}: IptcTagDesc{
+		Id:         10,
+		Name:       "IPTCPictureNumber",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 70}: IptcTagDesc{
+		Id:         70,
+		Name:       "ColorCalibrationMatrix",
+		Type:       IptcUndef,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   false,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 125}: IptcTagDesc{
+		Id:         125,
+		Name:       "EndPoints",
+		Type:       IptcUndef,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   false,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 86}: IptcTagDesc{
+		Id:         86,
+		Name:       "IPTCBitsPerSample",
+		Type:       IptcUint8,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCNewsPhoto, 50}: IptcTagDesc{
+		Id:         50,
+		Name:       "IPTCPixelHeight",
 		Type:       IptcUint16,
 		MinLength:  0,
 		MaxLength:  0,
@@ -463,78 +516,25 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Repeatable: false,
 		Writable:   true,
 		Values: map[uint16]string{
-			771:  "3 Components, Line Sequential",
-			1027: "4 Components, Line Sequential",
+			1028: "4 Components, Pixel Sequential",
 			773:  "3 Components, Special Interleaving",
+			771:  "3 Components, Line Sequential",
 			772:  "3 Components, Pixel Sequential",
-			256:  "Monochrome, Single Frame",
-			1025: "4 Components, Frame Sequential in Multiple Objects",
-			1029: "4 Components, Special Interleaving",
+			1026: "4 Components, Frame Sequential in One Object",
 			769:  "3 Components, Frame Sequential in Multiple Objects",
 			770:  "3 Components, Frame Sequential in One Object",
-			1026: "4 Components, Frame Sequential in One Object",
-			1028: "4 Components, Pixel Sequential",
+			1025: "4 Components, Frame Sequential in Multiple Objects",
+			1027: "4 Components, Line Sequential",
 			768:  "3 Components, Single Frame",
+			1029: "4 Components, Special Interleaving",
+			256:  "Monochrome, Single Frame",
 			0:    "No Image, Single Frame",
 			1024: "4 Components, Single Frame",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 85}: IptcTagDesc{
-		Id:         85,
-		Name:       "ColorPalette",
-		Type:       IptcUndef,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   false,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 140}: IptcTagDesc{
-		Id:         140,
-		Name:       "MaximumDensityRange",
-		Type:       IptcUint16,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 120}: IptcTagDesc{
-		Id:         120,
-		Name:       "QuantizationMethod",
-		Type:       IptcUint8,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values: map[uint8]string{
-			3: "Linear Dot Percent",
-			4: "AP Domestic Analogue",
-			5: "Compression Method Specific",
-			6: "Color Space Specific",
-			7: "Gamma Compensated",
-			0: "Linear Reflectance/Transmittance",
-			1: "Linear Density",
-			2: "IPTC Ref B",
-		},
-	},
-	IptcRecordTag{IPTCNewsPhoto, 0}: IptcTagDesc{
-		Id:         0,
-		Name:       "NewsPhotoVersion",
-		Type:       IptcUint16,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  true,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCNewsPhoto, 84}: IptcTagDesc{
-		Id:         84,
-		Name:       "NumIndexEntries",
+	IptcRecordTag{IPTCNewsPhoto, 30}: IptcTagDesc{
+		Id:         30,
+		Name:       "IPTCImageHeight",
 		Type:       IptcUint16,
 		MinLength:  0,
 		MaxLength:  0,
@@ -565,31 +565,9 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCPreObjectData, 95}: IptcTagDesc{
-		Id:         95,
-		Name:       "MaximumObjectSize",
-		Type:       IptcUint32,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
 	IptcRecordTag{IPTCPreObjectData, 20}: IptcTagDesc{
 		Id:         20,
 		Name:       "MaxSubfileSize",
-		Type:       IptcUint32,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCPreObjectData, 90}: IptcTagDesc{
-		Id:         90,
-		Name:       "ObjectSizeAnnounced",
 		Type:       IptcUint32,
 		MinLength:  0,
 		MaxLength:  0,
@@ -612,12 +590,430 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			1: "Size Known",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 60}: IptcTagDesc{
-		Id:         60,
-		Name:       "TimeCreated",
+	IptcRecordTag{IPTCPreObjectData, 90}: IptcTagDesc{
+		Id:         90,
+		Name:       "ObjectSizeAnnounced",
+		Type:       IptcUint32,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCPreObjectData, 95}: IptcTagDesc{
+		Id:         95,
+		Name:       "MaximumObjectSize",
+		Type:       IptcUint32,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 202}: IptcTagDesc{
+		Id:         202,
+		Name:       "ObjectPreviewData",
+		Type:       IptcUndef,
+		MinLength:  0,
+		MaxLength:  256000,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 186}: IptcTagDesc{
+		Id:         186,
+		Name:       "ShortDocumentID",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  64,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 185}: IptcTagDesc{
+		Id:         185,
+		Name:       "MasterDocumentID",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  256,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 37}: IptcTagDesc{
+		Id:         37,
+		Name:       "ExpirationDate",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 151}: IptcTagDesc{
+		Id:         151,
+		Name:       "AudioSamplingRate",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 100}: IptcTagDesc{
+		Id:         100,
+		Name:       "CountryPrimaryLocationCode",
 		Type:       IptcString,
 		MinLength:  0,
 		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 187}: IptcTagDesc{
+		Id:         187,
+		Name:       "UniqueDocumentID",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  128,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 228}: IptcTagDesc{
+		Id:         228,
+		Name:       "SimilarityIndex",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 45}: IptcTagDesc{
+		Id:         45,
+		Name:       "ReferenceService",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  10,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 25}: IptcTagDesc{
+		Id:         25,
+		Name:       "Keywords",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  64,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 122}: IptcTagDesc{
+		Id:         122,
+		Name:       "WriterEditor",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 70}: IptcTagDesc{
+		Id:         70,
+		Name:       "ProgramVersion",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  10,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 103}: IptcTagDesc{
+		Id:         103,
+		Name:       "OriginalTransmissionReference",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 230}: IptcTagDesc{
+		Id:         230,
+		Name:       "DocumentNotes",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  1024,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 80}: IptcTagDesc{
+		Id:         80,
+		Name:       "Byline",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 65}: IptcTagDesc{
+		Id:         65,
+		Name:       "OriginatingProgram",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 55}: IptcTagDesc{
+		Id:         55,
+		Name:       "DateCreated",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 35}: IptcTagDesc{
+		Id:         35,
+		Name:       "ReleaseTime",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 38}: IptcTagDesc{
+		Id:         38,
+		Name:       "ExpirationTime",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 130}: IptcTagDesc{
+		Id:         130,
+		Name:       "ImageType",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 26}: IptcTagDesc{
+		Id:         26,
+		Name:       "ContentLocationCode",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 15}: IptcTagDesc{
+		Id:         15,
+		Name:       "Category",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  3,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 232}: IptcTagDesc{
+		Id:         232,
+		Name:       "ExifCameraInfo",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  4096,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 120}: IptcTagDesc{
+		Id:         120,
+		Name:       "CaptionAbstract",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  2000,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 116}: IptcTagDesc{
+		Id:         116,
+		Name:       "CopyrightNotice",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  128,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 27}: IptcTagDesc{
+		Id:         27,
+		Name:       "ContentLocationName",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  64,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 47}: IptcTagDesc{
+		Id:         47,
+		Name:       "ReferenceDate",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 8}: IptcTagDesc{
+		Id:         8,
+		Name:       "EditorialUpdate",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values: map[string]string{
+			"01": "Additional language",
+		},
+	},
+	IptcRecordTag{IPTCApplication, 115}: IptcTagDesc{
+		Id:         115,
+		Name:       "Source",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 7}: IptcTagDesc{
+		Id:         7,
+		Name:       "EditStatus",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  64,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 200}: IptcTagDesc{
+		Id:         200,
+		Name:       "ObjectPreviewFileFormat",
+		Type:       IptcUint16,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values: map[uint16]string{
+			21: "Hypertext Markup Language [.HTML] (The Internet Society)",
+			4:  "Illustrator (Adobe Graphics data)",
+			29: "Corel Draw [.CDR]",
+			14: "Digital Audio File [.WAV] (Microsoft & Creative Labs)",
+			3:  "Tagged Image File Format (Adobe/Aldus Image data)",
+			28: "Ritzaus Bureau NITF version (RBNITF DTD)",
+			19: "RIFF Wave (Microsoft Corporation)",
+			9:  "United Press International ANPA 1312 variant",
+			0:  "No ObjectData",
+			10: "United Press International Down-Load Message",
+			7:  "MacBinary II",
+			27: "Tidningarnas Telegrambyra NITF version (TTNITF DTD)",
+			23: "MPEG 2 Audio Layer 3, ISO/IEC",
+			13: "Bit Mapped Graphics File [.BMP] (Microsoft)",
+			15: "Audio plus Moving Video [.AVI] (Microsoft)",
+			25: "News Industry Text Format (NITF)",
+			17: "Compressed Binary File [.ZIP] (PKWare Inc)",
+			26: "Tape Archive [.TAR]",
+			1:  "IPTC-NAA Digital Newsphoto Parameter Record",
+			2:  "IPTC7901 Recommended Message Format",
+			11: "JPEG File Interchange (JFIF)",
+			22: "MPEG 2 Audio Layer 2 (Musicom), ISO/IEC",
+			16: "PC DOS/Windows Executable Files [.COM][.EXE]",
+			12: "Photo-CD Image-Pac (Eastman Kodak)",
+			20: "Freehand (Macromedia/Aldus)",
+			8:  "IPTC Unstructured Character Oriented File Format (UCOFF)",
+			6:  "NAA 89-3 (ANPA 1312)",
+			18: "Audio Interchange File Format AIFF (Apple Computer Inc)",
+			24: "Portable Document File [.PDF] Adobe",
+			5:  "AppleSingle (Apple Computer Inc)",
+		},
+	},
+	IptcRecordTag{IPTCApplication, 95}: IptcTagDesc{
+		Id:         95,
+		Name:       "ProvinceState",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 255}: IptcTagDesc{
+		Id:         255,
+		Name:       "CatalogSets",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  256,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 184}: IptcTagDesc{
+		Id:         184,
+		Name:       "JobID",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  64,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
@@ -640,275 +1036,20 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"04": "Object Reference",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 225}: IptcTagDesc{
-		Id:         225,
-		Name:       "ClassifyState",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  64,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 20}: IptcTagDesc{
-		Id:         20,
-		Name:       "SupplementalCategories",
+	IptcRecordTag{IPTCApplication, 22}: IptcTagDesc{
+		Id:         22,
+		Name:       "FixtureIdentifier",
 		Type:       IptcString,
 		MinLength:  0,
 		MaxLength:  32,
 		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 85}: IptcTagDesc{
-		Id:         85,
-		Name:       "BylineTitle",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 255}: IptcTagDesc{
-		Id:         255,
-		Name:       "CatalogSets",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  256,
-		Mandatory:  false,
 		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 45}: IptcTagDesc{
-		Id:         45,
-		Name:       "ReferenceService",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  10,
-		Mandatory:  false,
-		Repeatable: true,
 		Writable:   true,
 		Values:     nil,
 	},
 	IptcRecordTag{IPTCApplication, 154}: IptcTagDesc{
 		Id:         154,
 		Name:       "AudioOutcue",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  64,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 0}: IptcTagDesc{
-		Id:         0,
-		Name:       "ApplicationRecordVersion",
-		Type:       IptcUint16,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  true,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 151}: IptcTagDesc{
-		Id:         151,
-		Name:       "AudioSamplingRate",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 121}: IptcTagDesc{
-		Id:         121,
-		Name:       "LocalCaption",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  256,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 5}: IptcTagDesc{
-		Id:         5,
-		Name:       "ObjectName",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  64,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 100}: IptcTagDesc{
-		Id:         100,
-		Name:       "CountryPrimaryLocationCode",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 231}: IptcTagDesc{
-		Id:         231,
-		Name:       "DocumentHistory",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  256,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 4}: IptcTagDesc{
-		Id:         4,
-		Name:       "ObjectAttributeReference",
-		Type:       IptcString,
-		MinLength:  4,
-		MaxLength:  68,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 8}: IptcTagDesc{
-		Id:         8,
-		Name:       "EditorialUpdate",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values: map[string]string{
-			"01": "Additional language",
-		},
-	},
-	IptcRecordTag{IPTCApplication, 135}: IptcTagDesc{
-		Id:         135,
-		Name:       "LanguageIdentifier",
-		Type:       IptcString,
-		MinLength:  2,
-		MaxLength:  3,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 228}: IptcTagDesc{
-		Id:         228,
-		Name:       "SimilarityIndex",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 55}: IptcTagDesc{
-		Id:         55,
-		Name:       "DateCreated",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 103}: IptcTagDesc{
-		Id:         103,
-		Name:       "OriginalTransmissionReference",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 15}: IptcTagDesc{
-		Id:         15,
-		Name:       "Category",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  3,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 95}: IptcTagDesc{
-		Id:         95,
-		Name:       "ProvinceState",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 105}: IptcTagDesc{
-		Id:         105,
-		Name:       "Headline",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  256,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 12}: IptcTagDesc{
-		Id:         12,
-		Name:       "SubjectReference",
-		Type:       IptcString,
-		MinLength:  13,
-		MaxLength:  236,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 92}: IptcTagDesc{
-		Id:         92,
-		Name:       "Sublocation",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 30}: IptcTagDesc{
-		Id:         30,
-		Name:       "ReleaseDate",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 186}: IptcTagDesc{
-		Id:         186,
-		Name:       "ShortDocumentID",
 		Type:       IptcString,
 		MinLength:  0,
 		MaxLength:  64,
@@ -928,320 +1069,12 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 184}: IptcTagDesc{
-		Id:         184,
-		Name:       "JobID",
+	IptcRecordTag{IPTCApplication, 4}: IptcTagDesc{
+		Id:         4,
+		Name:       "ObjectAttributeReference",
 		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  64,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 75}: IptcTagDesc{
-		Id:         75,
-		Name:       "ObjectCycle",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values: map[string]string{
-			"a": "Morning",
-			"b": "Both Morning and Evening",
-			"p": "Evening",
-		},
-	},
-	IptcRecordTag{IPTCApplication, 130}: IptcTagDesc{
-		Id:         130,
-		Name:       "ImageType",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 47}: IptcTagDesc{
-		Id:         47,
-		Name:       "ReferenceDate",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 116}: IptcTagDesc{
-		Id:         116,
-		Name:       "CopyrightNotice",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  128,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 26}: IptcTagDesc{
-		Id:         26,
-		Name:       "ContentLocationCode",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 7}: IptcTagDesc{
-		Id:         7,
-		Name:       "EditStatus",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  64,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 63}: IptcTagDesc{
-		Id:         63,
-		Name:       "DigitalCreationTime",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 153}: IptcTagDesc{
-		Id:         153,
-		Name:       "AudioDuration",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 115}: IptcTagDesc{
-		Id:         115,
-		Name:       "Source",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 122}: IptcTagDesc{
-		Id:         122,
-		Name:       "WriterEditor",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 50}: IptcTagDesc{
-		Id:         50,
-		Name:       "ReferenceNumber",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 152}: IptcTagDesc{
-		Id:         152,
-		Name:       "AudioSamplingResolution",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 188}: IptcTagDesc{
-		Id:         188,
-		Name:       "OwnerID",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  128,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 120}: IptcTagDesc{
-		Id:         120,
-		Name:       "CaptionAbstract",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  2000,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 150}: IptcTagDesc{
-		Id:         150,
-		Name:       "AudioType",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values: map[string]string{
-			"1A": "Mono Actuality",
-			"1R": "Mono Raw Sound",
-			"1S": "Mono Scener",
-			"2A": "Stereo Actuality",
-			"2S": "Stereo Scener",
-			"2W": "Stereo Wrap",
-			"1Q": "Mono Response to a Question",
-			"1W": "Mono Wrap",
-			"2M": "Stereo Music",
-			"2Q": "Stereo Response to a Question",
-			"2V": "Stereo Voicer",
-			"0T": "Text Only",
-			"1C": "Mono Question and Answer Session",
-			"1M": "Mono Music",
-			"1V": "Mono Voicer",
-			"2C": "Stereo Question and Answer Session",
-			"2R": "Stereo Raw Sound",
-		},
-	},
-	IptcRecordTag{IPTCApplication, 230}: IptcTagDesc{
-		Id:         230,
-		Name:       "DocumentNotes",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  1024,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 37}: IptcTagDesc{
-		Id:         37,
-		Name:       "ExpirationDate",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 101}: IptcTagDesc{
-		Id:         101,
-		Name:       "CountryPrimaryLocationName",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  64,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 185}: IptcTagDesc{
-		Id:         185,
-		Name:       "MasterDocumentID",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  256,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 62}: IptcTagDesc{
-		Id:         62,
-		Name:       "DigitalCreationDate",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 38}: IptcTagDesc{
-		Id:         38,
-		Name:       "ExpirationTime",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 22}: IptcTagDesc{
-		Id:         22,
-		Name:       "FixtureIdentifier",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 232}: IptcTagDesc{
-		Id:         232,
-		Name:       "ExifCameraInfo",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  4096,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 80}: IptcTagDesc{
-		Id:         80,
-		Name:       "Byline",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 40}: IptcTagDesc{
-		Id:         40,
-		Name:       "SpecialInstructions",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  256,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 25}: IptcTagDesc{
-		Id:         25,
-		Name:       "Keywords",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  64,
+		MinLength:  4,
+		MaxLength:  68,
 		Mandatory:  false,
 		Repeatable: true,
 		Writable:   true,
@@ -1258,9 +1091,9 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 65}: IptcTagDesc{
-		Id:         65,
-		Name:       "OriginatingProgram",
+	IptcRecordTag{IPTCApplication, 110}: IptcTagDesc{
+		Id:         110,
+		Name:       "Credit",
 		Type:       IptcString,
 		MinLength:  0,
 		MaxLength:  32,
@@ -1269,34 +1102,67 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 187}: IptcTagDesc{
-		Id:         187,
-		Name:       "UniqueDocumentID",
-		Type:       IptcString,
+	IptcRecordTag{IPTCApplication, 152}: IptcTagDesc{
+		Id:         152,
+		Name:       "AudioSamplingResolution",
+		Type:       IptcDigits,
 		MinLength:  0,
-		MaxLength:  128,
+		MaxLength:  0,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 202}: IptcTagDesc{
-		Id:         202,
-		Name:       "ObjectPreviewData",
+	IptcRecordTag{IPTCApplication, 90}: IptcTagDesc{
+		Id:         90,
+		Name:       "City",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 60}: IptcTagDesc{
+		Id:         60,
+		Name:       "TimeCreated",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 50}: IptcTagDesc{
+		Id:         50,
+		Name:       "ReferenceNumber",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 30}: IptcTagDesc{
+		Id:         30,
+		Name:       "ReleaseDate",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 125}: IptcTagDesc{
+		Id:         125,
+		Name:       "RasterizedCaption",
 		Type:       IptcUndef,
 		MinLength:  0,
-		MaxLength:  256000,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 3}: IptcTagDesc{
-		Id:         3,
-		Name:       "ObjectTypeReference",
-		Type:       IptcString,
-		MinLength:  3,
-		MaxLength:  67,
+		MaxLength:  0,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
@@ -1317,54 +1183,45 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"S": "Square",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 200}: IptcTagDesc{
-		Id:         200,
-		Name:       "ObjectPreviewFileFormat",
-		Type:       IptcUint16,
+	IptcRecordTag{IPTCApplication, 10}: IptcTagDesc{
+		Id:         10,
+		Name:       "Urgency",
+		Type:       IptcDigits,
 		MinLength:  0,
 		MaxLength:  0,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
-		Values: map[uint16]string{
-			3:  "Tagged Image File Format (Adobe/Aldus Image data)",
-			28: "Ritzaus Bureau NITF version (RBNITF DTD)",
-			14: "Digital Audio File [.WAV] (Microsoft & Creative Labs)",
-			27: "Tidningarnas Telegrambyra NITF version (TTNITF DTD)",
-			26: "Tape Archive [.TAR]",
-			11: "JPEG File Interchange (JFIF)",
-			19: "RIFF Wave (Microsoft Corporation)",
-			1:  "IPTC-NAA Digital Newsphoto Parameter Record",
-			15: "Audio plus Moving Video [.AVI] (Microsoft)",
-			8:  "IPTC Unstructured Character Oriented File Format (UCOFF)",
-			21: "Hypertext Markup Language [.HTML] (The Internet Society)",
-			25: "News Industry Text Format (NITF)",
-			6:  "NAA 89-3 (ANPA 1312)",
-			7:  "MacBinary II",
-			12: "Photo-CD Image-Pac (Eastman Kodak)",
-			10: "United Press International Down-Load Message",
-			22: "MPEG 2 Audio Layer 2 (Musicom), ISO/IEC",
-			9:  "United Press International ANPA 1312 variant",
-			18: "Audio Interchange File Format AIFF (Apple Computer Inc)",
-			5:  "AppleSingle (Apple Computer Inc)",
-			23: "MPEG 2 Audio Layer 3, ISO/IEC",
-			2:  "IPTC7901 Recommended Message Format",
-			4:  "Illustrator (Adobe Graphics data)",
-			20: "Freehand (Macromedia/Aldus)",
-			29: "Corel Draw [.CDR]",
-			24: "Portable Document File [.PDF] Adobe",
-			17: "Compressed Binary File [.ZIP] (PKWare Inc)",
-			13: "Bit Mapped Graphics File [.BMP] (Microsoft)",
-			0:  "No ObjectData",
-			16: "PC DOS/Windows Executable Files [.COM][.EXE]",
+		Values: map[string]string{
+			"0": "0 (reserved)",
+			"3": "3",
+			"4": "4",
+			"5": "5 (normal urgency)",
+			"9": "9 (user-defined priority)",
+			"1": "1 (most urgent)",
+			"2": "2",
+			"6": "6",
+			"7": "7",
+			"8": "8 (least urgent)",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 70}: IptcTagDesc{
-		Id:         70,
-		Name:       "ProgramVersion",
+	IptcRecordTag{IPTCApplication, 121}: IptcTagDesc{
+		Id:         121,
+		Name:       "LocalCaption",
 		Type:       IptcString,
 		MinLength:  0,
-		MaxLength:  10,
+		MaxLength:  256,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 135}: IptcTagDesc{
+		Id:         135,
+		Name:       "LanguageIdentifier",
+		Type:       IptcString,
+		MinLength:  2,
+		MaxLength:  3,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
@@ -1381,119 +1238,31 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 110}: IptcTagDesc{
-		Id:         110,
-		Name:       "Credit",
+	IptcRecordTag{IPTCApplication, 40}: IptcTagDesc{
+		Id:         40,
+		Name:       "SpecialInstructions",
 		Type:       IptcString,
 		MinLength:  0,
-		MaxLength:  32,
+		MaxLength:  256,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 27}: IptcTagDesc{
-		Id:         27,
-		Name:       "ContentLocationName",
+	IptcRecordTag{IPTCApplication, 20}: IptcTagDesc{
+		Id:         20,
+		Name:       "SupplementalCategories",
 		Type:       IptcString,
 		MinLength:  0,
-		MaxLength:  64,
+		MaxLength:  32,
 		Mandatory:  false,
 		Repeatable: true,
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 35}: IptcTagDesc{
-		Id:         35,
-		Name:       "ReleaseTime",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 90}: IptcTagDesc{
-		Id:         90,
-		Name:       "City",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCApplication, 10}: IptcTagDesc{
-		Id:         10,
-		Name:       "Urgency",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values: map[string]string{
-			"0": "0 (reserved)",
-			"1": "1 (most urgent)",
-			"2": "2",
-			"4": "4",
-			"5": "5 (normal urgency)",
-			"8": "8 (least urgent)",
-			"9": "9 (user-defined priority)",
-			"3": "3",
-			"6": "6",
-			"7": "7",
-		},
-	},
-	IptcRecordTag{IPTCApplication, 125}: IptcTagDesc{
-		Id:         125,
-		Name:       "RasterizedCaption",
-		Type:       IptcUndef,
-		MinLength:  0,
-		MaxLength:  0,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCEnvelope, 30}: IptcTagDesc{
-		Id:         30,
-		Name:       "ServiceIdentifier",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  10,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCEnvelope, 100}: IptcTagDesc{
-		Id:         100,
-		Name:       "UniqueObjectName",
-		Type:       IptcString,
-		MinLength:  14,
-		MaxLength:  80,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCEnvelope, 5}: IptcTagDesc{
-		Id:         5,
-		Name:       "Destination",
-		Type:       IptcString,
-		MinLength:  0,
-		MaxLength:  1024,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCEnvelope, 0}: IptcTagDesc{
+	IptcRecordTag{IPTCApplication, 0}: IptcTagDesc{
 		Id:         0,
-		Name:       "EnvelopeRecordVersion",
+		Name:       "ApplicationRecordVersion",
 		Type:       IptcUint16,
 		MinLength:  0,
 		MaxLength:  0,
@@ -1502,47 +1271,203 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 20}: IptcTagDesc{
-		Id:         20,
-		Name:       "FileFormat",
-		Type:       IptcUint16,
+	IptcRecordTag{IPTCApplication, 75}: IptcTagDesc{
+		Id:         75,
+		Name:       "ObjectCycle",
+		Type:       IptcString,
 		MinLength:  0,
 		MaxLength:  0,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
-		Values: map[uint16]string{
-			22: "MPEG 2 Audio Layer 2 (Musicom), ISO/IEC",
-			18: "Audio Interchange File Format AIFF (Apple Computer Inc)",
-			19: "RIFF Wave (Microsoft Corporation)",
-			7:  "MacBinary II",
-			5:  "AppleSingle (Apple Computer Inc)",
-			9:  "United Press International ANPA 1312 variant",
-			21: "Hypertext Markup Language [.HTML] (The Internet Society)",
-			25: "News Industry Text Format (NITF)",
-			24: "Portable Document File [.PDF] Adobe",
-			3:  "Tagged Image File Format (Adobe/Aldus Image data)",
-			11: "JPEG File Interchange (JFIF)",
-			16: "PC DOS/Windows Executable Files [.COM][.EXE]",
-			2:  "IPTC7901 Recommended Message Format",
-			8:  "IPTC Unstructured Character Oriented File Format (UCOFF)",
-			6:  "NAA 89-3 (ANPA 1312)",
-			0:  "No ObjectData",
-			26: "Tape Archive [.TAR]",
-			27: "Tidningarnas Telegrambyra NITF version (TTNITF DTD)",
-			4:  "Illustrator (Adobe Graphics data)",
-			14: "Digital Audio File [.WAV] (Microsoft & Creative Labs)",
-			28: "Ritzaus Bureau NITF version (RBNITF DTD)",
-			17: "Compressed Binary File [.ZIP] (PKWare Inc)",
-			15: "Audio plus Moving Video [.AVI] (Microsoft)",
-			23: "MPEG 2 Audio Layer 3, ISO/IEC",
-			10: "United Press International Down-Load Message",
-			1:  "IPTC-NAA Digital Newsphoto Parameter Record",
-			12: "Photo-CD Image-Pac (Eastman Kodak)",
-			13: "Bit Mapped Graphics File [.BMP] (Microsoft)",
-			20: "Freehand (Macromedia/Aldus)",
-			29: "Corel Draw [.CDR]",
+		Values: map[string]string{
+			"a": "Morning",
+			"b": "Both Morning and Evening",
+			"p": "Evening",
 		},
+	},
+	IptcRecordTag{IPTCApplication, 225}: IptcTagDesc{
+		Id:         225,
+		Name:       "ClassifyState",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  64,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 231}: IptcTagDesc{
+		Id:         231,
+		Name:       "DocumentHistory",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  256,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 153}: IptcTagDesc{
+		Id:         153,
+		Name:       "AudioDuration",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 92}: IptcTagDesc{
+		Id:         92,
+		Name:       "Sublocation",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 85}: IptcTagDesc{
+		Id:         85,
+		Name:       "BylineTitle",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 105}: IptcTagDesc{
+		Id:         105,
+		Name:       "Headline",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  256,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 62}: IptcTagDesc{
+		Id:         62,
+		Name:       "DigitalCreationDate",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 101}: IptcTagDesc{
+		Id:         101,
+		Name:       "CountryPrimaryLocationName",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  64,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 150}: IptcTagDesc{
+		Id:         150,
+		Name:       "AudioType",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values: map[string]string{
+			"1V": "Mono Voicer",
+			"2S": "Stereo Scener",
+			"0T": "Text Only",
+			"1A": "Mono Actuality",
+			"2C": "Stereo Question and Answer Session",
+			"2Q": "Stereo Response to a Question",
+			"2R": "Stereo Raw Sound",
+			"1C": "Mono Question and Answer Session",
+			"1M": "Mono Music",
+			"1R": "Mono Raw Sound",
+			"1S": "Mono Scener",
+			"1W": "Mono Wrap",
+			"2M": "Stereo Music",
+			"1Q": "Mono Response to a Question",
+			"2A": "Stereo Actuality",
+			"2V": "Stereo Voicer",
+			"2W": "Stereo Wrap",
+		},
+	},
+	IptcRecordTag{IPTCApplication, 63}: IptcTagDesc{
+		Id:         63,
+		Name:       "DigitalCreationTime",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 5}: IptcTagDesc{
+		Id:         5,
+		Name:       "ObjectName",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  64,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 3}: IptcTagDesc{
+		Id:         3,
+		Name:       "ObjectTypeReference",
+		Type:       IptcString,
+		MinLength:  3,
+		MaxLength:  67,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 188}: IptcTagDesc{
+		Id:         188,
+		Name:       "OwnerID",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  128,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCApplication, 12}: IptcTagDesc{
+		Id:         12,
+		Name:       "SubjectReference",
+		Type:       IptcString,
+		MinLength:  13,
+		MaxLength:  236,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCEnvelope, 50}: IptcTagDesc{
+		Id:         50,
+		Name:       "ProductID",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  32,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
 	},
 	IptcRecordTag{IPTCEnvelope, 60}: IptcTagDesc{
 		Id:         60,
@@ -1554,35 +1479,24 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Repeatable: false,
 		Writable:   true,
 		Values: map[string]string{
-			"1": "1 (most urgent)",
+			"9": "9 (user-defined priority)",
+			"2": "2",
+			"3": "3",
 			"5": "5 (normal urgency)",
-			"6": "6",
 			"7": "7",
 			"8": "8 (least urgent)",
 			"0": "0 (reserved)",
-			"2": "2",
-			"3": "3",
+			"1": "1 (most urgent)",
 			"4": "4",
-			"9": "9 (user-defined priority)",
+			"6": "6",
 		},
 	},
-	IptcRecordTag{IPTCEnvelope, 90}: IptcTagDesc{
-		Id:         90,
-		Name:       "CodedCharacterSet",
+	IptcRecordTag{IPTCEnvelope, 30}: IptcTagDesc{
+		Id:         30,
+		Name:       "ServiceIdentifier",
 		Type:       IptcString,
 		MinLength:  0,
-		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: false,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCEnvelope, 70}: IptcTagDesc{
-		Id:         70,
-		Name:       "DateSent",
-		Type:       IptcDigits,
-		MinLength:  0,
-		MaxLength:  0,
+		MaxLength:  10,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,
@@ -1610,6 +1524,103 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
+	IptcRecordTag{IPTCEnvelope, 20}: IptcTagDesc{
+		Id:         20,
+		Name:       "FileFormat",
+		Type:       IptcUint16,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values: map[uint16]string{
+			19: "RIFF Wave (Microsoft Corporation)",
+			0:  "No ObjectData",
+			21: "Hypertext Markup Language [.HTML] (The Internet Society)",
+			25: "News Industry Text Format (NITF)",
+			17: "Compressed Binary File [.ZIP] (PKWare Inc)",
+			14: "Digital Audio File [.WAV] (Microsoft & Creative Labs)",
+			8:  "IPTC Unstructured Character Oriented File Format (UCOFF)",
+			22: "MPEG 2 Audio Layer 2 (Musicom), ISO/IEC",
+			7:  "MacBinary II",
+			11: "JPEG File Interchange (JFIF)",
+			1:  "IPTC-NAA Digital Newsphoto Parameter Record",
+			24: "Portable Document File [.PDF] Adobe",
+			23: "MPEG 2 Audio Layer 3, ISO/IEC",
+			9:  "United Press International ANPA 1312 variant",
+			15: "Audio plus Moving Video [.AVI] (Microsoft)",
+			6:  "NAA 89-3 (ANPA 1312)",
+			2:  "IPTC7901 Recommended Message Format",
+			10: "United Press International Down-Load Message",
+			18: "Audio Interchange File Format AIFF (Apple Computer Inc)",
+			4:  "Illustrator (Adobe Graphics data)",
+			13: "Bit Mapped Graphics File [.BMP] (Microsoft)",
+			27: "Tidningarnas Telegrambyra NITF version (TTNITF DTD)",
+			12: "Photo-CD Image-Pac (Eastman Kodak)",
+			26: "Tape Archive [.TAR]",
+			16: "PC DOS/Windows Executable Files [.COM][.EXE]",
+			20: "Freehand (Macromedia/Aldus)",
+			3:  "Tagged Image File Format (Adobe/Aldus Image data)",
+			28: "Ritzaus Bureau NITF version (RBNITF DTD)",
+			29: "Corel Draw [.CDR]",
+			5:  "AppleSingle (Apple Computer Inc)",
+		},
+	},
+	IptcRecordTag{IPTCEnvelope, 0}: IptcTagDesc{
+		Id:         0,
+		Name:       "EnvelopeRecordVersion",
+		Type:       IptcUint16,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  true,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCEnvelope, 122}: IptcTagDesc{
+		Id:         122,
+		Name:       "ARMVersion",
+		Type:       IptcUint16,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCEnvelope, 70}: IptcTagDesc{
+		Id:         70,
+		Name:       "DateSent",
+		Type:       IptcDigits,
+		MinLength:  0,
+		MaxLength:  0,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCEnvelope, 100}: IptcTagDesc{
+		Id:         100,
+		Name:       "UniqueObjectName",
+		Type:       IptcString,
+		MinLength:  14,
+		MaxLength:  80,
+		Mandatory:  false,
+		Repeatable: false,
+		Writable:   true,
+		Values:     nil,
+	},
+	IptcRecordTag{IPTCEnvelope, 5}: IptcTagDesc{
+		Id:         5,
+		Name:       "Destination",
+		Type:       IptcString,
+		MinLength:  0,
+		MaxLength:  1024,
+		Mandatory:  false,
+		Repeatable: true,
+		Writable:   true,
+		Values:     nil,
+	},
 	IptcRecordTag{IPTCEnvelope, 80}: IptcTagDesc{
 		Id:         80,
 		Name:       "TimeSent",
@@ -1632,23 +1643,12 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 50}: IptcTagDesc{
-		Id:         50,
-		Name:       "ProductID",
+	IptcRecordTag{IPTCEnvelope, 90}: IptcTagDesc{
+		Id:         90,
+		Name:       "CodedCharacterSet",
 		Type:       IptcString,
 		MinLength:  0,
 		MaxLength:  32,
-		Mandatory:  false,
-		Repeatable: true,
-		Writable:   true,
-		Values:     nil,
-	},
-	IptcRecordTag{IPTCEnvelope, 122}: IptcTagDesc{
-		Id:         122,
-		Name:       "ARMVersion",
-		Type:       IptcUint16,
-		MinLength:  0,
-		MaxLength:  0,
 		Mandatory:  false,
 		Repeatable: false,
 		Writable:   true,

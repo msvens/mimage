@@ -1,8 +1,10 @@
 package metadata
 
 import (
-	"bytes"
+	"reflect"
+	"strings"
 	"testing"
+	"time"
 )
 
 func getIptcData(fname string, t *testing.T) *IptcData {
@@ -14,6 +16,53 @@ func getIptcData(fname string, t *testing.T) *IptcData {
 	iptcData, _ := NewIptcData(segments)
 	return iptcData
 
+}
+
+func TestIptcData_GetDate(t *testing.T) {
+	tests := []*IptcData{getIptcData(LeicaImg, t), getIptcData(NikonImg, t)}
+	for _, ipd := range tests {
+		var dt time.Time
+		if dt = ipd.GetDate(DateCreated); dt.IsZero() {
+			t.Errorf("Expected non zero DateCreated")
+		}
+		if dt = ipd.GetDate(DigitalCreationDate); dt.IsZero() {
+			t.Errorf("Expected non zero DigitalCreationDate")
+		}
+		if dt = ipd.GetDate(ExpirationDate); !dt.IsZero() {
+			t.Errorf("Expected zero ExpirationDate")
+		}
+	}
+	//no exif image
+	ipd := getIptcData(NoExifImg, t)
+	if dt := ipd.GetDate(DateCreated); !dt.IsZero() {
+		t.Errorf("Expected zero Date Created")
+	}
+
+}
+
+func TestIptcData_GetKeywords(t *testing.T) {
+	expKeywords := []string{"martin", "portland", "semester", "vintage"}
+	ipd := getIptcData(NikonImg, t)
+	if !reflect.DeepEqual(ipd.GetKeywords(), expKeywords) {
+		t.Errorf("Expected %v got %v", expKeywords, ipd.GetKeywords())
+	}
+	ipd = getIptcData(NoExifImg, t)
+	if len(ipd.GetKeywords()) != 0 {
+		t.Errorf("Expected empty keywords got %v", ipd.GetKeywords())
+	}
+
+}
+
+func TestIptcData_GetTitle(t *testing.T) {
+	expTitle := "Morning Fog"
+	ipd := getIptcData(LeicaImg, t)
+	if ipd.GetTitle() != expTitle {
+		t.Errorf("Expected %v got %v", expTitle, ipd.GetTitle())
+	}
+	ipd = getIptcData(NoExifImg, t)
+	if ipd.GetTitle() != "" {
+		t.Errorf("Expected empty title got %v", ipd.GetTitle())
+	}
 }
 
 func TestIptcData_IsEmpty(t *testing.T) {
@@ -42,7 +91,7 @@ func TestIptcData_Scan(t *testing.T) {
 
 }
 
-func TestIptcData_ScanApplicationTag(t *testing.T) {
+func TestIptcData_ScanApplication(t *testing.T) {
 	/*exiftool extract IPTC application from Leica Img
 	"IPTC": {
 	    "ApplicationRecordVersion": 4,
@@ -70,7 +119,33 @@ func TestIptcData_ScanApplicationTag(t *testing.T) {
 	//md.PrintIptc()
 }
 
-func TestIptcData_ScanIptcEnvelopTag(t *testing.T) {
+func TestIptcData_ScanDate(t *testing.T) {
+	tests := []*IptcData{getIptcData(LeicaImg, t), getIptcData(NikonImg, t)}
+	dt := time.Time{}
+	var err error
+	for _, ipd := range tests {
+		if err = ipd.ScanDate(DateCreated, &dt); err != nil {
+			t.Errorf("Got error: %v", err)
+		} else if dt.IsZero() {
+			t.Errorf("Expected non zero DateCreated")
+		}
+		if err = ipd.ScanDate(DigitalCreationDate, &dt); err != nil {
+			t.Errorf("Got error: %v", err)
+		} else if dt.IsZero() {
+			t.Errorf("Expected non zero DigitalCreationDate")
+		}
+		if err = ipd.ScanDate(ExpirationDate, &dt); err == nil {
+			t.Errorf("Expected error when scanning non existing date")
+		}
+	}
+	//no exif image
+	ipd := getIptcData(NoExifImg, t)
+	if err = ipd.ScanDate(DateCreated, &dt); err == nil {
+		t.Errorf("Expected error when scanning non existing date")
+	}
+}
+
+func TestIptcData_ScanEnvelope(t *testing.T) {
 	/*exiftool extract IPTC application from Leica Img
 	"IPTC": {
 	    "CodedCharacterSet": "UTF8",
@@ -78,12 +153,11 @@ func TestIptcData_ScanIptcEnvelopTag(t *testing.T) {
 	*/
 	iptcData := getIptcData(LeicaImg, t)
 	//expObjectName := "Morning Fog"
-	expectedCharSet := []byte{27, 37, 71} //ESC%G (which is UTF
-	ret := []byte{}
+	ret := ""
 	if err := iptcData.ScanEnvelope(IPTCEnvelope_CodedCharacterSet, &ret); err != nil {
 		t.Errorf("Expected CodedCharacterSet got error %v", err)
-	} else if bytes.Compare(ret, expectedCharSet) != 0 {
-		t.Errorf("Expected %v got %v", expectedCharSet, ret)
+	} else if strings.Compare(ret, iptcUtfCharSet) != 0 {
+		t.Errorf("Expected %v got %v", iptcUtfCharSet, ret)
 	}
 	//non existent tag
 	if err := iptcData.ScanEnvelope(IPTCEnvelope_Destination, &ret); err == nil {

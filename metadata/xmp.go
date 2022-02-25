@@ -8,6 +8,7 @@ import (
 	"trimmer.io/go-xmp/models/dc"
 	"trimmer.io/go-xmp/models/ps"
 	xmpbase "trimmer.io/go-xmp/models/xmp_base"
+	xmpmm "trimmer.io/go-xmp/models/xmp_mm"
 	"trimmer.io/go-xmp/xmp"
 )
 
@@ -27,9 +28,12 @@ func NewXmpData(segments *jpegstructure.SegmentList) (XmpData, error) {
 		//We should log errors
 		return XmpData{}, NoXmpErr
 	}
-	model := &xmp.Document{}
+	return NewXmpDataFromBytes([]byte(str))
+}
 
-	err = xmp.Unmarshal([]byte(str), model)
+func NewXmpDataFromBytes(data []byte) (XmpData, error) {
+	model := &xmp.Document{}
+	err := xmp.Unmarshal(data, model)
 	if err != nil {
 		return XmpData{}, NoXmpErr
 	} else {
@@ -50,8 +54,31 @@ func (xd XmpData) DublinCore() *dc.DublinCore {
 	return nil
 }
 
+func (xd XmpData) GetKeywords() []string {
+	if dcore := xd.DublinCore(); dcore != nil {
+		return dcore.Subject
+	} else {
+		return []string{}
+	}
+}
+
+func (xd XmpData) GetRating() uint16 {
+	if base := xd.Base(); base != nil {
+		return uint16(base.Rating)
+	}
+	return 0
+}
+
+func (xd XmpData) GetTitle() string {
+	if dcore := xd.DublinCore(); dcore != nil {
+		return dcore.Title.Default()
+	} else {
+		return ""
+	}
+}
+
 func (xd XmpData) IsEmpty() bool {
-	return xd.rawXmp == nil
+	return xd.rawXmp == nil || len(xd.rawXmp.Nodes()) == 0
 }
 
 func (xd XmpData) PhotoShop() *ps.PhotoshopInfo {
@@ -61,18 +88,20 @@ func (xd XmpData) PhotoShop() *ps.PhotoshopInfo {
 	return nil
 }
 
+func (xd XmpData) MM() *xmpmm.XmpMM {
+	if !xd.IsEmpty() {
+		return xmpmm.FindModel(xd.rawXmp)
+	}
+	return nil
+}
+
 func (xd XmpData) String() string {
 	if xd.IsEmpty() {
 		return "No XMP Data"
 	}
 	if bytes, err := json.MarshalIndent(xd.rawXmp, "", "  "); err != nil {
-		return fmt.Sprintf("Could not marshal xmp document: %v", err)
+		return fmt.Sprintf("Could not marshal XmpEditor document: %v", err)
 	} else {
 		return string(bytes)
 	}
-	/*if bytes, err := xmp.MarshalIndent(xd.rawXmp, "", "  "); err != nil {
-		return fmt.Sprintf("Could not marshal xmp document: %v", err)
-	} else {
-		return string(bytes)
-	}*/
 }
