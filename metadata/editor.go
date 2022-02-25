@@ -179,6 +179,17 @@ func (je *JpegEditor) MetaData() (*MetaData, error) {
 	}
 }
 
+func (je *JpegEditor) setExif() error {
+	if _, err := je.sl.DropExif(); err != nil {
+		return err
+	}
+	builder, _ := je.ee.IfdBuilder()
+	if err := je.sl.SetExif(builder); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (je *JpegEditor) setIptc() error {
 	//MarkerId: MARKER_APP13
 	iptcBytes, err := je.ie.Bytes()
@@ -217,6 +228,22 @@ func (je *JpegEditor) setIptc() error {
 	*/
 }
 
+//ConvenianceFunction to set keywords in both xmp and iptc metadata blocks
+func (je *JpegEditor) SetKeywords(keywords []string) error {
+	je.Xmp().SetKeywords(keywords)
+	return je.ie.SetKeywords(keywords)
+}
+
+//Conveniance function to image title in xmp, iptc and exif metadata blocks
+func (je *JpegEditor) SetTitle(title string) error {
+	if err := je.ee.SetImageDescription(title); err != nil {
+		return err
+	} else {
+		je.Xmp().SetTitle(title)
+		return je.Iptc().SetTitle(title)
+	}
+}
+
 func (je *JpegEditor) setXmp() error {
 	xmpBytes, err := je.xe.Bytes(true)
 	if err != nil {
@@ -233,17 +260,6 @@ func (je *JpegEditor) setXmp() error {
 	} else {
 		return err
 	}
-}
-
-func (je *JpegEditor) setExif() error {
-	if _, err := je.sl.DropExif(); err != nil {
-		return err
-	}
-	builder, _ := je.ee.IfdBuilder()
-	if err := je.sl.SetExif(builder); err != nil {
-		return err
-	}
-	return nil
 }
 
 //Writes this image to file by first commiting all edits. Any existing

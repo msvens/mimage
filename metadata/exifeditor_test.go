@@ -196,10 +196,8 @@ func TestExifEditor_SetImageDescription(t *testing.T) {
 		t.Fatalf("Could not set Image Description: %v", err)
 	}
 	md := jpegEditorMD(je, t)
-	ret, err := md.exifData.GetIfdImageDescription()
-	if err != nil {
-		t.Fatalf("Could not get Image Description from Metadata: %v", err)
-	} else if ret != expImageDescription {
+	ret := md.exifData.GetIfdImageDescription()
+	if ret != expImageDescription {
 		t.Fatalf("Expected %s got %s", expImageDescription, ret)
 	}
 }
@@ -211,10 +209,8 @@ func TestExifEditor_SetUserComment(t *testing.T) {
 		t.Fatalf("Could not set User Comment: %v", err)
 	}
 	md := jpegEditorMD(je, t)
-	ret, err := md.exifData.GetIfdUserComment()
-	if err != nil {
-		t.Fatalf("Could not get Image Comment from Metadata: %v", err)
-	} else if ret != expUserComment {
+	ret := md.exifData.GetIfdUserComment()
+	if ret != expUserComment {
 		t.Fatalf("Expected %s go %s", expUserComment, ret)
 	}
 

@@ -18,32 +18,43 @@ var editCommand = &cobra.Command{
 		if dest == "" {
 			dest = source
 		}
-		mde, err := metadata.NewJpegEditorFile(source)
+		je, err := metadata.NewJpegEditorFile(source)
 		if err != nil {
 			return err
 		}
 		changed := false
 		if cmd.Flags().Lookup("keywords").Changed {
 			newKeywords, _ := cmd.Flags().GetStringSlice("keywords")
-
-			fmt.Println("newKeywords: ", strings.Join(newKeywords, ","))
+			fmt.Println("setting new keywords: ", strings.Join(newKeywords, ","))
+			if err = je.SetKeywords(newKeywords); err != nil {
+				return err
+			}
+			changed = true
 		}
 		if cmd.Flags().Lookup("title").Changed {
 			newTitle, _ := cmd.Flags().GetString("title")
-			fmt.Println("newTitle", newTitle)
-			/*err = mde.SetImageDescription(newTitle)
-			if err != nil {
+			fmt.Println("setting newTitle", newTitle)
+			if err = je.SetTitle(newTitle); err != nil {
 				return err
-			}*/
-			changed = false
+			}
+			changed = true
 		}
 		if cmd.Flags().Lookup("rating").Changed {
-			newRating, _ := cmd.Flags().GetUint("rating")
-			fmt.Println("newRating: ", newRating)
+			newRating, err := cmd.Flags().GetUint16("rating")
+			if err != nil {
+				return err
+			}
+			fmt.Println("setting new rating: ", newRating)
+			je.Xmp().SetRating(newRating)
+			changed = true
+
 		}
 		if changed {
 			fmt.Println("Writing changes to ", dest)
-			_ = mde.WriteFile(dest)
+			err = je.WriteFile(dest)
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 
@@ -55,5 +66,5 @@ func init() {
 	editCommand.Flags().StringP("dest", "d", "", "destination file. If not set the source image will be modified")
 	editCommand.Flags().StringSliceP("keywords", "k", nil, "--keywords=\"k1,k2\"")
 	editCommand.Flags().StringP("title", "t", "", "image title/description")
-	editCommand.Flags().UintP("rating", "r", 0, "rating (1-5)")
+	editCommand.Flags().Uint16P("rating", "r", 0, "rating (1-5)")
 }

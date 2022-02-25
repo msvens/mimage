@@ -103,36 +103,34 @@ func TestExifValueString(t *testing.T) {
 //Todo: Create an asset image that has ImageDesc and UserComment already stored
 func TestExifData_GetIfdImageDescription(t *testing.T) {
 	ed := getExifData(LeicaImg, t)
-	if desc, err := ed.GetIfdImageDescription(); err == nil {
+	if desc := ed.GetIfdImageDescription(); desc != "" {
 		t.Errorf("Did not expect any image description got %s", desc)
-	} else if err != IfdTagNotFoundErr {
-		t.Errorf("Expected err %v got %v", IfdTagNotFoundErr, err)
 	}
 	je := getJpegEditor(LeicaImg, t)
-	if err := je.Exif().SetImageDescription("some description"); err != nil {
+	expImgDesc := "some description"
+	if err := je.Exif().SetImageDescription(expImgDesc); err != nil {
 		t.Errorf("Could not set image description: %v", err)
 	}
 	ed = jpegEditorMD(je, t).exifData
-	if _, err := ed.GetIfdImageDescription(); err != nil {
-		t.Errorf("Expected description got error %v", err)
+	if desc := ed.GetIfdImageDescription(); desc != expImgDesc {
+		t.Errorf("Expected description %s got %s", expImgDesc, desc)
 	}
 }
 
 //Todo: Create an asset image that has ImageDesc and UserComment already stored
 func TestExifData_GetIfdUserComment(t *testing.T) {
 	ed := getExifData(LeicaImg, t)
-	if desc, err := ed.GetIfdUserComment(); err == nil {
+	if desc := ed.GetIfdUserComment(); desc != "" {
 		t.Errorf("Did not expect any user comment got %s", desc)
-	} else if err != IfdTagNotFoundErr {
-		t.Errorf("Expected err %v got %v", IfdTagNotFoundErr, err)
 	}
 	je := getJpegEditor(LeicaImg, t)
-	if err := je.Exif().SetUserComment("some comment"); err != nil {
+	expUserComment := "some comment"
+	if err := je.Exif().SetUserComment(expUserComment); err != nil {
 		t.Errorf("Could not set user comment: %v", err)
 	}
 	ed = jpegEditorMD(je, t).exifData
-	if _, err := ed.GetIfdUserComment(); err != nil {
-		t.Errorf("Expected user comment got error %v", err)
+	if desc := ed.GetIfdUserComment(); desc != expUserComment {
+		t.Errorf("Expected user comment %s got %s", expUserComment, desc)
 	}
 }
 

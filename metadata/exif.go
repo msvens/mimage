@@ -375,21 +375,20 @@ func (ed *ExifData) GpsInfo() (*exif.GpsInfo, error) {
 	}
 }
 
-//Convinince method to retrive IFD_ImageDescription. The MetaDataEditor has
-//a corresponding method to set the IFD_ImageDescription
-func (ed *ExifData) GetIfdImageDescription() (string, error) {
+func (ed *ExifData) GetIfdImageDescription() string {
 	ret := ""
-	err := ed.ScanIfdRoot(IFD_ImageDescription, &ret)
-	return ret, err
+	if err := ed.ScanIfdRoot(IFD_ImageDescription, &ret); err != nil {
+		return ""
+	}
+	return ret
 }
 
-//Convinience method to retrieve Exif_UserComment. As the UserComment is
-//an undefined field this method will assume it has been set by the corresponding
-//MetaDataEditor method
-func (ed *ExifData) GetIfdUserComment() (string, error) {
+func (ed *ExifData) GetIfdUserComment() string {
 	ret := exifundefined.Tag9286UserComment{}
-	err := ed.ScanIfdExif(ExifIFD_UserComment, &ret)
-	return string(ret.EncodingBytes), err
+	if err := ed.ScanIfdExif(ExifIFD_UserComment, &ret); err != nil {
+		return ""
+	}
+	return string(ret.EncodingBytes)
 }
 
 func (ed *ExifData) HasIfd(index ExifIndex) bool {

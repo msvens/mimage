@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -315,6 +316,48 @@ func TestJpegEditor_MetaData(t *testing.T) {
 
 }
 
+func TestJpegEditor_SetKeywords(t *testing.T) {
+	expKeywords := []string{"keyword 1", "keyword 2", "keyword 3"}
+	for _, fname := range []string{LeicaImg, NoExifImg} {
+		je := getJpegEditor(fname, t)
+		err := je.SetKeywords(expKeywords)
+		if err != nil {
+			t.Fatalf("Error setting keywords for image %s got error: %v", fname, err)
+		}
+		md := jpegEditorMD(je, t)
+		actKeywords := md.Iptc().GetKeywords()
+		if !reflect.DeepEqual(expKeywords, actKeywords) {
+			t.Errorf("Expected %v got %v", expKeywords, actKeywords)
+		}
+		actKeywords = md.Xmp().GetKeywords()
+		if !reflect.DeepEqual(expKeywords, actKeywords) {
+			t.Errorf("Expected %v got %v", expKeywords, actKeywords)
+		}
+	}
+
+}
+
+func TestJpegEditor_SetTitle(t *testing.T) {
+	fnames := []string{LeicaImg, NoExifImg}
+	for _, fname := range fnames {
+		je := getJpegEditor(fname, t)
+		expTitle := "New Title"
+		if err := je.SetTitle(expTitle); err != nil {
+			t.Fatalf("Could not set title for image %s got error %v", fname, err)
+		}
+		md := jpegEditorMD(je, t)
+		if md.Iptc().GetTitle() != expTitle {
+			t.Errorf("Expected title %s got %s", expTitle, md.Iptc().GetTitle())
+		}
+		if md.Xmp().GetTitle() != expTitle {
+			t.Errorf("Expected title %s got %s", expTitle, md.Xmp().GetTitle())
+		}
+		if md.Exif().GetIfdImageDescription() != expTitle {
+			t.Errorf("Expected title %s got %s", expTitle, md.Xmp().GetTitle())
+		}
+	}
+}
+
 func TestJpegEditor_WriteFile(t *testing.T) {
 	je := getJpegEditor(LeicaImg, t)
 	//make a change
@@ -328,9 +371,7 @@ func TestJpegEditor_WriteFile(t *testing.T) {
 	}
 	//now reopen
 	md := getMetaData(out, t)
-	if desc, err := md.exifData.GetIfdImageDescription(); err != nil {
-		t.Errorf("Could not retrieve image description: %v", err)
-	} else if desc != expImageDesc {
+	if desc := md.exifData.GetIfdImageDescription(); desc != expImageDesc {
 		t.Errorf("Expected %s got %s", expImageDesc, desc)
 	}
 	//finally delete temp file
