@@ -9,8 +9,7 @@ mimage is a native go package for handling
 image meta information (exif, iptc, xmp) as well as some basic
 image manipulation (resizing, thumbnail creation, etc)
 
-mimage is used by [mphotos](https://www.github.com/msvens/mphotos) and is not at
-this time intended to be a general purpose package - it lacks proper testing and functionality.
+mimage is used by [mphotos](https://www.github.com/msvens/mphotos) and we welcome others to try it out.
 
 ## Why?
 
