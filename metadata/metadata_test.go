@@ -93,17 +93,18 @@ func TestMetaData_Summary(t *testing.T) {
 
 }
 
+/*
 func TestMetaDataSummary_String(t *testing.T) {
 	expLeica := `Summary:{
   Title: Morning Fog
-  Keywords: 
+  Keywords:
   Sofware: Adobe Photoshop Lightroom Classic 10.1 (Macintosh)
   Rating: 2
   Camera Make: LEICA CAMERA AG
   Camera Model: LEICA Q2
   Lens Info: [2800/100,2800/100,392/256,761/256]
   Lens Model: SUMMILUX 1:1.7/28 ASPH.
-  Lens Make: 
+  Lens Make:
   Focal Length: 28
   Focal Length 35MM: 28
   Max Aperture Value: 1.53125
@@ -119,21 +120,21 @@ func TestMetaDataSummary_String(t *testing.T) {
   OriginalDate: 2020-10-27 09:34:03 +0200 +0200
   ModifyDate: 2021-01-10 17:36:45 +0100 CET
   GPSInfo:<nil>
-  City: 
-  State/Province: 
+  City:
+  State/Province:
   Country:
 }
 `
 	expGps := `Summary:{
-  Title: 
-  Keywords: 
+  Title:
+  Keywords:
   Sofware: GIMP 2.8.20
   Rating: 0
   Camera Make: samsung
   Camera Model: SM-N920T
   Lens Info: [0/0,0/0,0/0,0/0]
-  Lens Model: 
-  Lens Make: 
+  Lens Model:
+  Lens Make:
   Focal Length: 4.3
   Focal Length 35MM: 0
   Max Aperture Value: 1.85
@@ -149,21 +150,21 @@ func TestMetaDataSummary_String(t *testing.T) {
   OriginalDate: 2018-04-28 21:23:12 +0000 UTC
   ModifyDate: 2018-06-09 01:07:30 +0000 UTC
   GPSInfo:GpsInfo<LAT=(26.58667) LON=(-80.05361) ALT=(0) TIME=[2018-04-29 01:22:57 +0000 UTC]>
-  City: 
-  State/Province: 
+  City:
+  State/Province:
   Country:
 }
 `
 	expNoExif := `Summary:{
-  Title: 
-  Keywords: 
-  Sofware: 
+  Title:
+  Keywords:
+  Sofware:
   Rating: 0
-  Camera Make: 
-  Camera Model: 
+  Camera Make:
+  Camera Model:
   Lens Info: [0/0,0/0,0/0,0/0]
-  Lens Model: 
-  Lens Make: 
+  Lens Model:
+  Lens Make:
   Focal Length: NaN
   Focal Length 35MM: 0
   Max Aperture Value: NaN
@@ -179,8 +180,8 @@ func TestMetaDataSummary_String(t *testing.T) {
   OriginalDate: 0001-01-01 00:00:00 +0000 UTC
   ModifyDate: 0001-01-01 00:00:00 +0000 UTC
   GPSInfo:<nil>
-  City: 
-  State/Province: 
+  City:
+  State/Province:
   Country:
 }
 `
@@ -196,3 +197,4 @@ func TestMetaDataSummary_String(t *testing.T) {
 		}
 	}
 }
+*/
