@@ -24,6 +24,8 @@ mimage seeks to remedy this by offering similar functionality using only go nati
 
 # Usage
 
+Show examples of how the library can be used
+
 # Releases
 
 # Todo
