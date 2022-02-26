@@ -1,0 +1,12 @@
+language: go
+go:
+  - master
+  - stable
+env:
+  - GO111MODULE=on
+install:
+  - go get -t ./...
+script:
+  - go test test ./... -v
+after_success:
+  - curl -s https://codecov.io/bash | bash
