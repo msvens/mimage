@@ -248,11 +248,13 @@ func TestExifData_ScanExifDate(t *testing.T) {
 	"OffsetTime": "+01:00",
 	"OffsetTimeOriginal": "+02:00",
 	*/
-	expModifyDate := "2021-01-10 17:36:45 +0100 CET"
-	expOrigDate := "2020-10-27 09:34:03 +0200 +0200"
-	expDigDate := "2020-10-27 09:34:03 +0200 +0200"
+	dateLayout := "2006-01-02 15:04:05 -0700"
+	expModifyDate, _ := time.Parse(dateLayout, "2021-01-10 17:36:45 +0100")
+	expOrigDate, _ := time.Parse(dateLayout, "2020-10-27 09:34:03 +0200")
+	expDigDate, _ := time.Parse(dateLayout, "2020-10-27 09:34:03 +0200")
+	//expDigDate :=
 	ed := getExifData(LeicaImg, t)
-	dates := map[ExifDate]string{
+	dates := map[ExifDate]time.Time{
 		OriginalDate:  expOrigDate,
 		ModifyDate:    expModifyDate,
 		DigitizedDate: expDigDate,
@@ -261,7 +263,7 @@ func TestExifData_ScanExifDate(t *testing.T) {
 	for k, v := range dates {
 		if err := ed.ScanExifDate(k, &ret); err != nil {
 			t.Errorf("Expected ExifDate %v got error: %v", k, err)
-		} else if ret.String() != v {
+		} else if !cmpDates(v, ret) {
 			t.Errorf("Expected %s got %s", v, ret)
 		}
 	}
