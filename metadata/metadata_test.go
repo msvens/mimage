@@ -2,7 +2,6 @@ package metadata
 
 import (
 	"io/ioutil"
-	"strings"
 	"testing"
 )
 
@@ -192,7 +191,7 @@ func TestMetaDataSummary_String(t *testing.T) {
 	}
 	for k, v := range cmpMap {
 		md := getMetaData(k, t)
-		if !strings.EqualFold(md.Summary().String(), v) {
+		if md.Summary().String() != v {
 			t.Errorf("Expected summary\n%v got\n%v", len(v), len(md.Summary().String()))
 		}
 	}
