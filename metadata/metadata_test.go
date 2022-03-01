@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"fmt"
 	"io/ioutil"
 	"testing"
 )
@@ -28,16 +29,6 @@ func getMetaData(fname string, t *testing.T) *MetaData {
 	}
 	return md
 }
-
-/*
-func editorMD(je *JpegEditor, t *testing.T) *MetaData {
-	md, err := je.MetaData()
-	if err != nil {
-		t.Fatalf("Could not get metadata ")
-	}
-	return md
-}
-*/
 
 func TestParse(t *testing.T) {
 	data := getAssetBytes(NikonImg, t)
@@ -198,3 +189,14 @@ func TestMetaDataSummary_String(t *testing.T) {
 	}
 }
 */
+
+func ExampleNewMetaDataFromFile() {
+	md, err := NewMetaDataFromFile("../assets/leica.jpg")
+	if err != nil {
+		fmt.Printf("Could not open file: %v\n", err)
+		return
+	}
+	fmt.Printf("Make: %s, Model: %s\n", md.Summary().CameraMake, md.Summary().CameraModel)
+
+	//Output: Make: LEICA CAMERA AG, Model: LEICA Q2
+}

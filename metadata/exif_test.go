@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"fmt"
 	exifundefined "github.com/dsoprea/go-exif/v3/undefined"
 	"strings"
 	"testing"
@@ -376,4 +377,20 @@ func TestParseIfdDateTime(t *testing.T) {
 //Todo:
 func TestTimeOffsetString(t *testing.T) {
 
+}
+
+func ExampleExifData_ScanIfdRoot() {
+	md, err := NewMetaDataFromFile("../assets/leica.jpg")
+	if err != nil {
+		fmt.Printf("Could not open file: %v\n", err)
+		return
+	}
+	cameraMake := ""
+	err = md.Exif().ScanIfdRoot(IFD_Make, &cameraMake)
+	if err != nil {
+		fmt.Printf("Could not scan ifd tag: %v\n", err)
+		return
+	}
+	fmt.Printf("Make: %s\n", cameraMake)
+	//Output: Make: LEICA CAMERA AG
 }

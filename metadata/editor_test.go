@@ -387,3 +387,23 @@ func TestJpegEditor_WriteFile(t *testing.T) {
 		t.Errorf("Expecteded error %v got %v", JpegWrongFileExtErr, err)
 	}
 }
+
+func ExampleJpegEditor_SetTitle() {
+	je, err := NewJpegEditorFile("../assets/leica.jpg")
+	if err != nil {
+		fmt.Printf("Could not retrieve editor for file: %v\n", err)
+		return
+	}
+	err = je.SetTitle("some new title")
+	if err != nil {
+		fmt.Printf("Could not set title: %v\n", err)
+		return
+	}
+	md, err := je.MetaData()
+	if err != nil {
+		fmt.Printf("Could not get metadata: %v\n", err)
+	}
+	fmt.Printf("New Title: %v\n", md.Summary().Title)
+
+	//Output: New Title: some new title
+}
