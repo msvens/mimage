@@ -108,7 +108,7 @@ func TestJpegEditor_Bytes(t *testing.T) {
 	if b, err = je.Bytes(); err != nil {
 		t.Errorf(err.Error())
 	} else {
-		je, err = NewJpegEditor(b)
+		_, err = NewJpegEditor(b)
 		if err != nil {
 			t.Errorf("Could not open editor from written bytes: %s", err.Error())
 		}
@@ -151,7 +151,7 @@ func TestJpegEditor_CopyMetaData(t *testing.T) {
 		fmt.Println(e1)
 		fmt.Println(e2)
 		t.Errorf("could not find source exif segement or dest exif segment")
-	} else if bytes.Compare(sourceSeq.Data, destSeq.Data) != 0 {
+	} else if !bytes.Equal(sourceSeq.Data, destSeq.Data) {
 		t.Errorf("exif segments are not the same")
 	}
 
@@ -161,7 +161,7 @@ func TestJpegEditor_CopyMetaData(t *testing.T) {
 
 	if e1 != nil || e2 != nil {
 		t.Errorf("could not find source XmpEditor segement or dest exif segment")
-	} else if bytes.Compare(sourceSeq.Data, destSeq.Data) != 0 {
+	} else if !bytes.Equal(sourceSeq.Data, destSeq.Data) {
 		t.Errorf("XmpEditor segments are not the same")
 	}
 
@@ -171,7 +171,7 @@ func TestJpegEditor_CopyMetaData(t *testing.T) {
 
 	if e1 != nil || e2 != nil {
 		t.Errorf("could not find source iptc segement or dest exif segment")
-	} else if bytes.Compare(sourceSeq.Data, destSeq.Data) != 0 {
+	} else if !bytes.Equal(sourceSeq.Data, destSeq.Data) {
 		t.Errorf("iptc segments are not the same")
 	}
 

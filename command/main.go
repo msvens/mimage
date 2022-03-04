@@ -6,14 +6,6 @@ package main
 
 import "github.com/msvens/mimage/command/cmd"
 
-type TestStruct struct {
-	data []string
-}
-
-func appendToTestStruct(s *TestStruct, d string) {
-	s.data = append(s.data, d)
-}
-
 func main() {
 	/*ts := TestStruct{}
 	appendToTestStruct(&ts, "str1")

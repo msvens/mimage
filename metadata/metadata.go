@@ -129,7 +129,7 @@ func NewMetaData(data []byte) (*MetaData, error) {
 	}
 
 	ret.xmpData, xmpErr = NewXmpData(segments)
-	if xmpErr != nil && xmpErr != NoXmpErr {
+	if xmpErr != nil && xmpErr != ErrNoXmp {
 		return nil, xmpErr
 	}
 
@@ -179,7 +179,7 @@ func (md *MetaData) Summary() *MetaDataSummary {
 }
 
 func (md *MetaData) SummaryErr() error {
-	return md.SummaryErr()
+	return md.summaryErr
 }
 
 func (md *MetaData) Xmp() XmpData {

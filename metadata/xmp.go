@@ -16,17 +16,17 @@ type XmpData struct {
 	rawXmp *xmp.Document
 }
 
-var NoXmpErr = errors.New("No XMP data")
+var ErrNoXmp = errors.New("No XMP data")
 
 func NewXmpData(segments *jpegstructure.SegmentList) (XmpData, error) {
 	_, s, err := segments.FindXmp()
 	if err != nil {
-		return XmpData{}, NoXmpErr
+		return XmpData{}, ErrNoXmp
 	}
 	str, err := s.FormattedXmp()
 	if err != nil {
 		//We should log errors
-		return XmpData{}, NoXmpErr
+		return XmpData{}, ErrNoXmp
 	}
 	return NewXmpDataFromBytes([]byte(str))
 }
@@ -35,7 +35,7 @@ func NewXmpDataFromBytes(data []byte) (XmpData, error) {
 	model := &xmp.Document{}
 	err := xmp.Unmarshal(data, model)
 	if err != nil {
-		return XmpData{}, NoXmpErr
+		return XmpData{}, ErrNoXmp
 	} else {
 		return XmpData{model}, nil
 	}

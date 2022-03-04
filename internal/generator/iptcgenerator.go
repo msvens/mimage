@@ -27,7 +27,7 @@ type etIptcRecord struct {
 	Tags []etIptcTag
 }
 
-var fmtParser, _ = regexp.Compile(`^\s*(\w+).*?\[?(\d*),?(\d*)\]?.*$`)
+//var fmtParser, _ = regexp.Compile(`^\s*(\w+).*?\[?(\d*),?(\d*)\]?.*$`)
 var typeRegExp, _ = regexp.Compile(`^\s*(\w+).*?\[?(\d*),?(\d*)\]?.*$`)
 
 func fixTagName(name string) string {
@@ -102,7 +102,7 @@ const(
 	}
 	sb.WriteString(")\n\n")
 	sb.WriteString("var IptcRecordName = map[IptcRecord]string{\n")
-	for k, _ := range raw {
+	for k := range raw {
 		sb.WriteString(fmt.Sprintf("  %s: \"%s\",\n", k, k))
 	}
 	sb.WriteString("}\n\n")
@@ -269,7 +269,7 @@ func parseValues(iptcType string, values map[string]string) (interface{}, error)
 		return values, nil
 	case "IptcDigits":
 		isNotDigit := func(c rune) bool { return c < '0' || c > '9' }
-		for k, _ := range values {
+		for k := range values {
 			if b := strings.IndexFunc(k, isNotDigit) == -1; b {
 				return values, nil
 			}

@@ -22,10 +22,6 @@ func (r Rat) Float32() float32 {
 	return float32(r.Numerator) / float32(r.Denominator)
 }
 
-func (r Rat) toSignedRational() exifcommon.SignedRational {
-	return exifcommon.SignedRational{Numerator: r.Numerator, Denominator: r.Denominator}
-}
-
 func (r Rat) IsZero() bool {
 	return r.Numerator == 0 && r.Denominator == 0
 }

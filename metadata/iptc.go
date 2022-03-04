@@ -306,41 +306,47 @@ func (ipd *IptcData) Scan(record IptcRecord, tag IptcTag, dest interface{}) erro
 		case *[]string:
 			if recdata.Type == IptcString || recdata.Type == IptcDigits {
 				vals := recdata.Data.([]string)
-				for _, v := range vals {
+				*dtype = vals
+				/*for _, v := range vals {
 					*dtype = append(*dtype, v)
-				}
+				}*/
 				return nil
 			}
 		case *[]uint8:
 			if recdata.Repeatable && recdata.Type == IptcUint8 {
 				vals := recdata.Data.([]uint8)
-				for _, v := range vals {
+				*dtype = vals
+				/*for _, v := range vals {
 					*dtype = append(*dtype, v)
-				}
+				}*/
 				return nil
 			}
 		case *[]uint16:
 			if recdata.Repeatable && recdata.Type == IptcUint16 {
 				vals := recdata.Data.([]uint16)
+				*dtype = vals
+				/**dtype = append(*dtype, vals...)
 				for _, v := range vals {
 					*dtype = append(*dtype, v)
-				}
+				}*/
 				return nil
 			}
 		case *[]uint32:
 			if recdata.Repeatable && recdata.Type == IptcUint32 {
 				vals := recdata.Data.([]uint32)
-				for _, v := range vals {
+				*dtype = vals
+				/*for _, v := range vals {
 					*dtype = append(*dtype, v)
-				}
+				}*/
 				return nil
 			}
 		case *[][]byte:
 			if recdata.Type == IptcUndef {
 				vals := recdata.Data.([][]byte)
-				for _, v := range vals {
+				*dtype = vals
+				/*for _, v := range vals {
 					*dtype = append(*dtype, v)
-				}
+				}*/
 				return nil
 			}
 		}

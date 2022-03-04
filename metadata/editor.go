@@ -32,7 +32,7 @@ func NewJpegEditor(data []byte) (*JpegEditor, error) {
 	if ret.sl, err = parseJpegBytes(data); err != nil {
 		return &ret, err
 	}
-	if ret.xe, err = NewXmpEditor(ret.sl); err != nil && err != NoXmpErr {
+	if ret.xe, err = NewXmpEditor(ret.sl); err != nil && err != ErrNoXmp {
 		return &ret, err
 	}
 	if ret.ee, err = NewExifEditor(ret.sl); err != nil {

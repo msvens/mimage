@@ -28,6 +28,7 @@ type etExifTag struct {
 	Values      map[string]string
 }
 
+/*
 var exifTypeMapping = map[string]string{
 	"double":      "ExifDouble",
 	"float":       "ExifFloat",
@@ -40,7 +41,7 @@ var exifTypeMapping = map[string]string{
 	"rational64u": "ExifUrational",
 	"string":      "ExifString",
 	"undef":       "ExifUndef",
-}
+}*/
 
 const rawMain = "main"
 const rawGps = "gps"
@@ -152,7 +153,7 @@ func GenerateMasterExifJson() error {
 			t.Ifd = alignIFD(t.Ifd)
 			t.Writable = alignType(*t, exivIdMaps)
 			t.Description = alignDesc(*t, exivIdMaps)
-			if _, found := tagNames[t.Ifd+t.Name]; found == true {
+			if _, found := tagNames[t.Ifd+t.Name]; found {
 				//fmt.Println("found duplicate")
 				t.Name = fmt.Sprintf("%s_%#04x", t.Name, t.Id)
 				//fmt.Println("found duplicate: ", t.Name)
