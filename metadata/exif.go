@@ -182,7 +182,7 @@ func ExifValueStringErr(index ExifIndex, tag ExifTag, value interface{}) (string
 	if !found {
 		return "", IfdTagNotFoundErr
 	}
-	var ret = ""
+	ret := ""
 	switch tagDesc.Type {
 	case ExifString:
 		if v, ok := value.(string); !ok {
@@ -438,7 +438,8 @@ func (ed *ExifData) Scan(ifdIndex ExifIndex, tagId ExifTag, dest interface{}) er
 	switch dtype := dest.(type) {
 
 	case *string:
-		*dtype, err = entry.Format()
+		//Todo: do a proper convert instead of using format
+		*dtype, _ = entry.Format()
 	case *float32:
 		if entry.TagType() == exifcommon.TypeFloat {
 			v := value.([]float32)

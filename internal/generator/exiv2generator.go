@@ -51,7 +51,7 @@ func GenerateExiv2ExifJson() error {
 	}
 
 	//find table body:
-	tbody, err := findNode(doc, func(n *html.Node) bool {
+	tbody, _ := findNode(doc, func(n *html.Node) bool {
 		if n.Type == html.ElementNode && n.Data == "tbody" {
 			return true
 		} else {

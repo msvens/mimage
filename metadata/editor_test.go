@@ -105,6 +105,9 @@ func TestJpegEditor_Bytes(t *testing.T) {
 	}
 	//Test 2: Write bytes after an edit
 	err = je.Exif().SetDate(ModifyDate, time.Now())
+	if err != nil {
+		t.Fatalf("Could not set date: %v", err)
+	}
 	if b, err = je.Bytes(); err != nil {
 		t.Errorf(err.Error())
 	} else {
