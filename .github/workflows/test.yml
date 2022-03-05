@@ -28,15 +28,16 @@ jobs:
       matrix:
         platform:
         - ubuntu-latest
-        - macOS-latest
+ #       - macOS-latest
         go:
-        - 16
+ #       - 16
         - 17
     name: '${{ matrix.platform }} | 1.${{ matrix.go }}.x'
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
           go-version: 1.${{ matrix.go }}.x
+      - uses: actions/checkout@v2
+      - run: go get -t ./...
       - run: go test ./...
