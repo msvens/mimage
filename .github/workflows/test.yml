@@ -25,12 +25,13 @@ jobs:
 
   golangci-test:
     strategy:
+      fail-fast: false
       matrix:
         platform:
         - ubuntu-latest
- #       - macOS-latest
+        - macOS-latest
         go:
- #       - 16
+        - 16
         - 17
     name: '${{ matrix.platform }} | 1.${{ matrix.go }}.x'
     runs-on: ${{ matrix.platform }}
