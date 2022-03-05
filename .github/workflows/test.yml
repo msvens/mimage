@@ -22,3 +22,21 @@ jobs:
         with:
           version: latest
           args: --verbose
+
+  golangci-test:
+    strategy:
+      matrix:
+        platform:
+        - ubuntu-latest
+        - macOS-latest
+        go:
+        - 16
+        - 17
+    name: '${{ matrix.platform }} | 1.${{ matrix.go }}.x'
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.${{ matrix.go }}.x
+      - run: go test ./...
