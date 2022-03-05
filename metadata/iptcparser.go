@@ -8,7 +8,6 @@ import (
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"github.com/msvens/mimage/photoshop"
 	"io"
-	"math"
 	"sort"
 )
 
@@ -21,6 +20,12 @@ const msb = 32768
 func setMsb(n uint16) uint16 {
 	return n | msb
 }
+
+//math.MaxInt only supported from 1.17 and up
+const (
+	intSize = 32 << (^uint(0) >> 63) // 32 or 64
+	maxInt  = 1<<(intSize-1) - 1
+)
 
 func clearMsb(n uint16) uint16 {
 	return n &^ msb
@@ -209,7 +214,7 @@ func decodeIptcRecordData(r io.Reader) (IptcRecordTag, []byte, error) {
 		}
 	}
 	//read the data:
-	if size > math.MaxInt {
+	if size > maxInt {
 		return recTag, nil, fmt.Errorf("Data Size exceeds MaxInt")
 	}
 	data := make([]byte, size)
