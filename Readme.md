@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/msvens/mimage.svg?branch=master)](https://travis-ci.com/msvens/mimage)
+[![](https://img.shields.io/github/workflow/status/msvens/mimage/Test?longCache=tru&label=Test&logo=github%20actions&logoColor=fff)](https://github.com/msvens/mimage/actions?query=workflow%3ATest)
 [![codecov](https://codecov.io/gh/dsoprea/go-exif/branch/master/graph/badge.svg)](https://codecov.io/gh/msvens/mimage)
 [![Go Report Card](https://goreportcard.com/badge/github.com/msvens/mimage)](https://goreportcard.com/report/github.com/msvens/mimage)
 [![GoDoc](https://godoc.org/github.com/msvens/mimage/v3?status.svg)](https://godoc.org/github.com/msvens/mimage)
