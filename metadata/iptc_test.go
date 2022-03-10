@@ -113,8 +113,8 @@ func TestIptcData_ScanApplication(t *testing.T) {
 	//non existent tag
 	if err := iptcData.ScanApplication(IPTCApplication_Keywords, &ret); err == nil {
 		t.Errorf("Expected error got %s", ret)
-	} else if err != IptcTagNotFoundErr {
-		t.Errorf("Expected error %v got error %v", IptcTagNotFoundErr, err)
+	} else if err != ErrIptcTagNotFound {
+		t.Errorf("Expected error %v got error %v", ErrIptcTagNotFound, err)
 	}
 	//md.PrintIptc()
 }
@@ -162,8 +162,8 @@ func TestIptcData_ScanEnvelope(t *testing.T) {
 	//non existent tag
 	if err := iptcData.ScanEnvelope(IPTCEnvelope_Destination, &ret); err == nil {
 		t.Errorf("Expected error for non existing tag")
-	} else if err != IptcTagNotFoundErr {
-		t.Errorf("Expected error %v got error %v", IptcTagNotFoundErr, err)
+	} else if err != ErrIptcTagNotFound {
+		t.Errorf("Expected error %v got error %v", ErrIptcTagNotFound, err)
 	}
 
 }

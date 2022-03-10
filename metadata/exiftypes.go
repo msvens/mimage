@@ -10,6 +10,18 @@ type Rat struct {
 	Denominator int32
 }
 
+type URat struct {
+	Numerator   uint32
+	Denominator uint32
+}
+
+type LensInfo struct {
+	MinFocalLength           URat `json:"minFocalLength,omitempty"`
+	MaxFocalLength           URat `json:"maxFocalLength,omitempty"`
+	MinFNumberMinFocalLength URat `json:"minFNumberMinFocalLength,omitempty"`
+	MinFNumberMaxFocalLength URat `json:"MinFNumberMaxFocalLength,omitempty"`
+}
+
 func NewRatFromSignedRational(v exifcommon.SignedRational) Rat {
 	return Rat{v.Numerator, v.Denominator}
 }
@@ -28,11 +40,6 @@ func (r Rat) IsZero() bool {
 
 func (r Rat) String() string {
 	return fmt.Sprintf("%v/%v", r.Numerator, r.Denominator)
-}
-
-type URat struct {
-	Numerator   uint32
-	Denominator uint32
 }
 
 func NewURatFromRational(v exifcommon.Rational) URat {
@@ -57,13 +64,6 @@ func (r URat) toRational() exifcommon.Rational {
 
 func (r URat) String() string {
 	return fmt.Sprintf("%v/%v", r.Numerator, r.Denominator)
-}
-
-type LensInfo struct {
-	MinFocalLength           URat `json:"minFocalLength,omitempty"`
-	MaxFocalLength           URat `json:"maxFocalLength,omitempty"`
-	MinFNumberMinFocalLength URat `json:"minFNumberMinFocalLength,omitempty"`
-	MinFNumberMaxFocalLength URat `json:"MinFNumberMaxFocalLength,omitempty"`
 }
 
 func NewLensInfoFromRational(vals []exifcommon.Rational) (LensInfo, error) {

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-var JpegWrongFileExtErr = errors.New("File does not end with .jpg or .jpeg")
+var ErrJpegWrongFileExt = errors.New("File does not end with .jpg or .jpeg")
 
 type JpegEditor struct {
 	sl *jpegstructure.SegmentList
@@ -19,11 +19,11 @@ type JpegEditor struct {
 }
 
 func NewJpegEditorFile(fileName string) (*JpegEditor, error) {
-	if b, err := ioutil.ReadFile(fileName); err != nil {
+	b, err := ioutil.ReadFile(fileName)
+	if err != nil {
 		return nil, err
-	} else {
-		return NewJpegEditor(b)
 	}
+	return NewJpegEditor(b)
 }
 
 func NewJpegEditor(data []byte) (*JpegEditor, error) {
@@ -70,9 +70,8 @@ func (je *JpegEditor) Bytes() ([]byte, error) {
 	out := new(bytes.Buffer)
 	if err := je.sl.Write(out); err != nil {
 		return nil, err
-	} else {
-		return out.Bytes(), nil
 	}
+	return out.Bytes(), nil
 }
 
 func (je *JpegEditor) CopyMetaData(sourceImg []byte) error {
@@ -172,11 +171,11 @@ func (je JpegEditor) Iptc() *IptcEditor {
 
 //Retrives a metadata struct based on this editor. Will commit any changes first
 func (je *JpegEditor) MetaData() (*MetaData, error) {
-	if b, e := je.Bytes(); e != nil {
+	b, e := je.Bytes()
+	if e != nil {
 		return nil, e
-	} else {
-		return NewMetaData(b)
 	}
+	return NewMetaData(b)
 }
 
 func (je *JpegEditor) setExif() error {
@@ -200,32 +199,12 @@ func (je *JpegEditor) setIptc() error {
 		s := je.sl.Segments()[je.ie.SegmentIndex()]
 		s.Data = iptcBytes
 		return nil
-	} else {
-		iptcS := &jpegstructure.Segment{MarkerId: jpegstructure.MARKER_APP13, Data: iptcBytes}
-		je.appendSegment(1, iptcS)
-		je.ie.segmentIdx = 1
-		return nil
 	}
-	/*
-		iptcBytes, err := je.ie.Bytes(true)
-		if err != nil {
-			return err
-		}
-		_, s, err := je.sl.FindIptc()
-		if err == nil {
-			fmt.Println("replacing bytes...")
-			fmt.Println(s.MarkerId,len(s.Data), len(iptcBytes))
+	iptcS := &jpegstructure.Segment{MarkerId: jpegstructure.MARKER_APP13, Data: iptcBytes}
+	je.appendSegment(1, iptcS)
+	je.ie.segmentIdx = 1
+	return nil
 
-			s.Data = iptcBytes
-			return nil
-		} else if err == jpegstructure.ErrNoIptc {
-			iptcS := &jpegstructure.Segment{MarkerId: jpegstructure.MARKER_APP13, Data: iptcBytes}
-			je.appendSegment(1, iptcS)
-			return nil
-		} else {
-			return err
-		}
-	*/
 }
 
 //ConvenianceFunction to set keywords in both xmp and iptc metadata blocks
@@ -236,12 +215,12 @@ func (je *JpegEditor) SetKeywords(keywords []string) error {
 
 //Conveniance function to image title in xmp, iptc and exif metadata blocks
 func (je *JpegEditor) SetTitle(title string) error {
+	je.Xmp().SetTitle(title)
 	if err := je.ee.SetImageDescription(title); err != nil {
 		return err
-	} else {
-		je.Xmp().SetTitle(title)
-		return je.Iptc().SetTitle(title)
 	}
+	return je.Iptc().SetTitle(title)
+
 }
 
 func (je *JpegEditor) setXmp() error {
@@ -262,18 +241,19 @@ func (je *JpegEditor) setXmp() error {
 	}
 }
 
-//Writes this image to file by first commiting all edits. Any existing
+//Writes this image to file by first committing all edits. Any existing
 //file will be truncated. Destination needs to have jpg or jpeg extension
 func (je *JpegEditor) WriteFile(dest string) error {
 	//make sure dest has the right file extension
 	if filepath.Ext(dest) != ".jpg" && filepath.Ext(dest) != ".jpeg" {
-		return JpegWrongFileExtErr
+		return ErrJpegWrongFileExt
 	}
-	if out, err := je.Bytes(); err != nil {
+	out, err := je.Bytes()
+	if err != nil {
 		return err
-	} else {
-		return ioutil.WriteFile(dest, out, 0644)
 	}
+	return ioutil.WriteFile(dest, out, 0644)
+
 }
 
 func (je JpegEditor) Xmp() *XmpEditor {

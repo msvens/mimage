@@ -10,23 +10,23 @@ import (
 
 func getIptcDataFromImage(fname string, t *testing.T) []byte {
 	jpegParser := jpegstructure.NewJpegMediaParser()
-	if ec, err := jpegParser.ParseFile(fname); err != nil {
+	ec, err := jpegParser.ParseFile(fname)
+	if err != nil {
 		t.Fatalf("Could not parse jpeg file: %v", err)
 		return nil
-	} else {
-		sl := ec.(*jpegstructure.SegmentList)
-		_, res, err := photoshop.ParseJpeg(sl)
-		if err != nil {
-			t.Fatalf("Could not parse segmentlist: %v", err)
-		}
-		iptcData, ok := res[photoshop.IptcId]
-		if ok {
-			return iptcData.Data
-		} else {
-			t.Fatalf("Photoshop resources did not contain IPTC data")
-			return nil
-		}
 	}
+	sl := ec.(*jpegstructure.SegmentList)
+	_, res, err := photoshop.ParseJpeg(sl)
+	if err != nil {
+		t.Fatalf("Could not parse segmentlist: %v", err)
+	}
+	iptcData, ok := res[photoshop.IptcId]
+	if ok {
+		return iptcData.Data
+	}
+	t.Fatalf("Photoshop resources did not contain IPTC data")
+	return nil
+
 }
 
 func checkIptcValues(actual map[IptcRecordTag]IptcRecordDataset, t *testing.T) {

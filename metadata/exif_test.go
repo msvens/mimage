@@ -296,8 +296,8 @@ func TestExifData_ScanIfdExif(t *testing.T) {
 	ret1 := exifundefined.Tag9286UserComment{}
 	if err := ed.ScanIfdExif(ExifIFD_UserComment, &ret1); err == nil {
 		t.Errorf("Expected error when reading non existent root tag")
-	} else if err != IfdTagNotFoundErr {
-		t.Errorf("Expected error %v got %v", IfdTagNotFoundErr, err)
+	} else if err != ErrExifTagNotFound {
+		t.Errorf("Expected error %v got %v", ErrExifTagNotFound, err)
 	}
 }
 
@@ -324,8 +324,8 @@ func TestExifData_ScanIfdRoot(t *testing.T) {
 	//now try a tag that is non existent
 	if err := ed.ScanIfdRoot(IFD_ImageDescription, &ret); err == nil {
 		t.Errorf("Expected error when reading non existent root tag")
-	} else if err != IfdTagNotFoundErr {
-		t.Errorf("Expected error %v got %v", IfdTagNotFoundErr, err)
+	} else if err != ErrExifTagNotFound {
+		t.Errorf("Expected error %v got %v", ErrExifTagNotFound, err)
 	}
 }
 

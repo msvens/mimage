@@ -35,7 +35,7 @@ func fixTagName(name string) string {
 }
 
 func GenerateIptcTagsFromExifTool() error {
-	raw, err := readExifToolIptcJson()
+	raw, err := readExifToolIptcJSON()
 	if err != nil {
 		return err
 	}
@@ -159,45 +159,46 @@ func generateIptcValueMap(iptcType string, values map[string]string) string {
 	}
 	switch iptcType {
 	case "IptcString", "IptcDigits":
-		if m, ok := vals.(map[string]string); !ok {
+		m, ok := vals.(map[string]string)
+		if !ok {
 			return "nil"
-		} else {
-			buff.WriteString("map[string]string{\n")
-			for k, v := range m {
-				buff.WriteString(fmt.Sprintf("    \"%s\": \"%s\",\n", k, v))
-			}
-			buff.WriteString("  }")
 		}
+		buff.WriteString("map[string]string{\n")
+		for k, v := range m {
+			buff.WriteString(fmt.Sprintf("    \"%s\": \"%s\",\n", k, v))
+		}
+		buff.WriteString("  }")
+
 	case "IptcUint8":
-		if m, ok := vals.(map[uint8]string); !ok {
+		m, ok := vals.(map[uint8]string)
+		if !ok {
 			return "nil"
-		} else {
-			buff.WriteString("map[uint8]string{\n")
-			for k, v := range m {
-				buff.WriteString(fmt.Sprintf("    %v: \"%s\",\n", k, v))
-			}
-			buff.WriteString("  }")
 		}
+		buff.WriteString("map[uint8]string{\n")
+		for k, v := range m {
+			buff.WriteString(fmt.Sprintf("    %v: \"%s\",\n", k, v))
+		}
+		buff.WriteString("  }")
 	case "IptcUint16":
-		if m, ok := vals.(map[uint16]string); !ok {
+		m, ok := vals.(map[uint16]string)
+		if !ok {
 			return "nil"
-		} else {
-			buff.WriteString("map[uint16]string{\n")
-			for k, v := range m {
-				buff.WriteString(fmt.Sprintf("    %v: \"%s\",\n", k, v))
-			}
-			buff.WriteString("  }")
 		}
+		buff.WriteString("map[uint16]string{\n")
+		for k, v := range m {
+			buff.WriteString(fmt.Sprintf("    %v: \"%s\",\n", k, v))
+		}
+		buff.WriteString("  }")
 	case "IptcUint32":
-		if m, ok := vals.(map[uint32]string); !ok {
+		m, ok := vals.(map[uint32]string)
+		if !ok {
 			return "nil"
-		} else {
-			buff.WriteString("map[uint32]string{\n")
-			for k, v := range m {
-				buff.WriteString(fmt.Sprintf("    %v: \"%s\",\n", k, v))
-			}
-			buff.WriteString("  }")
 		}
+		buff.WriteString("map[uint32]string{\n")
+		for k, v := range m {
+			buff.WriteString(fmt.Sprintf("    %v: \"%s\",\n", k, v))
+		}
+		buff.WriteString("  }")
 	default:
 		return "nil"
 	}
@@ -279,43 +280,42 @@ func parseValues(iptcType string, values map[string]string) (interface{}, error)
 	case "IptcUint8":
 		ret := make(map[uint8]string)
 		for k, v := range values {
-			if i, err := parseInt(k, iptcType); err != nil {
+			i, err := parseInt(k, iptcType)
+			if err != nil {
 				return ret, err
-			} else {
-				ret[uint8(i)] = v
 			}
+			ret[uint8(i)] = v
 		}
 		return ret, nil
 	case "IptcUint16":
 		ret := make(map[uint16]string)
 		for k, v := range values {
-			if i, err := parseInt(k, iptcType); err != nil {
+			i, err := parseInt(k, iptcType)
+			if err != nil {
 				return ret, err
-			} else {
-				ret[uint16(i)] = v
 			}
+			ret[uint16(i)] = v
 		}
 		return ret, nil
 	case "IptcUint32":
 		ret := make(map[uint32]string)
 		for k, v := range values {
-			if i, err := parseInt(k, iptcType); err != nil {
+			i, err := parseInt(k, iptcType)
+			if err != nil {
 				return ret, err
-			} else {
-				ret[uint32(i)] = v
 			}
+			ret[uint32(i)] = v
 		}
 		return ret, nil
 	default:
 		if len(values) == 0 {
 			return values, nil
-		} else {
-			return values, fmt.Errorf("Cannot parse values of type: %s", iptcType)
 		}
+		return values, fmt.Errorf("Cannot parse values of type: %s", iptcType)
 	}
 }
 
-func readExifToolIptcJson() (map[string]etIptcRecord, error) {
+func readExifToolIptcJSON() (map[string]etIptcRecord, error) {
 	b, err := ioutil.ReadFile("assets/exiftool-iptctags.json")
 	if err != nil {
 		return nil, err
@@ -324,7 +324,6 @@ func readExifToolIptcJson() (map[string]etIptcRecord, error) {
 	err = json.Unmarshal(b, &iptcMap)
 	if err != nil {
 		return nil, err
-	} else {
-		return iptcMap, nil
 	}
+	return iptcMap, nil
 }

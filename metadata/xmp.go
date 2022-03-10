@@ -3,7 +3,6 @@ package metadata
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"trimmer.io/go-xmp/models/dc"
 	"trimmer.io/go-xmp/models/ps"
@@ -36,9 +35,8 @@ func NewXmpDataFromBytes(data []byte) (XmpData, error) {
 	err := xmp.Unmarshal(data, model)
 	if err != nil {
 		return XmpData{}, ErrNoXmp
-	} else {
-		return XmpData{model}, nil
 	}
+	return XmpData{model}, nil
 }
 
 func (xd XmpData) Base() *xmpbase.XmpBase {
@@ -57,9 +55,8 @@ func (xd XmpData) DublinCore() *dc.DublinCore {
 func (xd XmpData) GetKeywords() []string {
 	if dcore := xd.DublinCore(); dcore != nil {
 		return dcore.Subject
-	} else {
-		return []string{}
 	}
+	return []string{}
 }
 
 func (xd XmpData) GetRating() uint16 {
@@ -72,9 +69,8 @@ func (xd XmpData) GetRating() uint16 {
 func (xd XmpData) GetTitle() string {
 	if dcore := xd.DublinCore(); dcore != nil {
 		return dcore.Title.Default()
-	} else {
-		return ""
 	}
+	return ""
 }
 
 func (xd XmpData) IsEmpty() bool {
@@ -99,9 +95,8 @@ func (xd XmpData) String() string {
 	if xd.IsEmpty() {
 		return "No XMP Data"
 	}
-	if bytes, err := json.MarshalIndent(xd.rawXmp, "", "  "); err != nil {
-		return fmt.Sprintf("Could not marshal XmpEditor document: %v", err)
-	} else {
+	if bytes, err := json.MarshalIndent(xd.rawXmp, "", "  "); err == nil {
 		return string(bytes)
 	}
+	return "Could not marshal XmpEditor document"
 }

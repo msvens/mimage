@@ -38,24 +38,24 @@ func odd(n uint) bool {
 	return n%2 == 1
 }
 
-type PhotoshopImageResource struct {
+type ImageResource struct {
 	Signature  string //4 bytes. Should be '8BIM'
 	ResourceId uint16
 	Name       string //pascal encoded, padded to make the size even. (null name consists of two bytes of 0)
 	Data       []byte
 }
 
-func NewPhotoshopImageResource(resourceId uint16, data []byte) PhotoshopImageResource {
-	return PhotoshopImageResource{Signature: photoshopResourceSignature, ResourceId: resourceId, Data: data}
+func NewPhotoshopImageResource(resourceId uint16, data []byte) ImageResource {
+	return ImageResource{Signature: photoshopResourceSignature, ResourceId: resourceId, Data: data}
 }
 
-func (ir PhotoshopImageResource) String() string {
+func (ir ImageResource) String() string {
 	return fmt.Sprintf("Signature=[%s] ResourceId=[0x%04x] Name=[%s] DataSize=(%d)", ir.Signature, ir.ResourceId, ir.Name, len(ir.Data))
 }
 
-func decodeImageResource(br *bufio.Reader) (PhotoshopImageResource, error) {
+func decodeImageResource(br *bufio.Reader) (ImageResource, error) {
 	var err error
-	ret := PhotoshopImageResource{}
+	ret := ImageResource{}
 
 	//signature
 	signature := make([]byte, 4)
@@ -111,7 +111,7 @@ func decodeImageResource(br *bufio.Reader) (PhotoshopImageResource, error) {
 	return ret, nil
 }
 
-func encodeImageResource(bw *bufio.Writer, r PhotoshopImageResource) error {
+func encodeImageResource(bw *bufio.Writer, r ImageResource) error {
 	//first write signature
 	if r.Signature != photoshopResourceSignature {
 		return fmt.Errorf("Expected signature %s got %s", photoshopResourceSignature, r.Signature)
@@ -161,8 +161,8 @@ func encodeImageResource(bw *bufio.Writer, r PhotoshopImageResource) error {
 	return nil
 }
 
-func Decode(r io.Reader, checkPrefix bool) (map[uint16]PhotoshopImageResource, error) {
-	ret := map[uint16]PhotoshopImageResource{}
+func Decode(r io.Reader, checkPrefix bool) (map[uint16]ImageResource, error) {
+	ret := map[uint16]ImageResource{}
 	var err error
 	br := bufio.NewReader(r)
 	if checkPrefix {
@@ -191,7 +191,7 @@ func Decode(r io.Reader, checkPrefix bool) (map[uint16]PhotoshopImageResource, e
 
 }
 
-func Encode(w io.Writer, source map[uint16]PhotoshopImageResource, addPrefix bool) error {
+func Encode(w io.Writer, source map[uint16]ImageResource, addPrefix bool) error {
 	bw := bufio.NewWriter(w)
 	var err error
 
@@ -204,7 +204,7 @@ func Encode(w io.Writer, source map[uint16]PhotoshopImageResource, addPrefix boo
 		}
 	}
 	//sort resources (likely not needed but nice anyway)
-	resources := []PhotoshopImageResource{}
+	resources := []ImageResource{}
 	for _, v := range source {
 		resources = append(resources, v)
 	}
@@ -223,27 +223,28 @@ func Encode(w io.Writer, source map[uint16]PhotoshopImageResource, addPrefix boo
 	return nil
 }
 
-func Marshal(source map[uint16]PhotoshopImageResource, addPrefix bool) ([]byte, error) {
+func Marshal(source map[uint16]ImageResource, addPrefix bool) ([]byte, error) {
 	out := &bytes.Buffer{}
-	if err := Encode(out, source, addPrefix); err != nil {
+	err := Encode(out, source, addPrefix)
+	if err != nil {
 		return nil, err
-	} else {
-		return out.Bytes(), err
 	}
+	return out.Bytes(), err
+
 }
 
-func Unmarshal(data []byte, hasPrefix bool, dest *map[uint16]PhotoshopImageResource) error {
+func Unmarshal(data []byte, hasPrefix bool, dest *map[uint16]ImageResource) error {
 	in := bytes.NewReader(data)
-	if ret, err := Decode(in, hasPrefix); err != nil {
+	ret, err := Decode(in, hasPrefix)
+	if err != nil {
 		return err
-	} else {
-		*dest = ret
-		return nil
 	}
+	*dest = ret
+	return nil
 }
 
-func ParseJpeg(sl *jpegstructure.SegmentList) (int, map[uint16]PhotoshopImageResource, error) {
-	ret := map[uint16]PhotoshopImageResource{}
+func ParseJpeg(sl *jpegstructure.SegmentList) (int, map[uint16]ImageResource, error) {
+	ret := map[uint16]ImageResource{}
 	for idx, segment := range sl.Segments() {
 		//Try parse:
 		if err := Unmarshal(segment.Data, true, &ret); err == nil {

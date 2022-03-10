@@ -44,7 +44,120 @@ type IptcRecordDataset struct {
 }
 
 //Todo: Add checks that the value is legit. The only thing we check now are digits
-func decodeIptcData(desc IptcTagDesc, data [][]byte) (interface{}, error) {
+
+func decodeIptcDataToSlice(desc IptcTagDesc, data [][]byte) (interface{}, error) {
+	//var err error
+	switch desc.Type {
+	case IptcString:
+		ret := []string{}
+		for _, d := range data {
+			ret = append(ret, string(d))
+		}
+		return ret, nil
+	case IptcDigits:
+		ret := []string{}
+		for _, d := range data {
+			ret = append(ret, string(d))
+		}
+		if isDigitsSlice(ret) {
+			return ret, nil
+		}
+		return ret, ErrIptcTagValue
+	case IptcUint8:
+		ret := []uint8{}
+		for _, d := range data {
+			if len(d) != 1 {
+				return ret, ErrIptcTagValue
+			}
+			val := uint8(0)
+			r := bytes.NewReader(d)
+			if err := binary.Read(r, defaultEncoding, &val); err != nil {
+				return ret, err
+			}
+			ret = append(ret, val)
+		}
+		return ret, nil
+	case IptcUint16:
+		ret := []uint16{}
+		for _, d := range data {
+			if len(d) != 2 {
+				return ret, ErrIptcTagValue
+			}
+			val := uint16(0)
+			r := bytes.NewReader(d)
+			if err := binary.Read(r, defaultEncoding, &val); err != nil {
+				return ret, err
+			}
+			ret = append(ret, val)
+		}
+		return ret, nil
+	case IptcUint32:
+		ret := []uint32{}
+		for _, d := range data {
+			if len(d) != 4 {
+				return ret, ErrIptcTagValue
+			}
+			val := uint32(0)
+			r := bytes.NewReader(d)
+			if err := binary.Read(r, defaultEncoding, &val); err != nil {
+				return ret, err
+			}
+			ret = append(ret, val)
+		}
+		return ret, nil
+	case IptcUndef:
+		return data, nil
+	default:
+		return nil, ErrIptcUndefinedType
+	}
+}
+
+func decodeIptcData(desc IptcTagDesc, data []byte) (interface{}, error) {
+	var err error
+	r := bytes.NewReader(data)
+	switch desc.Type {
+	case IptcString:
+		return string(data), nil
+	case IptcDigits:
+		ret := string(data)
+		if isDigits(ret) {
+			return ret, nil
+		}
+		return ret, ErrIptcTagValue
+	case IptcUint8:
+		ret := uint8(0)
+		if len(data) != 1 {
+			return ret, ErrIptcTagValue
+		}
+		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
+			return ret, nil
+		}
+	case IptcUint16:
+		ret := uint16(0)
+		if len(data) != 2 {
+			return ret, ErrIptcTagValue
+		}
+		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
+			return ret, nil
+		}
+	case IptcUint32:
+		ret := uint32(0)
+		if len(data) != 4 {
+			return ret, ErrIptcTagValue
+		}
+		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
+			return ret, nil
+		}
+	case IptcUndef:
+		return data[0], nil
+	default:
+		err = ErrIptcUndefinedType
+	}
+	return nil, err
+}
+
+/*
+func decodeIptcData2(desc IptcTagDesc, data [][]byte) (interface{}, error) {
 	var err error
 	if desc.Repeatable {
 		switch desc.Type {
@@ -61,14 +174,13 @@ func decodeIptcData(desc IptcTagDesc, data [][]byte) (interface{}, error) {
 			}
 			if isDigitsSlice(ret) {
 				return ret, nil
-			} else {
-				return ret, IptcTagValueErr
 			}
+			return ret, ErrIptcTagValue
 		case IptcUint8:
 			ret := []uint8{}
 			for _, d := range data {
 				if len(d) != 1 {
-					return ret, IptcTagValueErr
+					return ret, ErrIptcTagValue
 				}
 				val := uint8(0)
 				r := bytes.NewReader(d)
@@ -84,7 +196,7 @@ func decodeIptcData(desc IptcTagDesc, data [][]byte) (interface{}, error) {
 			ret := []uint16{}
 			for _, d := range data {
 				if len(d) != 2 {
-					return ret, IptcTagValueErr
+					return ret, ErrIptcTagValue
 				}
 				val := uint16(0)
 				r := bytes.NewReader(d)
@@ -100,7 +212,7 @@ func decodeIptcData(desc IptcTagDesc, data [][]byte) (interface{}, error) {
 			ret := []uint32{}
 			for _, d := range data {
 				if len(d) != 4 {
-					return ret, IptcTagValueErr
+					return ret, ErrIptcTagValue
 				}
 				val := uint32(0)
 				r := bytes.NewReader(d)
@@ -115,57 +227,59 @@ func decodeIptcData(desc IptcTagDesc, data [][]byte) (interface{}, error) {
 		case IptcUndef:
 			return data, nil
 		default:
-			return nil, IptcUndefinedTypeErr
+			err = ErrIptcUndefinedType
 		}
-	} else {
-		if len(data) != 1 {
-			return nil, IptcTagValueErr
+		return nil, err
+	}
+
+	//non repeatable
+	if len(data) != 1 {
+		return nil, ErrIptcTagValue
+	}
+	switch desc.Type {
+	case IptcString:
+		return string(data[0]), nil
+	case IptcDigits:
+		ret := string(data[0])
+		if isDigits(ret) {
+			return ret, nil
 		}
-		switch desc.Type {
-		case IptcString:
-			return string(data[0]), nil
-		case IptcDigits:
-			ret := string(data[0])
-			if isDigits(ret) {
-				return ret, nil
-			} else {
-				return ret, IptcTagValueErr
-			}
-		case IptcUint8:
-			ret := uint8(0)
-			if len(data[0]) != 1 {
-				return ret, IptcTagValueErr
-			}
-			r := bytes.NewReader(data[0])
-			if err = binary.Read(r, defaultEncoding, &ret); err == nil {
-				return ret, nil
-			}
-		case IptcUint16:
-			ret := uint16(0)
-			if len(data[0]) != 2 {
-				return ret, IptcTagValueErr
-			}
-			r := bytes.NewReader(data[0])
-			if err = binary.Read(r, defaultEncoding, &ret); err == nil {
-				return ret, nil
-			}
-		case IptcUint32:
-			ret := uint32(0)
-			if len(data[0]) != 4 {
-				return ret, IptcTagValueErr
-			}
-			r := bytes.NewReader(data[0])
-			if err = binary.Read(r, defaultEncoding, &ret); err == nil {
-				return ret, nil
-			}
-		case IptcUndef:
-			return data[0], nil
-		default:
-			return nil, IptcUndefinedTypeErr
+		return ret, ErrIptcTagValue
+	case IptcUint8:
+		ret := uint8(0)
+		if len(data[0]) != 1 {
+			return ret, ErrIptcTagValue
 		}
+		r := bytes.NewReader(data[0])
+		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
+			return ret, nil
+		}
+	case IptcUint16:
+		ret := uint16(0)
+		if len(data[0]) != 2 {
+			return ret, ErrIptcTagValue
+		}
+		r := bytes.NewReader(data[0])
+		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
+			return ret, nil
+		}
+	case IptcUint32:
+		ret := uint32(0)
+		if len(data[0]) != 4 {
+			return ret, ErrIptcTagValue
+		}
+		r := bytes.NewReader(data[0])
+		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
+			return ret, nil
+		}
+	case IptcUndef:
+		return data[0], nil
+	default:
+		err = ErrIptcUndefinedType
 	}
 	return nil, err
 }
+*/
 
 func decodeIptcRecordData(r io.Reader) (IptcRecordTag, []byte, error) {
 	var err error
@@ -181,15 +295,13 @@ func decodeIptcRecordData(r io.Reader) (IptcRecordTag, []byte, error) {
 	//record
 	if err = binary.Read(r, defaultEncoding, &tuint8); err != nil {
 		return recTag, nil, err
-	} else {
-		recTag.Record = IptcRecord(tuint8)
 	}
+	recTag.Record = IptcRecord(tuint8)
 	//tag
 	if err = binary.Read(r, defaultEncoding, &tuint8); err != nil {
 		return recTag, nil, err
-	} else {
-		recTag.Tag = IptcTag(tuint8)
 	}
+	recTag.Tag = IptcTag(tuint8)
 
 	//size
 	size16 := uint16(0)
@@ -248,11 +360,15 @@ func DecodeIptc(r io.Reader) (map[IptcRecordTag]IptcRecordDataset, error) {
 			continue
 		}
 		ds := IptcRecordDataset{Record: rt.Record, Tag: rt.Tag, Repeatable: desc.Repeatable, Type: desc.Type}
-		if ds.Data, err = decodeIptcData(desc, data); err != nil {
-			return ret, err
+		if desc.Repeatable {
+			ds.Data, err = decodeIptcDataToSlice(desc, data)
 		} else {
-			ret[rt] = ds
+			ds.Data, err = decodeIptcData(desc, data[0])
 		}
+		if err != nil {
+			return ret, err
+		}
+		ret[rt] = ds
 	}
 	return ret, nil
 }
@@ -310,7 +426,7 @@ func encodeIptcRecordData(bw *bufio.Writer, record IptcRecord, tag IptcTag, val 
 		}
 		_, err = bw.Write(vtype)
 	default:
-		err = IptcUndefinedTypeErr
+		err = ErrIptcUndefinedType
 	}
 	return err
 }
@@ -349,7 +465,7 @@ func encodeIptcRecord(bw *bufio.Writer, rd IptcRecordDataset) error {
 				}
 			}
 		default:
-			return IptcUndefinedTypeErr
+			return ErrIptcUndefinedType
 		}
 		return nil
 	}
@@ -365,9 +481,8 @@ func EncodeIptc(w io.Writer, recs map[IptcRecordTag]IptcRecordDataset) error {
 	sort.Slice(keys, func(i, j int) bool {
 		if keys[i].Record == keys[j].Record {
 			return keys[i].Tag < keys[j].Tag
-		} else {
-			return keys[i].Record < keys[j].Record
 		}
+		return keys[i].Record < keys[j].Record
 	})
 	bw := bufio.NewWriter(w)
 	for _, k := range keys {
@@ -383,13 +498,12 @@ func ParseIptcJpeg(sl *jpegstructure.SegmentList) (map[IptcRecordTag]IptcRecordD
 	ret := map[IptcRecordTag]IptcRecordDataset{}
 	_, res, err := photoshop.ParseJpeg(sl)
 	if err != nil && err == photoshop.ErrNoPhotoshopBlock {
-		return ret, NoIptcErr
+		return ret, ErrNoIptc
 	} else if err != nil {
 		return ret, err
 	}
-	if iptcData, ok := res[photoshop.IptcId]; !ok {
-		return ret, NoIptcErr
-	} else {
+	if iptcData, ok := res[photoshop.IptcId]; ok {
 		return DecodeIptc(bytes.NewReader(iptcData.Data))
 	}
+	return ret, ErrNoIptc
 }

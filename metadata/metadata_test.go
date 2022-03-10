@@ -38,14 +38,14 @@ func TestParse(t *testing.T) {
 	empty := []byte{}
 	if _, err := NewMetaData(empty); err == nil {
 		t.Errorf("Expected parse error")
-	} else if err != ParseImageErr {
-		t.Errorf("Expected error %v got error %v", ParseImageErr, err)
+	} else if err != ErrParseImage {
+		t.Errorf("Expected error %v got error %v", ErrParseImage, err)
 	}
 	nonImageFile := getAssetBytes(NonImageFile, t)
 	if _, err := NewMetaData(nonImageFile); err == nil {
 		t.Errorf("Expected parse error")
-	} else if err != ParseImageErr {
-		t.Errorf("Expected error %v got error %v", ParseImageErr, err)
+	} else if err != ErrParseImage {
+		t.Errorf("Expected error %v got error %v", ErrParseImage, err)
 	}
 }
 
@@ -55,8 +55,8 @@ func TestParseFile(t *testing.T) {
 	}
 	if _, err := NewMetaDataFromFile(NonImageFile); err == nil {
 		t.Errorf("Expected parse error")
-	} else if err != ParseImageErr {
-		t.Errorf("Expected error %v got error %v", ParseImageErr, err)
+	} else if err != ErrParseImage {
+		t.Errorf("Expected error %v got error %v", ErrParseImage, err)
 	}
 	//non existent file
 	if _, err := NewMetaDataFromFile("somefile.jpg"); err == nil {
@@ -89,7 +89,7 @@ func TestMetaDataSummary_String(t *testing.T) {
 	expLeica := `Summary:{
   Title: Morning Fog
   Keywords:
-  Sofware: Adobe Photoshop Lightroom Classic 10.1 (Macintosh)
+  Software: Adobe Photoshop Lightroom Classic 10.1 (Macintosh)
   Rating: 2
   Camera Make: LEICA CAMERA AG
   Camera Model: LEICA Q2
@@ -119,7 +119,7 @@ func TestMetaDataSummary_String(t *testing.T) {
 	expGps := `Summary:{
   Title:
   Keywords:
-  Sofware: GIMP 2.8.20
+  Software: GIMP 2.8.20
   Rating: 0
   Camera Make: samsung
   Camera Model: SM-N920T
@@ -149,7 +149,7 @@ func TestMetaDataSummary_String(t *testing.T) {
 	expNoExif := `Summary:{
   Title:
   Keywords:
-  Sofware:
+  Software:
   Rating: 0
   Camera Make:
   Camera Model:

@@ -43,17 +43,17 @@ var generateCommand = &cobra.Command{
 			_ = os.WriteFile("assets/exiftool-exiftags.json", out.Bytes(), 0644)
 
 			fmt.Println("Genereting exiv2 exif sources")
-			if err = generator.GenerateExiv2ExifJson(); err != nil {
+			if err = generator.GenerateExiv2ExifJSON(); err != nil {
 				return err
 			}
 			fmt.Println("Generate master exif json")
-			if err = generator.GenerateMasterExifJson(); err != nil {
+			if err = generator.GenerateMasterExifJSON(); err != nil {
 				return err
 			}
 		}
 		if exif {
 			fmt.Println("Generate Exif Tags")
-			if err := generator.GenerateExifTagsFromMasterExifJson(); err != nil {
+			if err := generator.GenerateExifTagsFromMasterExifJSON(); err != nil {
 				return err
 			}
 		}

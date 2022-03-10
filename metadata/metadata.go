@@ -10,14 +10,14 @@ import (
 	"io/ioutil"
 	"strings"
 	"time"
-	_ "trimmer.io/go-xmp/models"
+	//_ "trimmer.io/go-xmp/models"
 )
 
-var ParseImageErr = errors.New("Could not parse image")
+var ErrParseImage = errors.New("Could not parse image")
 
-//var JpegWrongFileExtErr = fmt.Errorf("Only .jpeg or .jpg file extension allowed")
+//var ErrJpegWrongFileExt = fmt.Errorf("Only .jpeg or .jpg file extension allowed")
 
-type MetaDataSummary struct {
+type Summary struct {
 	Title                   string        `json:"title,omitempty"`
 	Keywords                []string      `json:"keywords,omitempty"`
 	Software                string        `json:"software,omitempty"`
@@ -47,12 +47,12 @@ type MetaDataSummary struct {
 	State                   string        `json:"state,omitempty"`
 }
 
-func (ec MetaDataSummary) String() string {
+func (ec Summary) String() string {
 	sb := &strings.Builder{}
 	sb.WriteString("Summary:{\n")
 	sb.WriteString(fmt.Sprintf("  Title: %v\n", ec.Title))
 	sb.WriteString(fmt.Sprintf("  Keywords: %v\n", strings.Join(ec.Keywords, ", ")))
-	sb.WriteString(fmt.Sprintf("  Sofware: %v\n", ec.Software))
+	sb.WriteString(fmt.Sprintf("  Software: %v\n", ec.Software))
 	sb.WriteString(fmt.Sprintf("  Rating: %v\n", ec.Rating))
 	sb.WriteString(fmt.Sprintf("  Camera Make: %v\n", ec.CameraMake))
 	sb.WriteString(fmt.Sprintf("  Camera Model: %v\n", ec.CameraModel))
@@ -85,7 +85,7 @@ type MetaData struct {
 	xmpData     XmpData
 	iptcData    *IptcData
 	exifData    *ExifData
-	summary     *MetaDataSummary
+	summary     *Summary
 	summaryErr  error
 	ImageWidth  uint
 	ImageHeight uint
@@ -93,20 +93,20 @@ type MetaData struct {
 
 func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
 	jmp := jpegstructure.NewJpegMediaParser()
-	if intfc, err := jmp.ParseBytes(data); err != nil {
-		return nil, ParseImageErr
-	} else {
-		segments := intfc.(*jpegstructure.SegmentList)
-		return segments, nil
+	intfc, err := jmp.ParseBytes(data)
+	if err != nil {
+		return nil, ErrParseImage
 	}
+	segments := intfc.(*jpegstructure.SegmentList)
+	return segments, nil
 }
 
 func NewMetaDataFromFile(filename string) (*MetaData, error) {
-	if data, err := ioutil.ReadFile(filename); err != nil {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
 		return nil, err
-	} else {
-		return NewMetaData(data)
 	}
+	return NewMetaData(data)
 }
 
 func NewMetaData(data []byte) (*MetaData, error) {
@@ -119,12 +119,12 @@ func NewMetaData(data []byte) (*MetaData, error) {
 	var exifErr, xmpErr, iptcErr error
 
 	ret.exifData, exifErr = NewExifData(segments)
-	if exifErr != nil && exifErr != NoExifErr {
+	if exifErr != nil && exifErr != ErrExifNoData {
 		return nil, exifErr
 	}
 
 	ret.iptcData, iptcErr = NewIptcData(segments)
-	if iptcErr != nil && iptcErr != NoIptcErr {
+	if iptcErr != nil && iptcErr != ErrNoIptc {
 		return nil, iptcErr
 	}
 
@@ -153,11 +153,11 @@ func (md *MetaData) Iptc() *IptcData {
 	return md.iptcData
 }
 
-func (md *MetaData) Summary() *MetaDataSummary {
+func (md *MetaData) Summary() *Summary {
 	if md.summary != nil {
 		return md.summary
 	}
-	md.summary = &MetaDataSummary{}
+	md.summary = &Summary{}
 	var exifErr, iptcErr, xmpErr error
 	if !md.exifData.IsEmpty() {
 		exifErr = md.extractExifTags()
@@ -211,13 +211,13 @@ func (md *MetaData) extractExifTags() error {
 
 	scanR := func(tagId ExifTag, dest interface{}) {
 		e := md.exifData.ScanIfdRoot(tagId, dest)
-		if e != nil && e != IfdTagNotFoundErr {
+		if e != nil && e != ErrExifTagNotFound {
 			err = e
 		}
 	}
 	scanE := func(tagId ExifTag, dest interface{}) {
 		e := md.exifData.ScanIfdExif(tagId, dest)
-		if e != nil && e != IfdTagNotFoundErr {
+		if e != nil && e != ErrExifTagNotFound {
 			err = e
 		}
 	}

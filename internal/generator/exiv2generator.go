@@ -36,7 +36,7 @@ var exivTypeMap = map[string]string{
 
 //Generate ExifTags Json from https://www.exiv2.org/tags.html. This file is used
 //to build our master-exiftags.json
-func GenerateExiv2ExifJson() error {
+func GenerateExiv2ExifJSON() error {
 
 	//read source:
 	resp, err := http.Get("https://www.exiv2.org/tags.html")
@@ -54,9 +54,8 @@ func GenerateExiv2ExifJson() error {
 	tbody, _ := findNode(doc, func(n *html.Node) bool {
 		if n.Type == html.ElementNode && n.Data == "tbody" {
 			return true
-		} else {
-			return false
 		}
+		return false
 	})
 	data := parseTableBody(tbody)
 	out := map[string][]rawExifTag{}
@@ -77,9 +76,8 @@ func parseTableBody(tbody *html.Node) map[string]rawExif {
 	rows := findNodes(tbody, func(n *html.Node) bool {
 		if n.Type == html.ElementNode && n.Data == "tr" {
 			return true
-		} else {
-			return false
 		}
+		return false
 	})
 	for _, row := range rows {
 		td := parseExifRow(row)
@@ -114,11 +112,11 @@ func parseExifTags(rd []string) (rawExifTag, string, error) {
 	}
 	//id
 	cleaned := strings.Replace(rd[0], "0x", "", -1)
-	if id, err := strconv.ParseUint(cleaned, 16, 16); err != nil {
+	id, err := strconv.ParseUint(cleaned, 16, 16)
+	if err != nil {
 		return ret, ifd, err
-	} else {
-		ret.Id = uint16(id)
 	}
+	ret.Id = uint16(id)
 	//Ifd
 	switch rd[2] {
 	case "Image":
@@ -192,7 +190,7 @@ func findNode(node *html.Node, matcher Matcher) (*html.Node, error) {
 	f(node)
 	if ret == nil {
 		return ret, fmt.Errorf("Node not found")
-	} else {
-		return ret, nil
 	}
+	return ret, nil
+
 }

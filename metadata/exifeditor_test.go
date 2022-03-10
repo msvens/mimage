@@ -211,7 +211,7 @@ func TestExifEditor_SetUserComment(t *testing.T) {
 	md := jpegEditorMD(je, t)
 	ret := md.exifData.GetIfdUserComment()
 	if ret != expUserComment {
-		t.Fatalf("Expected %s go %s", expUserComment, ret)
+		t.Fatalf("Expected %s got %s", expUserComment, ret)
 	}
 
 }

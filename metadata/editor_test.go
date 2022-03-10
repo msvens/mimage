@@ -298,7 +298,7 @@ func TestJpegEditor_MetaData(t *testing.T) {
 	expectedCameraModel := "LEICA Q2"
 
 	if err != nil {
-		t.Fatalf("Could not retrive Metadata")
+		t.Fatalf("Could not retrieve Metadata")
 	}
 	if md.iptcData.IsEmpty() {
 		t.Errorf("Expected IPTC in Metada")
@@ -386,8 +386,8 @@ func TestJpegEditor_WriteFile(t *testing.T) {
 	wrongOut := filepath.Join(os.TempDir(), "TestWriteFile.png")
 	if err := je.WriteFile(wrongOut); err == nil {
 		t.Errorf("Write file should not accept a png extension")
-	} else if err != JpegWrongFileExtErr {
-		t.Errorf("Expecteded error %v got %v", JpegWrongFileExtErr, err)
+	} else if err != ErrJpegWrongFileExt {
+		t.Errorf("Expecteded error %v got %v", ErrJpegWrongFileExt, err)
 	}
 }
 

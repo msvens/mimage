@@ -35,7 +35,7 @@ const GPSImg = AssetPath + "gps.jpg"
 const NonImageFile = AssetPath + "exiftool-leica-g1.json"
 const XmpFile = AssetPath + "xmp.xml"*/
 
-func checkExpectedResources(actual map[uint16]PhotoshopImageResource, t *testing.T) {
+func checkExpectedResources(actual map[uint16]ImageResource, t *testing.T) {
 	for k, v := range expectedResources {
 		if r, ok := actual[k]; !ok {
 			t.Errorf("Could not find resource: %#04x", k)
@@ -55,12 +55,12 @@ func getAssetBytes(fname string, t *testing.T) []byte {
 
 func getSegments(fname string, t *testing.T) *jpegstructure.SegmentList {
 	parser := jpegstructure.NewJpegMediaParser()
-	if ec, err := parser.ParseFile(fname); err != nil {
+	ec, err := parser.ParseFile(fname)
+	if err != nil {
 		t.Fatalf("Could not parse jpeg file: %v", err)
 		return nil
-	} else {
-		return ec.(*jpegstructure.SegmentList)
 	}
+	return ec.(*jpegstructure.SegmentList)
 }
 
 func getTestData(t *testing.T) map[bool][]byte {
@@ -121,7 +121,7 @@ func TestEncode(t *testing.T) {
 		}
 	}
 	outBuff := &bytes.Buffer{}
-	err := Encode(outBuff, map[uint16]PhotoshopImageResource{}, false)
+	err := Encode(outBuff, map[uint16]ImageResource{}, false)
 	if err == nil {
 		t.Fatalf("Expected error got nil")
 	}
@@ -130,7 +130,7 @@ func TestEncode(t *testing.T) {
 func TestMarshal(t *testing.T) {
 	tests := getTestData(t)
 	for prefix, data := range tests {
-		m := map[uint16]PhotoshopImageResource{}
+		m := map[uint16]ImageResource{}
 		if err := Unmarshal(data, prefix, &m); err != nil {
 			t.Fatalf("Could not unmarshal prefixed %v data got error: %v", prefix, err)
 		}
@@ -141,7 +141,7 @@ func TestMarshal(t *testing.T) {
 		}
 	}
 	//now unmarshal empty data, expect error
-	m := map[uint16]PhotoshopImageResource{}
+	m := map[uint16]ImageResource{}
 	if _, err := Marshal(m, false); err == nil {
 		t.Errorf("Expected error when marshaling empty resources")
 	}
@@ -167,7 +167,7 @@ func TestParseJpeg(t *testing.T) {
 func TestUnmarshal(t *testing.T) {
 	tests := getTestData(t)
 	for prefix, data := range tests {
-		m := map[uint16]PhotoshopImageResource{}
+		m := map[uint16]ImageResource{}
 		if err := Unmarshal(data, prefix, &m); err != nil {
 			t.Fatalf("Could not unmarshal data with prefix %v got error: %v", prefix, err)
 		} else {
@@ -179,7 +179,7 @@ func TestUnmarshal(t *testing.T) {
 		}
 	}
 	//check empty data errors
-	m := map[uint16]PhotoshopImageResource{}
+	m := map[uint16]ImageResource{}
 	if err := Unmarshal([]byte{}, false, &m); err == nil {
 		t.Errorf("Expected error when unmarshaling an empty byte slice")
 	}

@@ -24,18 +24,19 @@ func NewXmpEditor(sl *jpegstructure.SegmentList) (*XmpEditor, error) {
 	if sl == nil {
 		return &XmpEditor{}, fmt.Errorf("nil segment list")
 	}
-	if xmpData, err := NewXmpData(sl); err != nil {
+	xmpData, err := NewXmpData(sl)
+	if err != nil {
 		ret := XmpEditor{}
 		ret.Clear(false)
 		return &ret, nil
-	} else {
-		return &XmpEditor{
-			XmpData{
-				xmpData.rawXmp,
-			},
-			false,
-		}, nil
 	}
+	return &XmpEditor{
+		XmpData{
+			xmpData.rawXmp,
+		},
+		false,
+	}, nil
+
 }
 
 func NewXmpEditorFromDocument(doc *xmp.Document) (*XmpEditor, error) {
@@ -51,16 +52,17 @@ func NewXmpEditorFromDocument(doc *xmp.Document) (*XmpEditor, error) {
 }
 
 func NewXmpEditorFromBytes(data []byte) (*XmpEditor, error) {
-	if xmpData, err := NewXmpDataFromBytes(data); err != nil {
+	xmpData, err := NewXmpDataFromBytes(data)
+	if err != nil {
 		return &XmpEditor{}, err
-	} else {
-		return &XmpEditor{
-			XmpData{
-				xmpData.rawXmp,
-			},
-			false,
-		}, nil
 	}
+	return &XmpEditor{
+		XmpData{
+			xmpData.rawXmp,
+		},
+		false,
+	}, nil
+
 }
 
 func (xe *XmpEditor) Bytes(prefix bool) ([]byte, error) {
@@ -69,17 +71,15 @@ func (xe *XmpEditor) Bytes(prefix bool) ([]byte, error) {
 
 	if !prefix {
 		return xmp.Marshal(xe.rawXmp)
-	} else {
-		buff := bytes.Buffer{}
-		if b, err := xmp.Marshal(xe.rawXmp); err != nil {
-			return b, err
-		} else {
-			buff.Write(xmpPrefix)
-			buff.Write(b)
-			return buff.Bytes(), nil
-		}
 	}
-
+	buff := bytes.Buffer{}
+	b, err := xmp.Marshal(xe.rawXmp)
+	if err != nil {
+		return b, err
+	}
+	buff.Write(xmpPrefix)
+	buff.Write(b)
+	return buff.Bytes(), nil
 }
 
 func (xe *XmpEditor) Document() *xmp.Document {
@@ -148,11 +148,11 @@ func (xe *XmpEditor) dcOrCreate() *dc.DublinCore {
 	if ret := xe.DublinCore(); ret != nil {
 		return ret
 	}
-	if m, err := xe.rawXmp.MakeModel(dc.NsDc); err != nil {
+	m, err := xe.rawXmp.MakeModel(dc.NsDc)
+	if err != nil {
 		return nil
-	} else {
-		return m.(*dc.DublinCore)
 	}
+	return m.(*dc.DublinCore)
 }
 
 func (xe *XmpEditor) mmOrCreate() *xmpmm.XmpMM {
@@ -160,11 +160,12 @@ func (xe *XmpEditor) mmOrCreate() *xmpmm.XmpMM {
 	if ret != nil {
 		return ret
 	}
-	if m, err := xe.rawXmp.MakeModel(xmpmm.NsXmpMM); err != nil {
+	m, err := xe.rawXmp.MakeModel(xmpmm.NsXmpMM)
+	if err != nil {
 		return nil
-	} else {
-		return m.(*xmpmm.XmpMM)
 	}
+	return m.(*xmpmm.XmpMM)
+
 }
 
 func (xe *XmpEditor) baseOrCreate() *xmpbase.XmpBase {
@@ -172,9 +173,9 @@ func (xe *XmpEditor) baseOrCreate() *xmpbase.XmpBase {
 	if ret != nil {
 		return ret
 	}
-	if m, err := xe.rawXmp.MakeModel(xmpbase.NsXmp); err != nil {
+	m, err := xe.rawXmp.MakeModel(xmpbase.NsXmp)
+	if err != nil {
 		return nil
-	} else {
-		return m.(*xmpbase.XmpBase)
 	}
+	return m.(*xmpbase.XmpBase)
 }

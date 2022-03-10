@@ -1,0 +1,30 @@
+
+run:
+  timeout: 5m
+
+linters:
+  disable-all: true
+  enable:
+    #default linters
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    #additional linters
+    - errname
+    - gocyclo
+    - misspell
+    - revive
+    - gofmt
+
+linters-settings:
+  revive:
+    rules:
+      - name: var-naming
+        disabled: true

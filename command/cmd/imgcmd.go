@@ -89,7 +89,7 @@ func parseTypeFlag(cmd *cobra.Command) (img.TransformType, error) {
 	case "ResizeAndFit":
 		return img.ResizeAndFit, nil
 	default:
-		return img.ResizeAndCrop, fmt.Errorf("Unknown Tranform Type: %s", t)
+		return img.ResizeAndCrop, fmt.Errorf("Unknown Transform Type: %s", t)
 	}
 }
 

@@ -9,10 +9,11 @@ import (
 	"unicode"
 )
 
-var NoIptcErr = errors.New("No IPTC data")
-var IptcTagNotFoundErr = errors.New("Iptc tag not found")
-var IptcTagValueErr = errors.New("Iptc tag value not corret")
-var IptcUndefinedTypeErr = errors.New("Could not parse ")
+var ErrNoIptc = errors.New("No IPTC data")
+var ErrIptcTagNotFound = errors.New("Iptc tag not found")
+var ErrIptcTagValue = errors.New("Iptc tag value not corret")
+var ErrIptcUndefinedType = errors.New("Could not parse ")
+
 var iptcUtfCharSet = string([]byte{27, 37, 71})
 
 type IptcData struct {
@@ -46,7 +47,7 @@ func iptcDateTime(dateStr string, timeStr string) (time.Time, error) {
 	case 14:
 		return time.Parse(IptcLongDate, tstr)
 	default:
-		return time.Time{}, IptcTagValueErr
+		return time.Time{}, ErrIptcTagValue
 	}
 }
 
@@ -73,7 +74,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 	rt := IptcRecordTag{Record: IptcRecord(key.RecordNumber), Tag: IptcTag(key.DatasetNumber)}
 	tagDesc, found := IptcTagDescriptions[rt]
 	if !found || len(data) < 1 {
-		return IptcRecordDataset{}, IptcTagNotFoundErr
+		return IptcRecordDataset{}, ErrIptcTagNotFound
 	}
 	ret := IptcRecordDataset{Record: rt.Record, Tag: rt.Tag, Type: tagDesc.Type, Repeatable: tagDesc.Repeatable}
 	switch tagDesc.Type {
@@ -92,7 +93,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 			if isDigits(string(data[0])) {
 				ret.Data = string(data[0])
 			} else {
-				return ret, IptcTagValueErr
+				return ret, ErrIptcTagValue
 			}
 		} else {
 			vals := []string{}
@@ -100,7 +101,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 				if isDigits(string(d)) {
 					vals = append(vals, string(d))
 				} else {
-					return ret, IptcTagValueErr
+					return ret, ErrIptcTagValue
 				}
 			}
 			ret.Data = vals
@@ -110,7 +111,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 			r := bytes.NewReader(data[0])
 			val := uint8(0)
 			if err := binary.Read(r, binary.BigEndian, &val); err != nil {
-				return ret, IptcTagValueErr
+				return ret, ErrIptcTagValue
 			} else {
 				ret.Data = val
 			}
@@ -120,7 +121,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 				r := bytes.NewReader(d)
 				val := uint8(0)
 				if err := binary.Read(r, binary.BigEndian, &val); err != nil {
-					return ret, IptcTagValueErr
+					return ret, ErrIptcTagValue
 				} else {
 					vals = append(vals, val)
 				}
@@ -132,7 +133,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 			r := bytes.NewReader(data[0])
 			val := uint16(0)
 			if err := binary.Read(r, binary.BigEndian, &val); err != nil {
-				return ret, IptcTagValueErr
+				return ret, ErrIptcTagValue
 			} else {
 				ret.Data = val
 			}
@@ -142,7 +143,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 				r := bytes.NewReader(d)
 				val := uint16(0)
 				if err := binary.Read(r, binary.BigEndian, &val); err != nil {
-					return ret, IptcTagValueErr
+					return ret, ErrIptcTagValue
 				} else {
 					vals = append(vals, val)
 				}
@@ -154,7 +155,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 			r := bytes.NewReader(data[0])
 			val := uint32(0)
 			if err := binary.Read(r, binary.BigEndian, &val); err != nil {
-				return ret, IptcTagValueErr
+				return ret, ErrIptcTagValue
 			} else {
 				ret.Data = val
 			}
@@ -164,7 +165,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 				r := bytes.NewReader(d)
 				val := uint32(0)
 				if err := binary.Read(r, binary.BigEndian, &val); err != nil {
-					return ret, IptcTagValueErr
+					return ret, ErrIptcTagValue
 				} else {
 					vals = append(vals, val)
 				}
@@ -184,7 +185,7 @@ func convertStreamKeyToRecord(key iptc.StreamTagKey, data []iptc.TagData) (IptcR
 			ret.Data = vals
 		}
 	default:
-		return ret, IptcUndefinedTypeErr
+		return ret, ErrIptcUndefinedType
 	}
 	return ret, nil
 }
@@ -208,10 +209,8 @@ func convertStreamKeysToRecords(source map[iptc.StreamTagKey][]iptc.TagData) map
 func IptcTagName(record IptcRecord, tag IptcTag) string {
 	if desc, found := IptcTagDescriptions[IptcRecordTag{Record: record, Tag: tag}]; found {
 		return desc.Name
-	} else {
-		return fmt.Sprintf("Unknown Tag. Record: %v, Dataset: %v", record, tag)
 	}
-
+	return fmt.Sprintf("Unknown Tag. Record: %v, Dataset: %v", record, tag)
 }
 
 func NewIptcData(segments *jpegstructure.SegmentList) (*IptcData, error) {
@@ -251,7 +250,7 @@ func (ipd *IptcData) GetKeywords() []string {
 	return ret
 }
 
-//Retrieves the IPTCApplication_ObjectName. Returns the emtpy string in case of an error
+//Retrieves the IPTCApplication_ObjectName. Returns the empty string in case of an error
 func (ipd *IptcData) GetTitle() string {
 	ret := ""
 	if err := ipd.ScanApplication(IPTCApplication_ObjectName, &ret); err != nil {
@@ -262,13 +261,13 @@ func (ipd *IptcData) GetTitle() string {
 
 func (ipd *IptcData) Scan(record IptcRecord, tag IptcTag, dest interface{}) error {
 	if ipd.IsEmpty() {
-		return NoIptcErr
+		return ErrNoIptc
 	}
 
 	tagKey := IptcRecordTag{record, tag}
 	recdata, found := ipd.raw[tagKey]
 	if !found {
-		return IptcTagNotFoundErr
+		return ErrIptcTagNotFound
 	}
 	if !recdata.Repeatable {
 		switch dtype := dest.(type) {
@@ -316,6 +315,7 @@ func (ipd *IptcData) Scan(record IptcRecord, tag IptcTag, dest interface{}) erro
 			if recdata.Repeatable && recdata.Type == IptcUint8 {
 				vals := recdata.Data.([]uint8)
 				*dtype = vals
+				//*dtype = append(*dtype, vals...)
 				/*for _, v := range vals {
 					*dtype = append(*dtype, v)
 				}*/
@@ -351,7 +351,7 @@ func (ipd *IptcData) Scan(record IptcRecord, tag IptcTag, dest interface{}) erro
 			}
 		}
 	}
-	return IptcUndefinedTypeErr
+	return ErrIptcUndefinedType
 }
 
 func (ipd *IptcData) ScanDate(dateTag IptcDate, dest *time.Time) error {
@@ -375,7 +375,7 @@ func (ipd *IptcData) ScanDate(dateTag IptcDate, dest *time.Time) error {
 		err = ipd.ScanApplication(IPTCApplication_DigitalCreationDate, &dateStr)
 		_ = ipd.ScanApplication(IPTCApplication_DigitalCreationTime, &timeStr)
 	default:
-		return IptcTagNotFoundErr
+		return ErrIptcTagNotFound
 	}
 	if err != nil {
 		return err

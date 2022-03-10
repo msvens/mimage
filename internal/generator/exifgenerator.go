@@ -107,7 +107,7 @@ type ExifTagDesc struct {
 `
 
 //Align types and adds type/description info to tags from exiv2 json. Sorts the file based on TagId
-func GenerateMasterExifJson() error {
+func GenerateMasterExifJSON() error {
 	b, err := ioutil.ReadFile("assets/exiftool-exiftags.json")
 	if err != nil {
 		return err
@@ -234,8 +234,8 @@ func alignName(rawName string) string {
 	return strings.Replace(rawName, "-", "", -1)
 }
 
-func GenerateExifTagsFromMasterExifJson() error {
-	raw, err := readMasterExifJson()
+func GenerateExifTagsFromMasterExifJSON() error {
+	raw, err := readMasterExifJSON()
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -278,7 +278,15 @@ func generateExifTagDescriptions(raw map[string][]etExifTag, sb *strings.Builder
   Protected: %v,
   Values: %s,
 }`
-			tagDesc := fmt.Sprintf(descFmt, t.Id, fixTagName(t.Name), t.Writable, t.Mandatory, t.Ifd, t.Count, t.Offset, t.OffsetPair, t.Permanent, t.Protected, valueMap)
+			adjustedCnt := t.Count
+			if adjustedCnt == 0 {
+				if t.Writable == "ExifString" || t.Writable == "ExifUndef" {
+					adjustedCnt = -1
+				} else {
+					adjustedCnt = 1
+				}
+			}
+			tagDesc := fmt.Sprintf(descFmt, t.Id, fixTagName(t.Name), t.Writable, t.Mandatory, t.Ifd, adjustedCnt, t.Offset, t.OffsetPair, t.Permanent, t.Protected, valueMap)
 			sb.WriteString(fmt.Sprintf("%s: %s,\n", indexTag, tagDesc))
 		}
 	}
@@ -328,10 +336,11 @@ func generateExifConstants(raw map[string][]etExifTag, sb *strings.Builder) erro
 	return nil
 }
 
+//gocyclo:ignore
 func generateExifValueMap(exifType string, tag etExifTag) string {
 	if len(tag.Values) == 0 || exifType == "ExifUndef" {
 		return "nil"
-	} else if tag.Count > 0 { //we dont generate a value map for complex values
+	} else if tag.Count != 0 { //we dont generate a value map for complex values
 		return "nil"
 	} else if exifType == "ExifUrational" || exifType == "ExifRational" { //we dont generate a value map for rationals
 		return "nil"
@@ -439,7 +448,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 	return buff.String()
 }
 
-func readMasterExifJson() (map[string][]etExifTag, error) {
+func readMasterExifJSON() (map[string][]etExifTag, error) {
 	b, err := ioutil.ReadFile("assets/master-exiftags.json")
 	if err != nil {
 		return nil, err
@@ -448,15 +457,14 @@ func readMasterExifJson() (map[string][]etExifTag, error) {
 	err = json.Unmarshal(b, &exifMap)
 	if err != nil {
 		return nil, err
-	} else {
-		//sort the slices on id
-		sort.Slice(exifMap[rawMain], func(i, j int) bool {
-			return exifMap[rawMain][i].Id < exifMap[rawMain][j].Id
-		})
-		sort.Slice(exifMap[rawGps], func(i, j int) bool {
-			return exifMap[rawGps][i].Id < exifMap[rawGps][j].Id
-		})
-		return exifMap, nil
 	}
+	//sort the slices on id
+	sort.Slice(exifMap[rawMain], func(i, j int) bool {
+		return exifMap[rawMain][i].Id < exifMap[rawMain][j].Id
+	})
+	sort.Slice(exifMap[rawGps], func(i, j int) bool {
+		return exifMap[rawGps][i].Id < exifMap[rawGps][j].Id
+	})
+	return exifMap, nil
 
 }

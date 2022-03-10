@@ -20,7 +20,7 @@ func iptcDateTimeStr(t time.Time) (string, string) {
 
 type IptcEditor struct {
 	raw        map[IptcRecordTag]IptcRecordDataset
-	resources  map[uint16]photoshop.PhotoshopImageResource
+	resources  map[uint16]photoshop.ImageResource
 	segmentIdx int
 	dirty      bool
 }
@@ -90,17 +90,18 @@ func NewIptcEditor(sl *jpegstructure.SegmentList) (*IptcEditor, error) {
 	if err != nil && err != photoshop.ErrNoPhotoshopBlock {
 		return &ret, err
 	}
-	if iptcData, ok := ret.resources[photoshop.IptcId]; !ok { //simply return
+	iptcData, ok := ret.resources[photoshop.IptcId]
+	if !ok { //simply return
 		return &ret, nil
-	} else {
-		ret.raw, err = DecodeIptc(bytes.NewReader(iptcData.Data))
-		return &ret, err
 	}
+	ret.raw, err = DecodeIptc(bytes.NewReader(iptcData.Data))
+	return &ret, err
+
 }
 
 func NewIptcEditorEmpty(dirty bool) *IptcEditor {
 	return &IptcEditor{raw: map[IptcRecordTag]IptcRecordDataset{}, segmentIdx: -1,
-		resources: map[uint16]photoshop.PhotoshopImageResource{}, dirty: dirty}
+		resources: map[uint16]photoshop.ImageResource{}, dirty: dirty}
 }
 
 func (ie *IptcEditor) Clear(dirty bool) {
@@ -197,7 +198,7 @@ func encodeData(out *bytes.Buffer, record IptcRecord, tag IptcTag, val interface
 		binary.Write(out, defaultEncoding, uint16(len(vtype)))
 		out.Write(vtype)
 	default:
-		return IptcUndefinedTypeErr
+		return ErrIptcUndefinedType
 	}
 	fmt.Printf("encode done (%v,%v), buff length: %v\n",record,tag, out.Len())
 	return nil
@@ -238,7 +239,7 @@ func encodeIptcRecordTag(out *bytes.Buffer, rd IptcRecordDataset) error {
 				}
 			}
 		default:
-			return IptcUndefinedTypeErr
+			return ErrIptcUndefinedType
 		}
 	} else {
 		return encodeData(out, rd.Record, rd.Tag, rd.Data)
@@ -295,7 +296,7 @@ func (ie *IptcEditor) SetDate(dateTag IptcDate, t time.Time) error {
 			return err
 		}
 	default:
-		return IptcTagNotFoundErr
+		return ErrIptcTagNotFound
 	}
 	return nil
 }
@@ -324,7 +325,7 @@ func (ie *IptcEditor) Set(record IptcRecord, tag IptcTag, value interface{}) err
 	rt := IptcRecordTag{record, tag}
 	tagDesc, found := IptcTagDescriptions[rt]
 	if !found {
-		return IptcTagNotFoundErr
+		return ErrIptcTagNotFound
 	}
 	newTag := IptcRecordDataset{Record: rt.Record, Tag: rt.Tag, Type: tagDesc.Type, Repeatable: tagDesc.Repeatable}
 	valueOk := false
@@ -389,9 +390,8 @@ func (ie *IptcEditor) Set(record IptcRecord, tag IptcTag, value interface{}) err
 		ie.raw[rt] = newTag
 		ie.dirty = true
 		return nil
-	} else {
-		return IptcTagValueErr
 	}
+	return ErrIptcTagValue
 }
 
 func (ie *IptcEditor) SetTitle(title string) error {

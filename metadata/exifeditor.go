@@ -25,17 +25,15 @@ func NewExifEditor(sl *jpegstructure.SegmentList) (*ExifEditor, error) {
 	if sl == nil {
 		return &ExifEditor{}, fmt.Errorf("nil segment list")
 	}
-	if rootIfd, _, err := sl.Exif(); err != nil {
+	rootIfd, _, err := sl.Exif()
+	if err != nil {
 		if errors.Is(err, exif.ErrNoExif) {
 			return NewExifEditorEmpty(false)
-		} else {
-			return &ExifEditor{}, err
 		}
-	} else {
-		rootIb := exif.NewIfdBuilderFromExistingChain(rootIfd)
-		return &ExifEditor{rootIb, false}, nil
+		return &ExifEditor{}, err
 	}
-
+	rootIb := exif.NewIfdBuilderFromExistingChain(rootIfd)
+	return &ExifEditor{rootIb, false}, nil
 }
 
 func NewExifEditorEmpty(dirty bool) (*ExifEditor, error) {
@@ -120,14 +118,12 @@ func (ee *ExifEditor) SetImageDescription(description string) error {
 }
 
 func (ee *ExifEditor) SetIfdExifTag(id ExifTag, value interface{}) error {
-
 	exifIb, err := exif.GetOrCreateIbFromRootIb(ee.rootIb, IFDPaths[ExifIFD])
 	if err != nil {
 		return err
-	} else {
-		if err := exifIb.SetStandard(uint16(id), toGoExifValue(value)); err != nil {
-			return err
-		}
+	}
+	if err = exifIb.SetStandard(uint16(id), toGoExifValue(value)); err != nil {
+		return err
 	}
 	ee.dirty = true
 	return nil
@@ -136,10 +132,9 @@ func (ee *ExifEditor) SetIfdExifTag(id ExifTag, value interface{}) error {
 func (ee *ExifEditor) SetIfdRootTag(id ExifTag, value interface{}) error {
 	if err := ee.rootIb.SetStandard(uint16(id), toGoExifValue(value)); err != nil {
 		return err
-	} else {
-		ee.dirty = true
-		return nil
 	}
+	ee.dirty = true
+	return nil
 }
 
 func (ee *ExifEditor) setSoftware() error {
@@ -148,10 +143,9 @@ func (ee *ExifEditor) setSoftware() error {
 	}
 	if err := ee.SetIfdRootTag(IFD_Software, ExifEditorSoftware); err != nil {
 		return err
-	} else {
-		ee.dirty = false
-		return nil
 	}
+	ee.dirty = false
+	return nil
 }
 
 func (ee *ExifEditor) SetUserComment(comment string) error {
