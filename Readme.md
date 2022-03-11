@@ -61,7 +61,6 @@ fmt.Printf("Make: %s\n", cameraMake)
 ```
 
 ## Editing Metadata
-
 One can also edit (or add) metadata to an image. All known IPTC,Exif,and Xmp tags can be edited - 
 much in the same why as you read those fields. There are conveniance methods to edit image titles
 and keywords (will set the fields in all relevant metadata sections) as those are typically 
@@ -93,10 +92,45 @@ je.WriteFile(someFile) //Calls je.Bytes() then writes to someFile
 ```
 
 ## Copy and Manipulating Images
+The second function of image is to manipulate/transform images - typically to create thumbnails, portrait,
+landscape and other scaled versions of your original image. These copy functions will also respect and copy
+and original image metadata information - which the standard jpeg writers dont do.
+
+The package *"github.com/msvens/mimage/img"* exposes one function
+```go
+func TransformFile(source string, destinations map[string]Options) error 
+```
+
+In the follwoing example we use TransformFile to create a number of versions of our sourceImage.
+
+```go
+sourceImg := "../assets/leica.jpg"
+homeDir, _ := os.UserHomeDir()
+sourceDir := path.Join(homeDir,"transform")
+_ = os.Mkdir(sourceDir, 0755)
+
+//for all but the thumb we are copying the original meta information
+thumb := NewOptions(ResizeAndCrop, 400, 400, false)
+landscape := NewOptions(ResizeAndCrop, 1200, 628, true)
+square := NewOptions(ResizeAndCrop, 1200, 1200, true)
+portrait := NewOptions(ResizeAndCrop, 1080, 1350, true)
+resize := NewOptions(Resize, 1200, 0, true)
+
+destImgs := map[string]Options{
+	path.Join(sourceDir,"thumb.jpg"): thumb,
+	path.Join(sourceDir, "landscape.jpg"): landscape,
+	path.Join(sourceDir, "square.jpg"): square,
+	path.Join(sourceDir, "portrait.jpg"): portrait,
+	path.Join(sourceDir, "resize.jpg"): resize,
+}
+
+_ = TransformFile(sourceImg, destImgs)
+```
+
+Note that in a real situation you would handle the errors that we are now just skipping
 
 
-
-## Why?
+## Motivation
 
 [mphotos](https://www.github.com/msvens/mphotos) has relied on two libraries/tools for
 image manipulation and meta data extraction: [bimg](https://github.com/h2non/bimg) and 
@@ -105,8 +139,6 @@ process more complicated as bimg relies on libvips and exiftool is an external p
 needs to be installed. In effect making mphotos slighly less portable.
 
 mimage seeks to remedy this by offering similar functionality using only go native code
-
-
 
 # Releases
 
