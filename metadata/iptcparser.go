@@ -13,7 +13,7 @@ import (
 
 var defaultEncoding = binary.BigEndian
 
-const TagMarker = uint8(0x1c)
+const tagMarker = uint8(0x1c)
 
 const msb = 32768
 
@@ -21,7 +21,7 @@ func setMsb(n uint16) uint16 {
 	return n | msb
 }
 
-//math.MaxInt only supported from 1.17 and up
+// math.MaxInt only supported from 1.17 and up
 const (
 	intSize = 32 << (^uint(0) >> 63) // 32 or 64
 	maxInt  = 1<<(intSize-1) - 1
@@ -35,6 +35,8 @@ func hasMsb(n uint16) bool {
 	return !(n&msb == 0)
 }
 
+// IptcRecordDataset contains the iptc data for a Record/Tag. If
+// Repeatable is true the Data will be of type slice
 type IptcRecordDataset struct {
 	Record     IptcRecord
 	Tag        IptcTag
@@ -156,131 +158,6 @@ func decodeIptcData(desc IptcTagDesc, data []byte) (interface{}, error) {
 	return nil, err
 }
 
-/*
-func decodeIptcData2(desc IptcTagDesc, data [][]byte) (interface{}, error) {
-	var err error
-	if desc.Repeatable {
-		switch desc.Type {
-		case IptcString:
-			ret := []string{}
-			for _, d := range data {
-				ret = append(ret, string(d))
-			}
-			return ret, nil
-		case IptcDigits:
-			ret := []string{}
-			for _, d := range data {
-				ret = append(ret, string(d))
-			}
-			if isDigitsSlice(ret) {
-				return ret, nil
-			}
-			return ret, ErrIptcTagValue
-		case IptcUint8:
-			ret := []uint8{}
-			for _, d := range data {
-				if len(d) != 1 {
-					return ret, ErrIptcTagValue
-				}
-				val := uint8(0)
-				r := bytes.NewReader(d)
-				if err = binary.Read(r, defaultEncoding, &val); err != nil {
-					break
-				}
-				ret = append(ret, val)
-			}
-			if err == nil {
-				return ret, nil
-			}
-		case IptcUint16:
-			ret := []uint16{}
-			for _, d := range data {
-				if len(d) != 2 {
-					return ret, ErrIptcTagValue
-				}
-				val := uint16(0)
-				r := bytes.NewReader(d)
-				if err = binary.Read(r, defaultEncoding, &val); err != nil {
-					break
-				}
-				ret = append(ret, val)
-			}
-			if err == nil {
-				return ret, nil
-			}
-		case IptcUint32:
-			ret := []uint32{}
-			for _, d := range data {
-				if len(d) != 4 {
-					return ret, ErrIptcTagValue
-				}
-				val := uint32(0)
-				r := bytes.NewReader(d)
-				if err = binary.Read(r, defaultEncoding, &val); err != nil {
-					break
-				}
-				ret = append(ret, val)
-			}
-			if err == nil {
-				return ret, nil
-			}
-		case IptcUndef:
-			return data, nil
-		default:
-			err = ErrIptcUndefinedType
-		}
-		return nil, err
-	}
-
-	//non repeatable
-	if len(data) != 1 {
-		return nil, ErrIptcTagValue
-	}
-	switch desc.Type {
-	case IptcString:
-		return string(data[0]), nil
-	case IptcDigits:
-		ret := string(data[0])
-		if isDigits(ret) {
-			return ret, nil
-		}
-		return ret, ErrIptcTagValue
-	case IptcUint8:
-		ret := uint8(0)
-		if len(data[0]) != 1 {
-			return ret, ErrIptcTagValue
-		}
-		r := bytes.NewReader(data[0])
-		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
-			return ret, nil
-		}
-	case IptcUint16:
-		ret := uint16(0)
-		if len(data[0]) != 2 {
-			return ret, ErrIptcTagValue
-		}
-		r := bytes.NewReader(data[0])
-		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
-			return ret, nil
-		}
-	case IptcUint32:
-		ret := uint32(0)
-		if len(data[0]) != 4 {
-			return ret, ErrIptcTagValue
-		}
-		r := bytes.NewReader(data[0])
-		if err = binary.Read(r, defaultEncoding, &ret); err == nil {
-			return ret, nil
-		}
-	case IptcUndef:
-		return data[0], nil
-	default:
-		err = ErrIptcUndefinedType
-	}
-	return nil, err
-}
-*/
-
 func decodeIptcRecordData(r io.Reader) (IptcRecordTag, []byte, error) {
 	var err error
 	tuint8 := uint8(0)
@@ -289,7 +166,7 @@ func decodeIptcRecordData(r io.Reader) (IptcRecordTag, []byte, error) {
 	//marker
 	if err = binary.Read(r, defaultEncoding, &tuint8); err != nil {
 		return recTag, nil, err
-	} else if tuint8 != TagMarker {
+	} else if tuint8 != tagMarker {
 		return recTag, nil, fmt.Errorf("Invalid IPTC Tag Marker")
 	}
 	//record
@@ -336,6 +213,7 @@ func decodeIptcRecordData(r io.Reader) (IptcRecordTag, []byte, error) {
 	return recTag, data, nil
 }
 
+// DecodeIptc according to https://iptc.org/std/IIM/4.2/specification/IIMV4.2.pdf
 func DecodeIptc(r io.Reader) (map[IptcRecordTag]IptcRecordDataset, error) {
 	allTags := map[IptcRecordTag][][]byte{}
 	var err error
@@ -389,7 +267,7 @@ func encodeIptcRecordData(bw *bufio.Writer, record IptcRecord, tag IptcTag, val 
 		}
 		return binary.Write(bw, defaultEncoding, uint32(length))
 	}
-	if err = binary.Write(bw, defaultEncoding, TagMarker); err != nil {
+	if err = binary.Write(bw, defaultEncoding, tagMarker); err != nil {
 		return err
 	}
 	if err = binary.Write(bw, defaultEncoding, record); err != nil {
@@ -473,6 +351,7 @@ func encodeIptcRecord(bw *bufio.Writer, rd IptcRecordDataset) error {
 
 }
 
+// EncodeIptc according to https://iptc.org/std/IIM/4.2/specification/IIMV4.2.pdf
 func EncodeIptc(w io.Writer, recs map[IptcRecordTag]IptcRecordDataset) error {
 	keys := []IptcRecordTag{}
 	for k := range recs {
@@ -494,6 +373,7 @@ func EncodeIptc(w io.Writer, recs map[IptcRecordTag]IptcRecordDataset) error {
 	//return nil
 }
 
+// ParseIptcJpeg extracts iptc data from a jpeg segment list. Returns ErrNoIptc if the segments dont contain any IPTC data
 func ParseIptcJpeg(sl *jpegstructure.SegmentList) (map[IptcRecordTag]IptcRecordDataset, error) {
 	ret := map[IptcRecordTag]IptcRecordDataset{}
 	_, res, err := photoshop.ParseJpeg(sl)

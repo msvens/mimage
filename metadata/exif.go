@@ -11,14 +11,20 @@ import (
 	"time"
 )
 
-var ErrExifNoData = errors.New("No Exif data")
-var ErrExifTagNotFound = errors.New("Ifd tag not found")
-var ErrExifValueNotFound = errors.New("Ifd value not found")
-var ErrExifParseTag = errors.New("Exif tag could not be parsed")
-var ErrExifUndefinedType = errors.New("Tag type undefined")
+// Exif errors
+var (
+	ErrExifNoData        = errors.New("No Exif data")
+	ErrExifTagNotFound   = errors.New("Ifd tag not found")
+	ErrExifValueNotFound = errors.New("Ifd value not found")
+	ErrExifParseTag      = errors.New("Exif tag could not be parsed")
+	ErrExifUndefinedType = errors.New("Tag type undefined")
+)
 
-const ExifDateTime = "2006:01:02 15:04:05"
-const ExifDateTimeOffset = "2006:01:02 15:04:05 -07:00"
+// Exif Time formats
+const (
+	ExifDateTime       = "2006:01:02 15:04:05"
+	ExifDateTimeOffset = "2006:01:02 15:04:05 -07:00"
+)
 
 func exifDateTime(dt string, offset string) (time.Time, error) {
 	if offset == "" {
@@ -27,14 +33,17 @@ func exifDateTime(dt string, offset string) (time.Time, error) {
 	return time.Parse(ExifDateTimeOffset, dt+" "+offset)
 }
 
+// ExifDate type
 type ExifDate int
 
+// ExifDates found in the specification
 const (
 	OriginalDate ExifDate = iota
 	ModifyDate
 	DigitizedDate
 )
 
+// ExifTagName returns the common name of specific ExifTag
 func ExifTagName(index ExifIndex, tag ExifTag) string {
 	tagDesc, found := ExifTagDescriptions[ExifIndexTag{Index: index, Tag: tag}]
 	if found {
@@ -43,6 +52,8 @@ func ExifTagName(index ExifIndex, tag ExifTag) string {
 	return fmt.Sprintf("Unknown Ifd Tag: %v", tag)
 }
 
+// ExifValueIsAllowed checks if an ExifTag value is ok to use. Most tags
+// dont have any specific values defined. see (https://exiftool.org/TagNames/EXIF.html)
 func ExifValueIsAllowed(index ExifIndex, tag ExifTag, value interface{}) bool {
 	tagDesc, found := ExifTagDescriptions[ExifIndexTag{index, tag}]
 	if !found {
@@ -146,6 +157,8 @@ func ExifValueIsAllowed(index ExifIndex, tag ExifTag, value interface{}) bool {
 	//return false
 }
 
+// ExifValueString returns the common name of specific ExifTag value. E.g. "No Flash" for value
+// 0 for the FlashTag. If no mapping is found returns "undefined"
 func ExifValueString(index ExifIndex, tag ExifTag, value interface{}) string {
 	if v, err := ExifValueStringErr(index, tag, value); err == nil {
 		return v
@@ -153,6 +166,8 @@ func ExifValueString(index ExifIndex, tag ExifTag, value interface{}) string {
 	return "undefined"
 }
 
+// ExifValueStringErr returns the common name of the ExifTag value or an error, either
+// ErrExifValueNotFound or ErrExifUndefinedType
 func ExifValueStringErr(index ExifIndex, tag ExifTag, value interface{}) (string, error) {
 	tagDesc, found := ExifTagDescriptions[ExifIndexTag{index, tag}]
 	if !found {
@@ -255,10 +270,13 @@ func ExifValueStringErr(index ExifIndex, tag ExifTag, value interface{}) (string
 
 }
 
+// ExifData holds the underlying IfdIndex
 type ExifData struct {
 	rawExif *exif.IfdIndex
 }
 
+// NewExifData creates an ExifData from a jpeg segment list. Returns
+// ErrExifNoData if the segment list did not contain any exif data
 func NewExifData(segments *jpegstructure.SegmentList) (*ExifData, error) {
 	var rawExif []byte
 	var ifdMapping *exifcommon.IfdMapping
@@ -281,10 +299,12 @@ func NewExifData(segments *jpegstructure.SegmentList) (*ExifData, error) {
 	return &ExifData{&index}, nil
 }
 
+// IsEmpty returns true if the underlying IfdIndex is nil
 func (ed *ExifData) IsEmpty() bool {
 	return ed.rawExif == nil
 }
 
+// GpsInfo returns this Exifs gpsinfo or an error
 func (ed *ExifData) GpsInfo() (*exif.GpsInfo, error) {
 	gpsIfd := ed.Ifd(GpsIFD)
 	if gpsIfd == nil {
@@ -293,7 +313,9 @@ func (ed *ExifData) GpsInfo() (*exif.GpsInfo, error) {
 	return gpsIfd.GpsInfo()
 }
 
-func (ed *ExifData) GetIfdImageDescription() string {
+// GetImageDescription returns IFD_ImaageDescription or "" if the tag was
+// not set
+func (ed *ExifData) GetImageDescription() string {
 	ret := ""
 	if err := ed.ScanIfdRoot(IFD_ImageDescription, &ret); err != nil {
 		return ""
@@ -301,7 +323,9 @@ func (ed *ExifData) GetIfdImageDescription() string {
 	return ret
 }
 
-func (ed *ExifData) GetIfdUserComment() string {
+// GetUserComment returns ExifIFD_UserComment as a string or "" if there was an error
+// getting the comment. The comment is assumed to be encoded using exifundefined.Tag9286UserComment
+func (ed *ExifData) GetUserComment() string {
 	ret := exifundefined.Tag9286UserComment{}
 	if err := ed.ScanIfdExif(ExifIFD_UserComment, &ret); err != nil {
 		return ""
@@ -309,6 +333,7 @@ func (ed *ExifData) GetIfdUserComment() string {
 	return string(ret.EncodingBytes)
 }
 
+// HasIfd checks if the specified index exists in this Ifd
 func (ed *ExifData) HasIfd(index ExifIndex) bool {
 	if ed.IsEmpty() {
 		return false
@@ -317,6 +342,7 @@ func (ed *ExifData) HasIfd(index ExifIndex) bool {
 	return found
 }
 
+// Ifd retrieves the given index or nil if it does not exist
 func (ed *ExifData) Ifd(index ExifIndex) *exif.Ifd {
 	if ed.IsEmpty() {
 		return nil
@@ -324,7 +350,7 @@ func (ed *ExifData) Ifd(index ExifIndex) *exif.Ifd {
 	return ed.rawExif.Lookup[IFDPaths[index]]
 }
 
-func scanExifValue(tagDesc ExifTagDesc, source interface{}, dest interface{}) error {
+func scanExifValue(_ ExifTagDesc, source interface{}, dest interface{}) error {
 	switch dtype := dest.(type) {
 	case *string:
 		v, ok := source.(string)
@@ -379,13 +405,13 @@ func scanExifValue(tagDesc ExifTagDesc, source interface{}, dest interface{}) er
 		if !ok {
 			return ErrExifParseTag
 		}
-		*dtype = NewURatFromRational(v[0])
+		*dtype = newURatFromRational(v[0])
 	case *Rat:
 		v, ok := source.([]exifcommon.SignedRational)
 		if !ok {
 			return ErrExifParseTag
 		}
-		*dtype = NewRatFromSignedRational(v[0])
+		*dtype = newRatFromSignedRational(v[0])
 	case *exifundefined.Tag9286UserComment:
 		v, ok := source.(exifundefined.Tag9286UserComment)
 		if !ok {
@@ -404,7 +430,7 @@ func scanExifValue(tagDesc ExifTagDesc, source interface{}, dest interface{}) er
 	return nil
 }
 
-func scanMultipleExifValue(tagDesc ExifTagDesc, source interface{}, dest interface{}) error {
+func scanMultipleExifValue(_ ExifTagDesc, source interface{}, dest interface{}) error {
 	switch dtype := dest.(type) {
 	case *[]uint8:
 		v, ok := source.([]uint8)
@@ -454,7 +480,7 @@ func scanMultipleExifValue(tagDesc ExifTagDesc, source interface{}, dest interfa
 			return ErrExifParseTag
 		}
 		for _, v := range vals {
-			*dtype = append(*dtype, NewURatFromRational(v))
+			*dtype = append(*dtype, newURatFromRational(v))
 		}
 
 	case *[]Rat:
@@ -463,14 +489,14 @@ func scanMultipleExifValue(tagDesc ExifTagDesc, source interface{}, dest interfa
 			return ErrExifParseTag
 		}
 		for _, v := range vals {
-			*dtype = append(*dtype, NewRatFromSignedRational(v))
+			*dtype = append(*dtype, newRatFromSignedRational(v))
 		}
 	case *LensInfo:
 		vals, ok := source.([]exifcommon.Rational)
 		if !ok || len(vals) < 4 {
 			return ErrExifParseTag
 		}
-		ret, e := NewLensInfoFromRational(vals)
+		ret, e := newLensInfoFromRational(vals)
 		if e != nil {
 			return e
 		}
@@ -481,6 +507,7 @@ func scanMultipleExifValue(tagDesc ExifTagDesc, source interface{}, dest interfa
 	return nil
 }
 
+// Scan reads the specific tag from index into dest
 func (ed *ExifData) Scan(ifdIndex ExifIndex, tagId ExifTag, dest interface{}) error {
 	if ed.IsEmpty() {
 		return ErrExifNoData
@@ -513,162 +540,7 @@ func (ed *ExifData) Scan(ifdIndex ExifIndex, tagId ExifTag, dest interface{}) er
 	return scanMultipleExifValue(tagDesc, value, dest)
 }
 
-/*
-func (ed *ExifData) Scan2(ifdIndex ExifIndex, tagId ExifTag, dest interface{}) error {
-	if ed.IsEmpty() {
-		return ErrExifNoData
-	}
-	ifd, found := ed.rawExif.Lookup[IFDPaths[ifdIndex]]
-	if !found {
-		return ErrExifTagNotFound
-	}
-
-	entries, err := ifd.FindTagWithId(uint16(tagId))
-	if err != nil {
-		return ErrExifTagNotFound
-	}
-	if len(entries) < 1 {
-		return fmt.Errorf("No entry data for: %s", ExifTagName(ifdIndex, tagId))
-	}
-
-	entry := entries[0]
-
-	value, err := entry.Value()
-
-	if err != nil {
-		return err
-	}
-
-	wrongTagType := false
-
-	switch dtype := dest.(type) {
-
-	case *string:
-		//Todo: do a proper convert instead of using format
-		*dtype, _ = entry.Format()
-	case *float32:
-		if entry.TagType() == exifcommon.TypeFloat {
-			v := value.([]float32)
-			*dtype = float32(v[0])
-		} else {
-			wrongTagType = true
-		}
-	case *float64:
-		if entry.TagType() == exifcommon.TypeDouble {
-			v := value.([]float64)
-			*dtype = float64(v[0])
-		} else if entry.TagType() == exifcommon.TypeFloat {
-			v := value.([]float32)
-			*dtype = float64(v[0])
-		} else if entry.TagType() == exifcommon.TypeRational {
-			v := value.([]exifcommon.Rational)
-			*dtype = float64(v[0].Numerator) / float64(v[0].Denominator)
-		} else if entry.TagType() == exifcommon.TypeSignedRational {
-			v := value.([]exifcommon.SignedRational)
-			*dtype = float64(v[0].Numerator) / float64(v[0].Denominator)
-		} else {
-			wrongTagType = true
-		}
-	case *int64:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = int64(v[0])
-		} else if entry.TagType() == exifcommon.TypeLong {
-			v := value.([]uint32)
-			*dtype = int64(v[0])
-		} else if entry.TagType() == exifcommon.TypeSignedLong {
-			v := value.([]int32)
-			*dtype = int64(v[0])
-		} else {
-			wrongTagType = true
-		}
-	case *uint64:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = uint64(v[0])
-		} else if entry.TagType() == exifcommon.TypeLong {
-			v := value.([]uint32)
-			*dtype = uint64(v[0])
-		} else {
-			wrongTagType = true
-		}
-	case *int32:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = int32(v[0])
-		} else if entry.TagType() == exifcommon.TypeSignedLong {
-			v := value.([]int32)
-			*dtype = v[0]
-		} else {
-			wrongTagType = true
-		}
-	case *uint32:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = uint32(v[0])
-		} else if entry.TagType() == exifcommon.TypeLong {
-			v := value.([]uint32)
-			*dtype = v[0]
-		} else {
-			wrongTagType = true
-		}
-	case *uint16:
-		if entry.TagType() == exifcommon.TypeShort {
-			v := value.([]uint16)
-			*dtype = v[0]
-			return nil
-		}
-		wrongTagType = true
-	case *URat:
-		if entry.TagType() == exifcommon.TypeRational {
-			v := value.([]exifcommon.Rational)
-			*dtype = NewURatFromRational(v[0])
-		} else {
-			wrongTagType = true
-		}
-	case *Rat:
-		if entry.TagType() == exifcommon.TypeSignedRational {
-			v := value.([]exifcommon.SignedRational)
-			*dtype = NewRatFromSignedRational(v[0])
-		} else {
-			wrongTagType = true
-		}
-	case *LensInfo:
-		if entry.TagType() == exifcommon.TypeRational {
-			v := value.([]exifcommon.Rational)
-			if len(v) != 4 {
-				return fmt.Errorf("Expected 4 values for LensInfo got %v", len(v))
-			}
-			ret, e := NewLensInfoFromRational(v)
-			if e != nil {
-				return e
-			}
-			*dtype = ret
-		} else {
-			wrongTagType = true
-		}
-	case *exifundefined.Tag9286UserComment:
-		if entry.TagType() == exifcommon.TypeUndefined {
-			v, ok := value.(exifundefined.Tag9286UserComment)
-			if !ok {
-				return fmt.Errorf("Cannot recognise User Comment Type")
-			}
-			*dtype = v
-		} else {
-			wrongTagType = true
-		}
-	default:
-		return fmt.Errorf("Cannot handle destination type %T", dest)
-	}
-
-	if wrongTagType {
-		n := exifcommon.TypeNames[entry.TagType()]
-		return fmt.Errorf("Wrong TagType: %s for destination", n)
-	}
-	return nil
-}
-*/
-
+// ScanExifDate reads the given dateTag into dest
 func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 	if ed.IsEmpty() {
 		return ErrExifNoData
@@ -709,18 +581,22 @@ func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 	return nil
 }
 
+// ScanIfdExif scans tag from ExifIFD into dest
 func (ed *ExifData) ScanIfdExif(tag ExifTag, dest interface{}) error {
 	return ed.Scan(ExifIFD, tag, dest)
 }
 
+// ScanIfdIop scans tag from InteropIFD into dest
 func (ed *ExifData) ScanIfdIop(tagId ExifTag, dest interface{}) error {
 	return ed.Scan(InteropIFD, tagId, dest)
 }
 
+// ScanIfdRoot scans tag from RootIFD into dest
 func (ed *ExifData) ScanIfdRoot(tagId ExifTag, dest interface{}) error {
 	return ed.Scan(RootIFD, tagId, dest)
 }
 
+// ScanIfdThumbnail scans tag from ThumbnailIFD into dest
 func (ed *ExifData) ScanIfdThumbnail(tagId ExifTag, dest interface{}) error {
 	return ed.Scan(ThumbnailIFD, tagId, dest)
 }

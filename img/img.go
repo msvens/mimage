@@ -6,12 +6,14 @@ import (
 	"github.com/msvens/mimage/metadata"
 	"image"
 	"image/jpeg"
-	"io/ioutil"
+	"os"
 	"time"
 )
 
+// CropAnchor specifies where the anchor point should be when cropping an image
 type CropAnchor int
 
+// Various Anchors for your crop
 const (
 	Center CropAnchor = iota
 	TopLeft
@@ -24,39 +26,57 @@ const (
 	BottomRight
 )
 
+// ResampleStrategy specifies what method to use when resampling an image
 type ResampleStrategy int
 
 const (
+	//Lanczos sampling. Default
 	Lanczos ResampleStrategy = iota
+	//NearestNeighbor sampling
 	NearestNeighbor
+	//Box sampling
 	Box
+	//Linear sampling
 	Linear
+	//Hermite sampling
 	Hermite
+	//MitchellNetravali sampling
 	MitchellNetravali
+	//CatmullRom sampling
 	CatmullRom
+	//BSpline sampling
 	BSpline
+	//Gaussian sampling
 	Gaussian
+	//Bartlett sampling
 	Bartlett
+	//Hann sampling
 	Hann
+	//Hamming sampling
 	Hamming
+	//Blackman sampling
 	Blackman
+	//Welch sampling
 	Welch
+	//Cosine sampling
 	Cosine
 )
 
+// TransformType specifies how to transform an image, crop, resize, etc...
 type TransformType int
 
 const (
-	//Scales the image to given dimension. To keep aspect ratio the image is cropped
+	//ResizeAndCrop scales the image to given dimension. To keep aspect ratio the image is cropped
 	ResizeAndCrop TransformType = iota
-	//Cuts a specified region of the image
+	//Crop cuts a specified region of the image
 	Crop
-	//Scale the image to the specified dimensions. To keep aspect ratio set either width or height to 0
+	//Resize scale the image to the specified dimensions. To keep aspect ratio set either width or height to 0
 	Resize
-	//Scale the image to fit the maximum specified dimensions.
+	//ResizeAndFit scale the image to fit the maximum specified dimensions.
 	ResizeAndFit
 )
 
+// Options holds all options for a given image transformation job
 type Options struct {
 	Width     int
 	Height    int
@@ -65,7 +85,6 @@ type Options struct {
 	Transform TransformType
 	Strategy  ResampleStrategy
 	CopyExif  bool
-	//FileName  string
 }
 
 func resampleFiler(strategy ResampleStrategy) imaging.ResampleFilter {
@@ -130,14 +149,14 @@ func anchor(ca CropAnchor) imaging.Anchor {
 	}
 }
 
-//Create Options that default to crop center strategy, image quality 90% and Resize strategy lanczos
+// NewOptions creates Options that default to crop center strategy, image quality 90% and Resize strategy lanczos
 func NewOptions(transform TransformType, width, height int, copyExif bool) Options {
 	return Options{Width: width, Height: height, Quality: 90, Anchor: Center,
 		Transform: transform, Strategy: Lanczos, CopyExif: copyExif}
 }
 
 func openForExifCopy(sourceFile string) (image.Image, []byte, error) {
-	srcBytes, err := ioutil.ReadFile(sourceFile)
+	srcBytes, err := os.ReadFile(sourceFile)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -169,6 +188,7 @@ func saveWithExif(srcBytes []byte, dstImage image.Image, opt Options, fileName s
 	return mde.WriteFile(fileName)
 }
 
+// TransformFile creates versions of source based on destinations
 func TransformFile(source string, destinations map[string]Options) error {
 	srcImg, srcBytes, err := openForExifCopy(source)
 	if err != nil {
@@ -187,29 +207,6 @@ func TransformFile(source string, destinations map[string]Options) error {
 	}
 	return nil
 }
-
-/*
-func Transform(source string, dest string, opt Options) error {
-	var srcImg image.Image
-	var err error
-	var srcBytes []byte
-	if opt.CopyExif {
-		srcImg, srcBytes, err = openForExifCopy(source)
-	} else {
-		srcImg, err = imaging.Open(source)
-	}
-	if err != nil {
-		return err
-	}
-	dst := transform(srcImg, opt)
-	if opt.CopyExif {
-		err = saveWithExif(srcBytes, dst, opt, dest)
-	} else {
-		err = imaging.Save(dst, dest, imaging.JPEGQuality(opt.Quality))
-	}
-	return err
-}
-*/
 
 func transform(src image.Image, opt Options) image.Image {
 	var dstImage image.Image

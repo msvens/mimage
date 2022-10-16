@@ -101,10 +101,10 @@ func TestExifValueString(t *testing.T) {
 
 }
 
-//Todo: Create an asset image that has ImageDesc and UserComment already stored
+// Todo: Create an asset image that has ImageDesc and UserComment already stored
 func TestExifData_GetIfdImageDescription(t *testing.T) {
 	ed := getExifData(LeicaImg, t)
-	if desc := ed.GetIfdImageDescription(); desc != "" {
+	if desc := ed.GetImageDescription(); desc != "" {
 		t.Errorf("Did not expect any image description got %s", desc)
 	}
 	je := getJpegEditor(LeicaImg, t)
@@ -113,15 +113,15 @@ func TestExifData_GetIfdImageDescription(t *testing.T) {
 		t.Errorf("Could not set image description: %v", err)
 	}
 	ed = jpegEditorMD(je, t).exifData
-	if desc := ed.GetIfdImageDescription(); desc != expImgDesc {
+	if desc := ed.GetImageDescription(); desc != expImgDesc {
 		t.Errorf("Expected description %s got %s", expImgDesc, desc)
 	}
 }
 
-//Todo: Create an asset image that has ImageDesc and UserComment already stored
+// Todo: Create an asset image that has ImageDesc and UserComment already stored
 func TestExifData_GetIfdUserComment(t *testing.T) {
 	ed := getExifData(LeicaImg, t)
-	if desc := ed.GetIfdUserComment(); desc != "" {
+	if desc := ed.GetUserComment(); desc != "" {
 		t.Errorf("Did not expect any user comment got %s", desc)
 	}
 	je := getJpegEditor(LeicaImg, t)
@@ -130,7 +130,7 @@ func TestExifData_GetIfdUserComment(t *testing.T) {
 		t.Errorf("Could not set user comment: %v", err)
 	}
 	ed = jpegEditorMD(je, t).exifData
-	if desc := ed.GetIfdUserComment(); desc != expUserComment {
+	if desc := ed.GetUserComment(); desc != expUserComment {
 		t.Errorf("Expected user comment %s got %s", expUserComment, desc)
 	}
 }
@@ -369,12 +369,12 @@ func TestExifTagName(t *testing.T) {
 	}
 }
 
-//Todo:
+// Todo:
 func TestParseIfdDateTime(t *testing.T) {
 
 }
 
-//Todo:
+// Todo:
 func TestTimeOffsetString(t *testing.T) {
 
 }

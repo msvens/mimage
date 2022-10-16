@@ -7,16 +7,16 @@ import (
 	"github.com/dsoprea/go-exif/v3"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"image/jpeg"
-	"io/ioutil"
+	"os"
 	"strings"
 	"time"
 	//_ "trimmer.io/go-xmp/models"
 )
 
+// ErrParseImage if a file or byte slice could not be parsed as a jpeg image
 var ErrParseImage = errors.New("Could not parse image")
 
-//var ErrJpegWrongFileExt = fmt.Errorf("Only .jpeg or .jpg file extension allowed")
-
+// Summary holds the most common image metadata of interest
 type Summary struct {
 	Title                   string        `json:"title,omitempty"`
 	Keywords                []string      `json:"keywords,omitempty"`
@@ -81,6 +81,7 @@ func (ec Summary) String() string {
 	return sb.String()
 }
 
+// MetaData keeps xmp, iptc, exif data as well as image dimensions
 type MetaData struct {
 	xmpData     XmpData
 	iptcData    *IptcData
@@ -101,14 +102,16 @@ func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
 	return segments, nil
 }
 
+// NewMetaDataFromFile reads a jpeg image file
 func NewMetaDataFromFile(filename string) (*MetaData, error) {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
 	return NewMetaData(data)
 }
 
+// NewMetaData reads a jpeg image byte slice
 func NewMetaData(data []byte) (*MetaData, error) {
 	ret := MetaData{}
 	segments, err := parseJpegBytes(data)
@@ -145,14 +148,18 @@ func NewMetaData(data []byte) (*MetaData, error) {
 	return &ret, nil
 }
 
+// Exif returens the exif portion of the MetaData. Can be nil
 func (md *MetaData) Exif() *ExifData {
 	return md.exifData
 }
 
+// Iptc returns the iptc portion of the MetaData. Can be nil
 func (md *MetaData) Iptc() *IptcData {
 	return md.iptcData
 }
 
+// Summary parses the metadata and returns its Summary. If the summary
+// has already been parsed returns a cached copy of it
 func (md *MetaData) Summary() *Summary {
 	if md.summary != nil {
 		return md.summary
@@ -178,10 +185,12 @@ func (md *MetaData) Summary() *Summary {
 	return md.summary
 }
 
+// SummaryErr returns any error any error from the Summary parsing
 func (md *MetaData) SummaryErr() error {
 	return md.summaryErr
 }
 
+// Xmp returns the Xmp portion of the metadata
 func (md *MetaData) Xmp() XmpData {
 	return md.xmpData
 }

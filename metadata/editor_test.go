@@ -3,7 +3,6 @@ package metadata
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -69,7 +68,7 @@ func cmpDates(t1, t2 time.Time) bool {
 func TestNewJpegEditor(t *testing.T) {
 	assets := []string{LeicaImg, NoExifImg}
 	for _, asset := range assets {
-		if b, err := ioutil.ReadFile(asset); err != nil {
+		if b, err := os.ReadFile(asset); err != nil {
 			t.Errorf("Could not read file: %s error %v", asset, err)
 		} else {
 			if _, err1 := NewJpegEditor(b); err1 != nil {
@@ -355,7 +354,7 @@ func TestJpegEditor_SetTitle(t *testing.T) {
 		if md.Xmp().GetTitle() != expTitle {
 			t.Errorf("Expected title %s got %s", expTitle, md.Xmp().GetTitle())
 		}
-		if md.Exif().GetIfdImageDescription() != expTitle {
+		if md.Exif().GetImageDescription() != expTitle {
 			t.Errorf("Expected title %s got %s", expTitle, md.Xmp().GetTitle())
 		}
 	}
@@ -374,7 +373,7 @@ func TestJpegEditor_WriteFile(t *testing.T) {
 	}
 	//now reopen
 	md := getMetaData(out, t)
-	if desc := md.exifData.GetIfdImageDescription(); desc != expImageDesc {
+	if desc := md.exifData.GetImageDescription(); desc != expImageDesc {
 		t.Errorf("Expected %s got %s", expImageDesc, desc)
 	}
 	//finally delete temp file
@@ -386,8 +385,8 @@ func TestJpegEditor_WriteFile(t *testing.T) {
 	wrongOut := filepath.Join(os.TempDir(), "TestWriteFile.png")
 	if err := je.WriteFile(wrongOut); err == nil {
 		t.Errorf("Write file should not accept a png extension")
-	} else if err != ErrJpegWrongFileExt {
-		t.Errorf("Expecteded error %v got %v", ErrJpegWrongFileExt, err)
+	} else if err != errJpegWrongFileExt {
+		t.Errorf("Expecteded error %v got %v", errJpegWrongFileExt, err)
 	}
 }
 

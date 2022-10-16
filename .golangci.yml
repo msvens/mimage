@@ -2,6 +2,9 @@
 run:
   timeout: 5m
 
+issues:
+  exclude-use-default: false
+
 linters:
   disable-all: true
   enable:
@@ -27,4 +30,11 @@ linters-settings:
   revive:
     rules:
       - name: var-naming
-        disabled: true
+        disabled: false
+        arguments:
+          - [ "ID", "Id" ] # AllowList
+          - [] # DenyList
+      - name: exported
+        disabled: false
+        severity: warning
+

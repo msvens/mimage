@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"golang.org/x/net/html"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -34,8 +34,8 @@ var exivTypeMap = map[string]string{
 	"UNDEFINED": "ExifUndef",
 }
 
-//Generate ExifTags Json from https://www.exiv2.org/tags.html. This file is used
-//to build our master-exiftags.json
+// GenerateExiv2ExifJSON generates Json from https://www.exiv2.org/tags.html. This file is used
+// to build our master-exiftags.json
 func GenerateExiv2ExifJSON() error {
 
 	//read source:
@@ -43,7 +43,11 @@ func GenerateExiv2ExifJSON() error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if tErr := resp.Body.Close(); tErr != nil {
+			err = tErr
+		}
+	}()
 
 	doc, err := html.Parse(resp.Body)
 	if err != nil {
@@ -67,7 +71,7 @@ func GenerateExiv2ExifJSON() error {
 		return err
 	}
 
-	return ioutil.WriteFile("./assets/exiv2-exiftags.json", outBytes, 0644)
+	return os.WriteFile("./assets/exiv2-exiftags.json", outBytes, 0644)
 
 }
 
@@ -152,9 +156,9 @@ func parseExifTags(rd []string) (rawExifTag, string, error) {
 	return ret, ifd, nil
 }
 
-type Matcher = func(node *html.Node) bool
+type matcher = func(node *html.Node) bool
 
-func findNodes(node *html.Node, matcher Matcher) []*html.Node {
+func findNodes(node *html.Node, matcher matcher) []*html.Node {
 	var ret []*html.Node
 
 	var f func(*html.Node)
@@ -171,7 +175,7 @@ func findNodes(node *html.Node, matcher Matcher) []*html.Node {
 	return ret
 }
 
-func findNode(node *html.Node, matcher Matcher) (*html.Node, error) {
+func findNode(node *html.Node, matcher matcher) (*html.Node, error) {
 	var ret *html.Node
 
 	var f func(*html.Node)

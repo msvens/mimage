@@ -5,12 +5,13 @@ import (
 	"errors"
 	"github.com/dsoprea/go-exif/v3"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
-var ErrJpegWrongFileExt = errors.New("File does not end with .jpg or .jpeg")
+var errJpegWrongFileExt = errors.New("File does not end with .jpg or .jpeg")
 
+// JpegEditor holds the exif, xmp and iptc editors as well as the jpeg segment list
 type JpegEditor struct {
 	sl *jpegstructure.SegmentList
 	xe *XmpEditor
@@ -18,14 +19,16 @@ type JpegEditor struct {
 	ie *IptcEditor
 }
 
+// NewJpegEditorFile from a jpeg image file
 func NewJpegEditorFile(fileName string) (*JpegEditor, error) {
-	b, err := ioutil.ReadFile(fileName)
+	b, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
 	return NewJpegEditor(b)
 }
 
+// NewJpegEditor from a jpeg image byte slice
 func NewJpegEditor(data []byte) (*JpegEditor, error) {
 	var err error
 	ret := JpegEditor{}
@@ -51,6 +54,7 @@ func (je *JpegEditor) appendSegment(idx int, s *jpegstructure.Segment) {
 	je.sl = jpegstructure.NewSegmentList(newS)
 }
 
+// Bytes return jpeg image bytes from this editor. Any edits will be committed
 func (je *JpegEditor) Bytes() ([]byte, error) {
 	if je.ie.IsDirty() {
 		if err := je.setIptc(); err != nil {
@@ -74,6 +78,7 @@ func (je *JpegEditor) Bytes() ([]byte, error) {
 	return out.Bytes(), nil
 }
 
+// CopyMetaData copies and replaces metadata (xmp,iptc,exif) from sourcImg
 func (je *JpegEditor) CopyMetaData(sourceImg []byte) error {
 	sl, err := parseJpegBytes(sourceImg)
 	if err != nil {
@@ -116,6 +121,7 @@ func (je *JpegEditor) CopyMetaData(sourceImg []byte) error {
 	return nil
 }
 
+// DropMetaData removes xmp, exif, iptc data from this editor
 func (je *JpegEditor) DropMetaData() error {
 	if err := je.DropExif(); err != nil {
 		return err
@@ -126,6 +132,7 @@ func (je *JpegEditor) DropMetaData() error {
 	return je.DropXmp()
 }
 
+// DropExif removes exif data from this editor
 func (je *JpegEditor) DropExif() error {
 	if _, err := je.sl.DropExif(); err != nil {
 		return err
@@ -133,6 +140,7 @@ func (je *JpegEditor) DropExif() error {
 	return je.ee.Clear(false)
 }
 
+// DropXmp removes xmp data from this editor
 func (je *JpegEditor) DropXmp() error {
 	i, _, err := je.sl.FindXmp()
 	if err == nil {
@@ -149,6 +157,7 @@ func (je *JpegEditor) DropXmp() error {
 	}
 }
 
+// DropIptc removes iptc data from this editor
 func (je *JpegEditor) DropIptc() error {
 	i, _, err := je.sl.FindIptc()
 	if err == nil {
@@ -161,15 +170,17 @@ func (je *JpegEditor) DropIptc() error {
 	return nil
 }
 
+// Exif returns the exifEditor
 func (je JpegEditor) Exif() *ExifEditor {
 	return je.ee
 }
 
+// Iptc returns the iptcEditor
 func (je JpegEditor) Iptc() *IptcEditor {
 	return je.ie
 }
 
-//Retrives a metadata struct based on this editor. Will commit any changes first
+// MetaData returns a metadata struct based on this editor. Will commit any changes first
 func (je *JpegEditor) MetaData() (*MetaData, error) {
 	b, e := je.Bytes()
 	if e != nil {
@@ -195,8 +206,8 @@ func (je *JpegEditor) setIptc() error {
 	if err != nil {
 		return err
 	}
-	if je.ie.SegmentIndex() != -1 {
-		s := je.sl.Segments()[je.ie.SegmentIndex()]
+	if je.ie.segmentIdx != -1 {
+		s := je.sl.Segments()[je.ie.segmentIdx]
 		s.Data = iptcBytes
 		return nil
 	}
@@ -207,13 +218,13 @@ func (je *JpegEditor) setIptc() error {
 
 }
 
-//ConvenianceFunction to set keywords in both xmp and iptc metadata blocks
+// SetKeywords sets the keywords in Xmp and Iptc
 func (je *JpegEditor) SetKeywords(keywords []string) error {
 	je.Xmp().SetKeywords(keywords)
 	return je.ie.SetKeywords(keywords)
 }
 
-//Conveniance function to image title in xmp, iptc and exif metadata blocks
+// SetTitle sets title in Xmp and Iptc and ImageDescription in Exif
 func (je *JpegEditor) SetTitle(title string) error {
 	je.Xmp().SetTitle(title)
 	if err := je.ee.SetImageDescription(title); err != nil {
@@ -241,21 +252,22 @@ func (je *JpegEditor) setXmp() error {
 	}
 }
 
-//Writes this image to file by first committing all edits. Any existing
-//file will be truncated. Destination needs to have jpg or jpeg extension
+// WriteFile writes this editor to file by first committing any edits. Any existing
+// file will be truncated. Destination needs to have jpg or jpeg extension
 func (je *JpegEditor) WriteFile(dest string) error {
 	//make sure dest has the right file extension
 	if filepath.Ext(dest) != ".jpg" && filepath.Ext(dest) != ".jpeg" {
-		return ErrJpegWrongFileExt
+		return errJpegWrongFileExt
 	}
 	out, err := je.Bytes()
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(dest, out, 0644)
+	return os.WriteFile(dest, out, 0644)
 
 }
 
+// Xmp returns the xmp editor
 func (je JpegEditor) Xmp() *XmpEditor {
 	return je.xe
 }

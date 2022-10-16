@@ -93,8 +93,8 @@ func TestXmpEditor_Bytes(t *testing.T) {
 	if base == nil {
 		t.Fatalf("xmp document did not have a base model")
 	}
-	if base.CreatorTool.String() != XmpEditorSoftware {
-		t.Fatalf("Expected xmp creator tool %s got %s", XmpEditorSoftware, base.CreatorTool.String())
+	if base.CreatorTool.String() != xmpEditorSoftware {
+		t.Fatalf("Expected xmp creator tool %s got %s", xmpEditorSoftware, base.CreatorTool.String())
 	}
 	//now write and reopen with prefix
 	je.Xmp().SetDirty()
@@ -103,8 +103,8 @@ func TestXmpEditor_Bytes(t *testing.T) {
 	if base == nil {
 		t.Fatalf("xmp document did not have a base model")
 	}
-	if base.CreatorTool.String() != XmpEditorSoftware {
-		t.Fatalf("Expected xmp creator tool %s got %s", XmpEditorSoftware, base.CreatorTool.String())
+	if base.CreatorTool.String() != xmpEditorSoftware {
+		t.Fatalf("Expected xmp creator tool %s got %s", xmpEditorSoftware, base.CreatorTool.String())
 	}
 }
 
@@ -120,8 +120,8 @@ func TestXmpEditor_Clear(t *testing.T) {
 	if base == nil {
 		t.Fatalf("xmp document did not have a base model")
 	}
-	if base.CreatorTool.String() != XmpEditorSoftware {
-		t.Fatalf("Expected xmp creator tool %s got %s", XmpEditorSoftware, base.CreatorTool.String())
+	if base.CreatorTool.String() != xmpEditorSoftware {
+		t.Fatalf("Expected xmp creator tool %s got %s", xmpEditorSoftware, base.CreatorTool.String())
 	}
 
 }

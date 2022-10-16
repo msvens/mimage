@@ -115,7 +115,7 @@ func TestIptcEditor_SetApplication(t *testing.T) {
 	expEditorialUpdate := "01"
 	for _, fname := range []string{LeicaImg, NoExifImg} {
 		je := getJpegEditor(fname, t)
-		if err := je.Iptc().SetApplication(IPTCApplication_EditorialUpdate, expEditorialUpdate); err != nil {
+		if err := je.Iptc().setApplication(IPTCApplication_EditorialUpdate, expEditorialUpdate); err != nil {
 			t.Fatalf("Could not set IPTCApplication_EditorialUpdate for image %s got err %v", fname, err)
 		}
 		md := jpegEditorMD(je, t)

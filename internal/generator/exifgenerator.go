@@ -3,7 +3,7 @@ package generator
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -106,9 +106,9 @@ type ExifTagDesc struct {
 }
 `
 
-//Align types and adds type/description info to tags from exiv2 json. Sorts the file based on TagId
+// GenerateMasterExifJSON aligns types and adds type/description info to tags from exiv2 json. Sorts the file based on TagId
 func GenerateMasterExifJSON() error {
-	b, err := ioutil.ReadFile("assets/exiftool-exiftags.json")
+	b, err := os.ReadFile("assets/exiftool-exiftags.json")
 	if err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func GenerateMasterExifJSON() error {
 	if err != nil {
 		return err
 	}
-	b, err = ioutil.ReadFile("assets/exiv2-exiftags.json")
+	b, err = os.ReadFile("assets/exiv2-exiftags.json")
 	if err != nil {
 		return err
 	}
@@ -169,7 +169,7 @@ func GenerateMasterExifJSON() error {
 		return err
 	}
 
-	return ioutil.WriteFile("./assets/master-exiftags.json", outBytes, 0644)
+	return os.WriteFile("./assets/master-exiftags.json", outBytes, 0644)
 
 }
 
@@ -234,6 +234,7 @@ func alignName(rawName string) string {
 	return strings.Replace(rawName, "-", "", -1)
 }
 
+// GenerateExifTagsFromMasterExifJSON generate exif sources from exif json file
 func GenerateExifTagsFromMasterExifJSON() error {
 	raw, err := readMasterExifJSON()
 	if err != nil {
@@ -252,7 +253,7 @@ func GenerateExifTagsFromMasterExifJSON() error {
 	_ = generateExifConstants(raw, &sb)
 	_ = generateExifTagDescriptions(raw, &sb)
 
-	err = ioutil.WriteFile("./metadata/genexif.go", []byte(sb.String()), 0644)
+	err = os.WriteFile("./metadata/genexif.go", []byte(sb.String()), 0644)
 	return err
 }
 
@@ -449,7 +450,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 }
 
 func readMasterExifJSON() (map[string][]etExifTag, error) {
-	b, err := ioutil.ReadFile("assets/master-exiftags.json")
+	b, err := os.ReadFile("assets/master-exiftags.json")
 	if err != nil {
 		return nil, err
 	}

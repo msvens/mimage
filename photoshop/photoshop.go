@@ -15,7 +15,9 @@ This implementation is based on https://www.adobe.com/devnet-apps/photoshop/file
 */
 
 const (
-	IptcId   uint16 = 0x0404
+	//IptcId id for Iptc resource
+	IptcId uint16 = 0x0404
+	//DigestId id for Digest resource
 	DigestId uint16 = 0x0425
 )
 
@@ -24,27 +26,32 @@ const photoshopResourceSignature = "8BIM"
 
 var defaultEncoding = binary.BigEndian
 
+// ErrNoPrefix expected photoshop block prefix
 var ErrNoPrefix = fmt.Errorf("Block does not contain photoshop prefix")
-var ErrNoData = fmt.Errorf("Block contains no data")
-var ErrNoPhotoshopBlock = fmt.Errorf("Image contained no photoshop data")
 
-/*
-func even(n uint) bool {
-	return n%2 == 0
-}
-*/
+// ErrNoData no data in block
+var ErrNoData = fmt.Errorf("Block contains no data")
+
+// ErrNoPhotoshopBlock could not find a photoshop segment/block in an image
+var ErrNoPhotoshopBlock = fmt.Errorf("Image contained no photoshop data")
 
 func odd(n uint) bool {
 	return n%2 == 1
 }
 
+// ImageResource holds a photoshop image source
 type ImageResource struct {
-	Signature  string //4 bytes. Should be '8BIM'
+	//Signature is always 4 bytes and should be 8BIM
+	Signature string
+	//ResourceId. E.g. 0x0404 for Iptc Data
 	ResourceId uint16
-	Name       string //pascal encoded, padded to make the size even. (null name consists of two bytes of 0)
-	Data       []byte
+	//Name of the resource. Most often this ""
+	Name string
+	//Image resource data
+	Data []byte
 }
 
+// NewPhotoshopImageResource from an id and data
 func NewPhotoshopImageResource(resourceId uint16, data []byte) ImageResource {
 	return ImageResource{Signature: photoshopResourceSignature, ResourceId: resourceId, Data: data}
 }
@@ -161,6 +168,7 @@ func encodeImageResource(bw *bufio.Writer, r ImageResource) error {
 	return nil
 }
 
+// Decode photoshop image resources according to https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_pgfId-1037504
 func Decode(r io.Reader, checkPrefix bool) (map[uint16]ImageResource, error) {
 	ret := map[uint16]ImageResource{}
 	var err error
@@ -191,6 +199,7 @@ func Decode(r io.Reader, checkPrefix bool) (map[uint16]ImageResource, error) {
 
 }
 
+// Encode according to https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577409_pgfId-1037504
 func Encode(w io.Writer, source map[uint16]ImageResource, addPrefix bool) error {
 	bw := bufio.NewWriter(w)
 	var err error
@@ -223,6 +232,8 @@ func Encode(w io.Writer, source map[uint16]ImageResource, addPrefix bool) error 
 	return nil
 }
 
+// Marshal writes photoshop images resources. If addPrefix adds the photoshop
+// block prefix ("Photoshop 3.0\000")
 func Marshal(source map[uint16]ImageResource, addPrefix bool) ([]byte, error) {
 	out := &bytes.Buffer{}
 	err := Encode(out, source, addPrefix)
@@ -233,6 +244,8 @@ func Marshal(source map[uint16]ImageResource, addPrefix bool) ([]byte, error) {
 
 }
 
+// Unmarshal reads photoshop imagesources into dest. If hasPrefix it will first scan
+// for a photoshop block prefix ("Photoshop 3.0\000")
 func Unmarshal(data []byte, hasPrefix bool, dest *map[uint16]ImageResource) error {
 	in := bytes.NewReader(data)
 	ret, err := Decode(in, hasPrefix)
@@ -243,6 +256,7 @@ func Unmarshal(data []byte, hasPrefix bool, dest *map[uint16]ImageResource) erro
 	return nil
 }
 
+// ParseJpeg reads a jpeg segement list and extract the photoshop resources (if they exist)
 func ParseJpeg(sl *jpegstructure.SegmentList) (int, map[uint16]ImageResource, error) {
 	ret := map[uint16]ImageResource{}
 	for idx, segment := range sl.Segments() {

@@ -3,7 +3,7 @@ package generator
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -27,13 +27,14 @@ type etIptcRecord struct {
 	Tags []etIptcTag
 }
 
-//var fmtParser, _ = regexp.Compile(`^\s*(\w+).*?\[?(\d*),?(\d*)\]?.*$`)
+// var fmtParser, _ = regexp.Compile(`^\s*(\w+).*?\[?(\d*),?(\d*)\]?.*$`)
 var typeRegExp, _ = regexp.Compile(`^\s*(\w+).*?\[?(\d*),?(\d*)\]?.*$`)
 
 func fixTagName(name string) string {
 	return strings.Replace(name, "-", "", -1)
 }
 
+// GenerateIptcTagsFromExifTool generate iptc sources from exiftool data
 func GenerateIptcTagsFromExifTool() error {
 	raw, err := readExifToolIptcJSON()
 	if err != nil {
@@ -49,7 +50,7 @@ func GenerateIptcTagsFromExifTool() error {
 	generateTagConstants(raw, &sb)
 	generateTagMap(raw, &sb)
 
-	err = ioutil.WriteFile("./metadata/geniptc.go", []byte(sb.String()), 0644)
+	err = os.WriteFile("./metadata/geniptc.go", []byte(sb.String()), 0644)
 
 	/*
 		for _,v := range raw {
@@ -316,7 +317,7 @@ func parseValues(iptcType string, values map[string]string) (interface{}, error)
 }
 
 func readExifToolIptcJSON() (map[string]etIptcRecord, error) {
-	b, err := ioutil.ReadFile("assets/exiftool-iptctags.json")
+	b, err := os.ReadFile("assets/exiftool-iptctags.json")
 	if err != nil {
 		return nil, err
 	}

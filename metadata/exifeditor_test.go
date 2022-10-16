@@ -60,8 +60,8 @@ func TestExifEditor_EmptyBuilder(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Could not open MetaData")
 	}
-	if md.Summary().Software != ExifEditorSoftware {
-		t.Errorf("Expected %s got %s", ExifEditorSoftware, md.Summary().Software)
+	if md.Summary().Software != exifEditorSoftware {
+		t.Errorf("Expected %s got %s", exifEditorSoftware, md.Summary().Software)
 	}
 	if md.Summary().CameraMake != "" {
 		t.Errorf("Expected empty camera make got %s", md.Summary().CameraMake)
@@ -92,8 +92,8 @@ func TestExifEditor_IfdBuilder(t *testing.T) {
 	if err = md.exifData.ScanIfdRoot(IFD_Software, &softwareTag); err != nil {
 		t.Fatalf("Expected IFD_Software Tag got error: %v", err)
 	}
-	if softwareTag != ExifEditorSoftware {
-		t.Errorf("Expected %s got %s", ExifEditorSoftware, softwareTag)
+	if softwareTag != exifEditorSoftware {
+		t.Errorf("Expected %s got %s", exifEditorSoftware, softwareTag)
 	}
 }
 
@@ -196,7 +196,7 @@ func TestExifEditor_SetImageDescription(t *testing.T) {
 		t.Fatalf("Could not set Image Description: %v", err)
 	}
 	md := jpegEditorMD(je, t)
-	ret := md.exifData.GetIfdImageDescription()
+	ret := md.exifData.GetImageDescription()
 	if ret != expImageDescription {
 		t.Fatalf("Expected %s got %s", expImageDescription, ret)
 	}
@@ -209,7 +209,7 @@ func TestExifEditor_SetUserComment(t *testing.T) {
 		t.Fatalf("Could not set User Comment: %v", err)
 	}
 	md := jpegEditorMD(je, t)
-	ret := md.exifData.GetIfdUserComment()
+	ret := md.exifData.GetUserComment()
 	if ret != expUserComment {
 		t.Fatalf("Expected %s got %s", expUserComment, ret)
 	}
