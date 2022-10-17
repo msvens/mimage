@@ -3,7 +3,7 @@ package photoshop
 import (
 	"bytes"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -46,7 +46,7 @@ func checkExpectedResources(actual map[uint16]ImageResource, t *testing.T) {
 }
 
 func getAssetBytes(fname string, t *testing.T) []byte {
-	b, err := ioutil.ReadFile(fname)
+	b, err := os.ReadFile(fname)
 	if err != nil {
 		t.Fatalf("Could not read file: %v", err)
 	}

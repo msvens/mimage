@@ -2,7 +2,7 @@ package metadata
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -15,7 +15,7 @@ const NonImageFile = AssetPath + "exiftool-leica-g1.json"
 const XmpFile = AssetPath + "xmp.xml"
 
 func getAssetBytes(fname string, t *testing.T) []byte {
-	b, err := ioutil.ReadFile(fname)
+	b, err := os.ReadFile(fname)
 	if err != nil {
 		t.Fatalf("Could not read file: %v", err)
 	}
