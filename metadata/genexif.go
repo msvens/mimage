@@ -55,7 +55,7 @@ type ExifTagDesc struct {
 	Values     interface{} `json:"values"`
 }
 
-//IFD Tag Ids (includes all IFD, IFD1, etc tags)
+// IFD Tag Ids (includes all IFD, IFD1, etc tags)
 const (
 	IFD_ProcessingSoftware            ExifTag = 0x000b
 	IFD_SubfileType                   ExifTag = 0x00fe
@@ -264,7 +264,7 @@ const (
 	IFD_RGBTables                     ExifTag = 0xcd3b
 )
 
-//ExifIFD Tag Ids
+// ExifIFD Tag Ids
 const (
 	ExifIFD_FreeOffsets                     ExifTag = 0x0120
 	ExifIFD_FreeByteCounts                  ExifTag = 0x0121
@@ -445,7 +445,7 @@ const (
 	ExifIFD_MoireFilter                     ExifTag = 0xfe58
 )
 
-//InteropIFD Tag Ids
+// InteropIFD Tag Ids
 const (
 	InteropIFD_InteropIndex           ExifTag = 0x0001
 	InteropIFD_InteropVersion         ExifTag = 0x0002
@@ -454,7 +454,7 @@ const (
 	InteropIFD_RelatedImageHeight     ExifTag = 0x1002
 )
 
-//GpsIFD Tag Ids
+// GpsIFD Tag Ids
 const (
 	GpsIFD_GPSVersionID         ExifTag = 0x0000
 	GpsIFD_GPSLatitudeRef       ExifTag = 0x0001
@@ -490,9 +490,9 @@ const (
 	GpsIFD_GPSHPositioningError ExifTag = 0x001f
 )
 
-//Exif Tag Descriptions
+// Exif Tag Descriptions
 var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
-	ExifIndexTag{InteropIFD, 0x0001}: ExifTagDesc{
+	{InteropIFD, 0x0001}: {
 		Id:         0x0001,
 		Name:       "InteropIndex",
 		Type:       ExifString,
@@ -509,7 +509,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			"THM": "THM - DCF thumbnail file",
 		},
 	},
-	ExifIndexTag{InteropIFD, 0x0002}: ExifTagDesc{
+	{InteropIFD, 0x0002}: {
 		Id:         0x0002,
 		Name:       "InteropVersion",
 		Type:       ExifUndef,
@@ -522,7 +522,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x000b}: ExifTagDesc{
+	{RootIFD, 0x000b}: {
 		Id:         0x000b,
 		Name:       "ProcessingSoftware",
 		Type:       ExifString,
@@ -535,7 +535,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x00fe}: ExifTagDesc{
+	{RootIFD, 0x00fe}: {
 		Id:         0x00fe,
 		Name:       "SubfileType",
 		Type:       ExifUint32,
@@ -563,7 +563,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			7:          "Transparency mask of reduced-resolution multi-page image",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x00ff}: ExifTagDesc{
+	{RootIFD, 0x00ff}: {
 		Id:         0x00ff,
 		Name:       "OldSubfileType",
 		Type:       ExifUint16,
@@ -580,7 +580,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			3: "Single page of multi-page image",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x0100}: ExifTagDesc{
+	{RootIFD, 0x0100}: {
 		Id:         0x0100,
 		Name:       "ImageWidth",
 		Type:       ExifUint32,
@@ -593,7 +593,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0101}: ExifTagDesc{
+	{RootIFD, 0x0101}: {
 		Id:         0x0101,
 		Name:       "ImageHeight",
 		Type:       ExifUint32,
@@ -606,7 +606,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0102}: ExifTagDesc{
+	{RootIFD, 0x0102}: {
 		Id:         0x0102,
 		Name:       "BitsPerSample",
 		Type:       ExifUint16,
@@ -619,7 +619,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0103}: ExifTagDesc{
+	{RootIFD, 0x0103}: {
 		Id:         0x0103,
 		Name:       "Compression",
 		Type:       ExifUint16,
@@ -682,7 +682,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			34926: "Zstd",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x0106}: ExifTagDesc{
+	{RootIFD, 0x0106}: {
 		Id:         0x0106,
 		Name:       "PhotometricInterpretation",
 		Type:       ExifUint16,
@@ -713,7 +713,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			5:     "CMYK",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x0107}: ExifTagDesc{
+	{RootIFD, 0x0107}: {
 		Id:         0x0107,
 		Name:       "Thresholding",
 		Type:       ExifUint16,
@@ -730,7 +730,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			3: "Randomized dither",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x0108}: ExifTagDesc{
+	{RootIFD, 0x0108}: {
 		Id:         0x0108,
 		Name:       "CellWidth",
 		Type:       ExifUint16,
@@ -743,7 +743,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0109}: ExifTagDesc{
+	{RootIFD, 0x0109}: {
 		Id:         0x0109,
 		Name:       "CellLength",
 		Type:       ExifUint16,
@@ -756,7 +756,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x010a}: ExifTagDesc{
+	{RootIFD, 0x010a}: {
 		Id:         0x010a,
 		Name:       "FillOrder",
 		Type:       ExifUint16,
@@ -772,7 +772,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "Normal",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x010d}: ExifTagDesc{
+	{RootIFD, 0x010d}: {
 		Id:         0x010d,
 		Name:       "DocumentName",
 		Type:       ExifString,
@@ -785,7 +785,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x010e}: ExifTagDesc{
+	{RootIFD, 0x010e}: {
 		Id:         0x010e,
 		Name:       "ImageDescription",
 		Type:       ExifString,
@@ -798,7 +798,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x010f}: ExifTagDesc{
+	{RootIFD, 0x010f}: {
 		Id:         0x010f,
 		Name:       "Make",
 		Type:       ExifString,
@@ -811,7 +811,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0110}: ExifTagDesc{
+	{RootIFD, 0x0110}: {
 		Id:         0x0110,
 		Name:       "Model",
 		Type:       ExifString,
@@ -824,7 +824,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0111}: ExifTagDesc{
+	{RootIFD, 0x0111}: {
 		Id:         0x0111,
 		Name:       "StripOffsets",
 		Type:       ExifUint32,
@@ -837,7 +837,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0112}: ExifTagDesc{
+	{RootIFD, 0x0112}: {
 		Id:         0x0112,
 		Name:       "Orientation",
 		Type:       ExifUint16,
@@ -859,7 +859,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			4: "Mirror vertical",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x0115}: ExifTagDesc{
+	{RootIFD, 0x0115}: {
 		Id:         0x0115,
 		Name:       "SamplesPerPixel",
 		Type:       ExifUint16,
@@ -872,7 +872,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0116}: ExifTagDesc{
+	{RootIFD, 0x0116}: {
 		Id:         0x0116,
 		Name:       "RowsPerStrip",
 		Type:       ExifUint32,
@@ -885,7 +885,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0117}: ExifTagDesc{
+	{RootIFD, 0x0117}: {
 		Id:         0x0117,
 		Name:       "StripByteCounts",
 		Type:       ExifUint32,
@@ -898,7 +898,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0118}: ExifTagDesc{
+	{RootIFD, 0x0118}: {
 		Id:         0x0118,
 		Name:       "MinSampleValue",
 		Type:       ExifUint16,
@@ -911,7 +911,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0119}: ExifTagDesc{
+	{RootIFD, 0x0119}: {
 		Id:         0x0119,
 		Name:       "MaxSampleValue",
 		Type:       ExifUint16,
@@ -924,7 +924,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x011a}: ExifTagDesc{
+	{RootIFD, 0x011a}: {
 		Id:         0x011a,
 		Name:       "XResolution",
 		Type:       ExifUrational,
@@ -937,7 +937,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x011b}: ExifTagDesc{
+	{RootIFD, 0x011b}: {
 		Id:         0x011b,
 		Name:       "YResolution",
 		Type:       ExifUrational,
@@ -950,7 +950,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x011c}: ExifTagDesc{
+	{RootIFD, 0x011c}: {
 		Id:         0x011c,
 		Name:       "PlanarConfiguration",
 		Type:       ExifUint16,
@@ -966,7 +966,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "Planar",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x011d}: ExifTagDesc{
+	{RootIFD, 0x011d}: {
 		Id:         0x011d,
 		Name:       "PageName",
 		Type:       ExifString,
@@ -979,7 +979,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x011e}: ExifTagDesc{
+	{RootIFD, 0x011e}: {
 		Id:         0x011e,
 		Name:       "XPosition",
 		Type:       ExifUrational,
@@ -992,7 +992,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x011f}: ExifTagDesc{
+	{RootIFD, 0x011f}: {
 		Id:         0x011f,
 		Name:       "YPosition",
 		Type:       ExifUrational,
@@ -1005,7 +1005,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0120}: ExifTagDesc{
+	{ExifIFD, 0x0120}: {
 		Id:         0x0120,
 		Name:       "FreeOffsets",
 		Type:       ExifUndef,
@@ -1018,7 +1018,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0121}: ExifTagDesc{
+	{ExifIFD, 0x0121}: {
 		Id:         0x0121,
 		Name:       "FreeByteCounts",
 		Type:       ExifUndef,
@@ -1031,7 +1031,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0122}: ExifTagDesc{
+	{RootIFD, 0x0122}: {
 		Id:         0x0122,
 		Name:       "GrayResponseUnit",
 		Type:       ExifUint16,
@@ -1050,7 +1050,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			5: "1e-06",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0x0123}: ExifTagDesc{
+	{ExifIFD, 0x0123}: {
 		Id:         0x0123,
 		Name:       "GrayResponseCurve",
 		Type:       ExifUndef,
@@ -1063,7 +1063,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0124}: ExifTagDesc{
+	{ExifIFD, 0x0124}: {
 		Id:         0x0124,
 		Name:       "T4Options",
 		Type:       ExifUndef,
@@ -1076,7 +1076,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0125}: ExifTagDesc{
+	{ExifIFD, 0x0125}: {
 		Id:         0x0125,
 		Name:       "T6Options",
 		Type:       ExifUndef,
@@ -1089,7 +1089,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0128}: ExifTagDesc{
+	{RootIFD, 0x0128}: {
 		Id:         0x0128,
 		Name:       "ResolutionUnit",
 		Type:       ExifUint16,
@@ -1106,7 +1106,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			3: "cm",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x0129}: ExifTagDesc{
+	{RootIFD, 0x0129}: {
 		Id:         0x0129,
 		Name:       "PageNumber",
 		Type:       ExifUint16,
@@ -1119,7 +1119,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x012d}: ExifTagDesc{
+	{RootIFD, 0x012d}: {
 		Id:         0x012d,
 		Name:       "TransferFunction",
 		Type:       ExifUint16,
@@ -1132,7 +1132,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0131}: ExifTagDesc{
+	{RootIFD, 0x0131}: {
 		Id:         0x0131,
 		Name:       "Software",
 		Type:       ExifString,
@@ -1145,7 +1145,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0132}: ExifTagDesc{
+	{RootIFD, 0x0132}: {
 		Id:         0x0132,
 		Name:       "ModifyDate",
 		Type:       ExifString,
@@ -1158,7 +1158,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x013b}: ExifTagDesc{
+	{RootIFD, 0x013b}: {
 		Id:         0x013b,
 		Name:       "Artist",
 		Type:       ExifString,
@@ -1171,7 +1171,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x013c}: ExifTagDesc{
+	{RootIFD, 0x013c}: {
 		Id:         0x013c,
 		Name:       "HostComputer",
 		Type:       ExifString,
@@ -1184,7 +1184,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x013d}: ExifTagDesc{
+	{RootIFD, 0x013d}: {
 		Id:         0x013d,
 		Name:       "Predictor",
 		Type:       ExifUint16,
@@ -1205,7 +1205,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			34895: "Floating point X4",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x013e}: ExifTagDesc{
+	{RootIFD, 0x013e}: {
 		Id:         0x013e,
 		Name:       "WhitePoint",
 		Type:       ExifUrational,
@@ -1218,7 +1218,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x013f}: ExifTagDesc{
+	{RootIFD, 0x013f}: {
 		Id:         0x013f,
 		Name:       "PrimaryChromaticities",
 		Type:       ExifUrational,
@@ -1231,7 +1231,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0140}: ExifTagDesc{
+	{ExifIFD, 0x0140}: {
 		Id:         0x0140,
 		Name:       "ColorMap",
 		Type:       ExifUndef,
@@ -1244,7 +1244,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0141}: ExifTagDesc{
+	{RootIFD, 0x0141}: {
 		Id:         0x0141,
 		Name:       "HalftoneHints",
 		Type:       ExifUint16,
@@ -1257,7 +1257,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0142}: ExifTagDesc{
+	{RootIFD, 0x0142}: {
 		Id:         0x0142,
 		Name:       "TileWidth",
 		Type:       ExifUint32,
@@ -1270,7 +1270,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0143}: ExifTagDesc{
+	{RootIFD, 0x0143}: {
 		Id:         0x0143,
 		Name:       "TileLength",
 		Type:       ExifUint32,
@@ -1283,7 +1283,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0144}: ExifTagDesc{
+	{ExifIFD, 0x0144}: {
 		Id:         0x0144,
 		Name:       "TileOffsets",
 		Type:       ExifUndef,
@@ -1296,7 +1296,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0145}: ExifTagDesc{
+	{ExifIFD, 0x0145}: {
 		Id:         0x0145,
 		Name:       "TileByteCounts",
 		Type:       ExifUndef,
@@ -1309,7 +1309,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0147}: ExifTagDesc{
+	{ExifIFD, 0x0147}: {
 		Id:         0x0147,
 		Name:       "CleanFaxData",
 		Type:       ExifUndef,
@@ -1322,7 +1322,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x014a}: ExifTagDesc{
+	{RootIFD, 0x014a}: {
 		Id:         0x014a,
 		Name:       "SubIFDs",
 		Type:       ExifUint32,
@@ -1335,7 +1335,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x014c}: ExifTagDesc{
+	{RootIFD, 0x014c}: {
 		Id:         0x014c,
 		Name:       "InkSet",
 		Type:       ExifUint16,
@@ -1351,7 +1351,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "Not CMYK",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x0151}: ExifTagDesc{
+	{RootIFD, 0x0151}: {
 		Id:         0x0151,
 		Name:       "TargetPrinter",
 		Type:       ExifString,
@@ -1364,7 +1364,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0152}: ExifTagDesc{
+	{ExifIFD, 0x0152}: {
 		Id:         0x0152,
 		Name:       "ExtraSamples",
 		Type:       ExifUndef,
@@ -1377,7 +1377,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0153}: ExifTagDesc{
+	{RootIFD, 0x0153}: {
 		Id:         0x0153,
 		Name:       "SampleFormat",
 		Type:       ExifUint16,
@@ -1390,7 +1390,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x015a}: ExifTagDesc{
+	{ExifIFD, 0x015a}: {
 		Id:         0x015a,
 		Name:       "Indexed",
 		Type:       ExifUndef,
@@ -1403,7 +1403,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x015b}: ExifTagDesc{
+	{ExifIFD, 0x015b}: {
 		Id:         0x015b,
 		Name:       "JPEGTables",
 		Type:       ExifUndef,
@@ -1416,7 +1416,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x015f}: ExifTagDesc{
+	{ExifIFD, 0x015f}: {
 		Id:         0x015f,
 		Name:       "OPIProxy",
 		Type:       ExifUndef,
@@ -1429,7 +1429,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0190}: ExifTagDesc{
+	{ExifIFD, 0x0190}: {
 		Id:         0x0190,
 		Name:       "GlobalParametersIFD",
 		Type:       ExifUndef,
@@ -1442,7 +1442,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0191}: ExifTagDesc{
+	{ExifIFD, 0x0191}: {
 		Id:         0x0191,
 		Name:       "ProfileType",
 		Type:       ExifUndef,
@@ -1455,7 +1455,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0192}: ExifTagDesc{
+	{ExifIFD, 0x0192}: {
 		Id:         0x0192,
 		Name:       "FaxProfile",
 		Type:       ExifUndef,
@@ -1468,7 +1468,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0193}: ExifTagDesc{
+	{ExifIFD, 0x0193}: {
 		Id:         0x0193,
 		Name:       "CodingMethods",
 		Type:       ExifUndef,
@@ -1481,7 +1481,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x01b5}: ExifTagDesc{
+	{ExifIFD, 0x01b5}: {
 		Id:         0x01b5,
 		Name:       "JPEGTables_0x01b5",
 		Type:       ExifUndef,
@@ -1494,7 +1494,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0200}: ExifTagDesc{
+	{ExifIFD, 0x0200}: {
 		Id:         0x0200,
 		Name:       "JPEGProc",
 		Type:       ExifUndef,
@@ -1507,7 +1507,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0201}: ExifTagDesc{
+	{RootIFD, 0x0201}: {
 		Id:         0x0201,
 		Name:       "ThumbnailOffset",
 		Type:       ExifUint32,
@@ -1520,7 +1520,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0202}: ExifTagDesc{
+	{RootIFD, 0x0202}: {
 		Id:         0x0202,
 		Name:       "ThumbnailLength",
 		Type:       ExifUint32,
@@ -1533,7 +1533,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0207}: ExifTagDesc{
+	{ExifIFD, 0x0207}: {
 		Id:         0x0207,
 		Name:       "JPEGQTables",
 		Type:       ExifUndef,
@@ -1546,7 +1546,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0208}: ExifTagDesc{
+	{ExifIFD, 0x0208}: {
 		Id:         0x0208,
 		Name:       "JPEGDCTables",
 		Type:       ExifUndef,
@@ -1559,7 +1559,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x0209}: ExifTagDesc{
+	{ExifIFD, 0x0209}: {
 		Id:         0x0209,
 		Name:       "JPEGACTables",
 		Type:       ExifUndef,
@@ -1572,7 +1572,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0211}: ExifTagDesc{
+	{RootIFD, 0x0211}: {
 		Id:         0x0211,
 		Name:       "YCbCrCoefficients",
 		Type:       ExifUrational,
@@ -1585,7 +1585,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0212}: ExifTagDesc{
+	{RootIFD, 0x0212}: {
 		Id:         0x0212,
 		Name:       "YCbCrSubSampling",
 		Type:       ExifUint16,
@@ -1598,7 +1598,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x0213}: ExifTagDesc{
+	{RootIFD, 0x0213}: {
 		Id:         0x0213,
 		Name:       "YCbCrPositioning",
 		Type:       ExifUint16,
@@ -1614,7 +1614,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "Co-sited",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x0214}: ExifTagDesc{
+	{RootIFD, 0x0214}: {
 		Id:         0x0214,
 		Name:       "ReferenceBlackWhite",
 		Type:       ExifUrational,
@@ -1627,7 +1627,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x02bc}: ExifTagDesc{
+	{RootIFD, 0x02bc}: {
 		Id:         0x02bc,
 		Name:       "ApplicationNotes",
 		Type:       ExifUint8,
@@ -1640,7 +1640,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{InteropIFD, 0x1000}: ExifTagDesc{
+	{InteropIFD, 0x1000}: {
 		Id:         0x1000,
 		Name:       "RelatedImageFileFormat",
 		Type:       ExifString,
@@ -1653,7 +1653,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{InteropIFD, 0x1001}: ExifTagDesc{
+	{InteropIFD, 0x1001}: {
 		Id:         0x1001,
 		Name:       "RelatedImageWidth",
 		Type:       ExifUint16,
@@ -1666,7 +1666,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{InteropIFD, 0x1002}: ExifTagDesc{
+	{InteropIFD, 0x1002}: {
 		Id:         0x1002,
 		Name:       "RelatedImageHeight",
 		Type:       ExifUint16,
@@ -1679,7 +1679,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x4746}: ExifTagDesc{
+	{RootIFD, 0x4746}: {
 		Id:         0x4746,
 		Name:       "Rating",
 		Type:       ExifUint16,
@@ -1692,7 +1692,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x4747}: ExifTagDesc{
+	{ExifIFD, 0x4747}: {
 		Id:         0x4747,
 		Name:       "XP_DIP_XML",
 		Type:       ExifUndef,
@@ -1705,7 +1705,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x4748}: ExifTagDesc{
+	{ExifIFD, 0x4748}: {
 		Id:         0x4748,
 		Name:       "StitchInfo",
 		Type:       ExifUndef,
@@ -1718,7 +1718,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x4749}: ExifTagDesc{
+	{RootIFD, 0x4749}: {
 		Id:         0x4749,
 		Name:       "RatingPercent",
 		Type:       ExifUint16,
@@ -1731,7 +1731,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x7000}: ExifTagDesc{
+	{ExifIFD, 0x7000}: {
 		Id:         0x7000,
 		Name:       "SonyRawFileType",
 		Type:       ExifUndef,
@@ -1744,7 +1744,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x7010}: ExifTagDesc{
+	{ExifIFD, 0x7010}: {
 		Id:         0x7010,
 		Name:       "SonyToneCurve",
 		Type:       ExifUndef,
@@ -1757,7 +1757,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x7031}: ExifTagDesc{
+	{RootIFD, 0x7031}: {
 		Id:         0x7031,
 		Name:       "VignettingCorrection",
 		Type:       ExifInt16,
@@ -1775,7 +1775,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			511: "No correction params available",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x7032}: ExifTagDesc{
+	{RootIFD, 0x7032}: {
 		Id:         0x7032,
 		Name:       "VignettingCorrParams",
 		Type:       ExifInt16,
@@ -1788,7 +1788,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x7034}: ExifTagDesc{
+	{RootIFD, 0x7034}: {
 		Id:         0x7034,
 		Name:       "ChromaticAberrationCorrection",
 		Type:       ExifInt16,
@@ -1805,7 +1805,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			255: "No correction params available",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x7035}: ExifTagDesc{
+	{RootIFD, 0x7035}: {
 		Id:         0x7035,
 		Name:       "ChromaticAberrationCorrParams",
 		Type:       ExifInt16,
@@ -1818,7 +1818,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x7036}: ExifTagDesc{
+	{RootIFD, 0x7036}: {
 		Id:         0x7036,
 		Name:       "DistortionCorrection",
 		Type:       ExifInt16,
@@ -1836,7 +1836,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1:   "Auto",
 		},
 	},
-	ExifIndexTag{RootIFD, 0x7037}: ExifTagDesc{
+	{RootIFD, 0x7037}: {
 		Id:         0x7037,
 		Name:       "DistortionCorrParams",
 		Type:       ExifInt16,
@@ -1849,7 +1849,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x74c7}: ExifTagDesc{
+	{RootIFD, 0x74c7}: {
 		Id:         0x74c7,
 		Name:       "SonyCropTopLeft",
 		Type:       ExifUint32,
@@ -1862,7 +1862,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x74c8}: ExifTagDesc{
+	{RootIFD, 0x74c8}: {
 		Id:         0x74c8,
 		Name:       "SonyCropSize",
 		Type:       ExifUint32,
@@ -1875,7 +1875,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x80a3}: ExifTagDesc{
+	{ExifIFD, 0x80a3}: {
 		Id:         0x80a3,
 		Name:       "WangTag1",
 		Type:       ExifUndef,
@@ -1888,7 +1888,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x80a4}: ExifTagDesc{
+	{ExifIFD, 0x80a4}: {
 		Id:         0x80a4,
 		Name:       "WangAnnotation",
 		Type:       ExifUndef,
@@ -1901,7 +1901,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x80a5}: ExifTagDesc{
+	{ExifIFD, 0x80a5}: {
 		Id:         0x80a5,
 		Name:       "WangTag3",
 		Type:       ExifUndef,
@@ -1914,7 +1914,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x80a6}: ExifTagDesc{
+	{ExifIFD, 0x80a6}: {
 		Id:         0x80a6,
 		Name:       "WangTag4",
 		Type:       ExifUndef,
@@ -1927,7 +1927,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x828d}: ExifTagDesc{
+	{RootIFD, 0x828d}: {
 		Id:         0x828d,
 		Name:       "CFARepeatPatternDim",
 		Type:       ExifUint16,
@@ -1940,7 +1940,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x828e}: ExifTagDesc{
+	{RootIFD, 0x828e}: {
 		Id:         0x828e,
 		Name:       "CFAPattern2",
 		Type:       ExifUint8,
@@ -1953,7 +1953,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x828f}: ExifTagDesc{
+	{ExifIFD, 0x828f}: {
 		Id:         0x828f,
 		Name:       "BatteryLevel",
 		Type:       ExifUndef,
@@ -1966,7 +1966,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8290}: ExifTagDesc{
+	{ExifIFD, 0x8290}: {
 		Id:         0x8290,
 		Name:       "KodakIFD",
 		Type:       ExifUndef,
@@ -1979,7 +1979,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x8298}: ExifTagDesc{
+	{RootIFD, 0x8298}: {
 		Id:         0x8298,
 		Name:       "Copyright",
 		Type:       ExifString,
@@ -1992,7 +1992,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x829a}: ExifTagDesc{
+	{ExifIFD, 0x829a}: {
 		Id:         0x829a,
 		Name:       "ExposureTime",
 		Type:       ExifUrational,
@@ -2005,7 +2005,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x829d}: ExifTagDesc{
+	{ExifIFD, 0x829d}: {
 		Id:         0x829d,
 		Name:       "FNumber",
 		Type:       ExifUrational,
@@ -2018,7 +2018,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x82a5}: ExifTagDesc{
+	{ExifIFD, 0x82a5}: {
 		Id:         0x82a5,
 		Name:       "MDFileTag",
 		Type:       ExifUndef,
@@ -2031,7 +2031,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x830e}: ExifTagDesc{
+	{RootIFD, 0x830e}: {
 		Id:         0x830e,
 		Name:       "PixelScale",
 		Type:       ExifDouble,
@@ -2044,7 +2044,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x83bb}: ExifTagDesc{
+	{RootIFD, 0x83bb}: {
 		Id:         0x83bb,
 		Name:       "IPTCNAA",
 		Type:       ExifUint32,
@@ -2057,7 +2057,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x8480}: ExifTagDesc{
+	{RootIFD, 0x8480}: {
 		Id:         0x8480,
 		Name:       "IntergraphMatrix",
 		Type:       ExifDouble,
@@ -2070,7 +2070,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x8482}: ExifTagDesc{
+	{RootIFD, 0x8482}: {
 		Id:         0x8482,
 		Name:       "ModelTiePoint",
 		Type:       ExifDouble,
@@ -2083,7 +2083,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x84e3}: ExifTagDesc{
+	{ExifIFD, 0x84e3}: {
 		Id:         0x84e3,
 		Name:       "RasterPadding",
 		Type:       ExifUndef,
@@ -2096,7 +2096,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x84e7}: ExifTagDesc{
+	{ExifIFD, 0x84e7}: {
 		Id:         0x84e7,
 		Name:       "ImageColorIndicator",
 		Type:       ExifUndef,
@@ -2109,7 +2109,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x84e8}: ExifTagDesc{
+	{ExifIFD, 0x84e8}: {
 		Id:         0x84e8,
 		Name:       "BackgroundColorIndicator",
 		Type:       ExifUndef,
@@ -2122,7 +2122,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x84ee}: ExifTagDesc{
+	{ExifIFD, 0x84ee}: {
 		Id:         0x84ee,
 		Name:       "HCUsage",
 		Type:       ExifUndef,
@@ -2135,7 +2135,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x8546}: ExifTagDesc{
+	{RootIFD, 0x8546}: {
 		Id:         0x8546,
 		Name:       "SEMInfo",
 		Type:       ExifString,
@@ -2148,7 +2148,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8568}: ExifTagDesc{
+	{ExifIFD, 0x8568}: {
 		Id:         0x8568,
 		Name:       "AFCP_IPTC",
 		Type:       ExifUndef,
@@ -2161,7 +2161,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x85d8}: ExifTagDesc{
+	{RootIFD, 0x85d8}: {
 		Id:         0x85d8,
 		Name:       "ModelTransform",
 		Type:       ExifDouble,
@@ -2174,7 +2174,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8602}: ExifTagDesc{
+	{ExifIFD, 0x8602}: {
 		Id:         0x8602,
 		Name:       "WB_GRGBLevels",
 		Type:       ExifUndef,
@@ -2187,7 +2187,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8606}: ExifTagDesc{
+	{ExifIFD, 0x8606}: {
 		Id:         0x8606,
 		Name:       "LeafData",
 		Type:       ExifUndef,
@@ -2200,7 +2200,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x8649}: ExifTagDesc{
+	{RootIFD, 0x8649}: {
 		Id:         0x8649,
 		Name:       "PhotoshopSettings",
 		Type:       ExifUint8,
@@ -2213,7 +2213,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x8769}: ExifTagDesc{
+	{RootIFD, 0x8769}: {
 		Id:         0x8769,
 		Name:       "ExifOffset",
 		Type:       ExifUint32,
@@ -2226,7 +2226,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x8773}: ExifTagDesc{
+	{RootIFD, 0x8773}: {
 		Id:         0x8773,
 		Name:       "ICC_Profile",
 		Type:       ExifUndef,
@@ -2239,7 +2239,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x877f}: ExifTagDesc{
+	{ExifIFD, 0x877f}: {
 		Id:         0x877f,
 		Name:       "TIFF_FXExtensions",
 		Type:       ExifUndef,
@@ -2252,7 +2252,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8780}: ExifTagDesc{
+	{ExifIFD, 0x8780}: {
 		Id:         0x8780,
 		Name:       "MultiProfiles",
 		Type:       ExifUndef,
@@ -2265,7 +2265,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8781}: ExifTagDesc{
+	{ExifIFD, 0x8781}: {
 		Id:         0x8781,
 		Name:       "SharedData",
 		Type:       ExifUndef,
@@ -2278,7 +2278,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x87af}: ExifTagDesc{
+	{RootIFD, 0x87af}: {
 		Id:         0x87af,
 		Name:       "GeoTiffDirectory",
 		Type:       ExifUint16,
@@ -2291,7 +2291,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x87b0}: ExifTagDesc{
+	{RootIFD, 0x87b0}: {
 		Id:         0x87b0,
 		Name:       "GeoTiffDoubleParams",
 		Type:       ExifDouble,
@@ -2304,7 +2304,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x87b1}: ExifTagDesc{
+	{RootIFD, 0x87b1}: {
 		Id:         0x87b1,
 		Name:       "GeoTiffAsciiParams",
 		Type:       ExifString,
@@ -2317,7 +2317,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8822}: ExifTagDesc{
+	{ExifIFD, 0x8822}: {
 		Id:         0x8822,
 		Name:       "ExposureProgram",
 		Type:       ExifUint16,
@@ -2341,7 +2341,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			3: "Aperture-priority AE",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0x8824}: ExifTagDesc{
+	{ExifIFD, 0x8824}: {
 		Id:         0x8824,
 		Name:       "SpectralSensitivity",
 		Type:       ExifString,
@@ -2354,7 +2354,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x8825}: ExifTagDesc{
+	{RootIFD, 0x8825}: {
 		Id:         0x8825,
 		Name:       "GPSInfo",
 		Type:       ExifUint32,
@@ -2367,7 +2367,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8827}: ExifTagDesc{
+	{ExifIFD, 0x8827}: {
 		Id:         0x8827,
 		Name:       "ISO",
 		Type:       ExifUint16,
@@ -2380,7 +2380,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8828}: ExifTagDesc{
+	{ExifIFD, 0x8828}: {
 		Id:         0x8828,
 		Name:       "OptoElectricConvFactor",
 		Type:       ExifUndef,
@@ -2393,7 +2393,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x882a}: ExifTagDesc{
+	{ExifIFD, 0x882a}: {
 		Id:         0x882a,
 		Name:       "TimeZoneOffset",
 		Type:       ExifInt16,
@@ -2406,7 +2406,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x882b}: ExifTagDesc{
+	{ExifIFD, 0x882b}: {
 		Id:         0x882b,
 		Name:       "SelfTimerMode",
 		Type:       ExifUint16,
@@ -2419,7 +2419,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8830}: ExifTagDesc{
+	{ExifIFD, 0x8830}: {
 		Id:         0x8830,
 		Name:       "SensitivityType",
 		Type:       ExifUint16,
@@ -2441,7 +2441,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "Recommended Exposure Index",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0x8831}: ExifTagDesc{
+	{ExifIFD, 0x8831}: {
 		Id:         0x8831,
 		Name:       "StandardOutputSensitivity",
 		Type:       ExifUint32,
@@ -2454,7 +2454,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8832}: ExifTagDesc{
+	{ExifIFD, 0x8832}: {
 		Id:         0x8832,
 		Name:       "RecommendedExposureIndex",
 		Type:       ExifUint32,
@@ -2467,7 +2467,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8833}: ExifTagDesc{
+	{ExifIFD, 0x8833}: {
 		Id:         0x8833,
 		Name:       "ISOSpeed",
 		Type:       ExifUint32,
@@ -2480,7 +2480,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8834}: ExifTagDesc{
+	{ExifIFD, 0x8834}: {
 		Id:         0x8834,
 		Name:       "ISOSpeedLatitudeyyy",
 		Type:       ExifUint32,
@@ -2493,7 +2493,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x8835}: ExifTagDesc{
+	{ExifIFD, 0x8835}: {
 		Id:         0x8835,
 		Name:       "ISOSpeedLatitudezzz",
 		Type:       ExifUint32,
@@ -2506,7 +2506,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x888a}: ExifTagDesc{
+	{ExifIFD, 0x888a}: {
 		Id:         0x888a,
 		Name:       "LeafSubIFD",
 		Type:       ExifUint32,
@@ -2519,7 +2519,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9000}: ExifTagDesc{
+	{ExifIFD, 0x9000}: {
 		Id:         0x9000,
 		Name:       "ExifVersion",
 		Type:       ExifUndef,
@@ -2532,7 +2532,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9003}: ExifTagDesc{
+	{ExifIFD, 0x9003}: {
 		Id:         0x9003,
 		Name:       "DateTimeOriginal",
 		Type:       ExifString,
@@ -2545,7 +2545,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9004}: ExifTagDesc{
+	{ExifIFD, 0x9004}: {
 		Id:         0x9004,
 		Name:       "CreateDate",
 		Type:       ExifString,
@@ -2558,7 +2558,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9009}: ExifTagDesc{
+	{ExifIFD, 0x9009}: {
 		Id:         0x9009,
 		Name:       "GooglePlusUploadCode",
 		Type:       ExifUint8,
@@ -2571,7 +2571,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9010}: ExifTagDesc{
+	{ExifIFD, 0x9010}: {
 		Id:         0x9010,
 		Name:       "OffsetTime",
 		Type:       ExifString,
@@ -2584,7 +2584,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9011}: ExifTagDesc{
+	{ExifIFD, 0x9011}: {
 		Id:         0x9011,
 		Name:       "OffsetTimeOriginal",
 		Type:       ExifString,
@@ -2597,7 +2597,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9012}: ExifTagDesc{
+	{ExifIFD, 0x9012}: {
 		Id:         0x9012,
 		Name:       "OffsetTimeDigitized",
 		Type:       ExifString,
@@ -2610,7 +2610,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9101}: ExifTagDesc{
+	{ExifIFD, 0x9101}: {
 		Id:         0x9101,
 		Name:       "ComponentsConfiguration",
 		Type:       ExifUint8,
@@ -2623,7 +2623,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9102}: ExifTagDesc{
+	{ExifIFD, 0x9102}: {
 		Id:         0x9102,
 		Name:       "CompressedBitsPerPixel",
 		Type:       ExifUrational,
@@ -2636,7 +2636,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9201}: ExifTagDesc{
+	{ExifIFD, 0x9201}: {
 		Id:         0x9201,
 		Name:       "ShutterSpeedValue",
 		Type:       ExifRational,
@@ -2649,7 +2649,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9202}: ExifTagDesc{
+	{ExifIFD, 0x9202}: {
 		Id:         0x9202,
 		Name:       "ApertureValue",
 		Type:       ExifUrational,
@@ -2662,7 +2662,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9203}: ExifTagDesc{
+	{ExifIFD, 0x9203}: {
 		Id:         0x9203,
 		Name:       "BrightnessValue",
 		Type:       ExifRational,
@@ -2675,7 +2675,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9204}: ExifTagDesc{
+	{ExifIFD, 0x9204}: {
 		Id:         0x9204,
 		Name:       "ExposureCompensation",
 		Type:       ExifRational,
@@ -2688,7 +2688,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9205}: ExifTagDesc{
+	{ExifIFD, 0x9205}: {
 		Id:         0x9205,
 		Name:       "MaxApertureValue",
 		Type:       ExifUrational,
@@ -2701,7 +2701,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9206}: ExifTagDesc{
+	{ExifIFD, 0x9206}: {
 		Id:         0x9206,
 		Name:       "SubjectDistance",
 		Type:       ExifUrational,
@@ -2714,7 +2714,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9207}: ExifTagDesc{
+	{ExifIFD, 0x9207}: {
 		Id:         0x9207,
 		Name:       "MeteringMode",
 		Type:       ExifUint16,
@@ -2736,7 +2736,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			6:   "Partial",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0x9208}: ExifTagDesc{
+	{ExifIFD, 0x9208}: {
 		Id:         0x9208,
 		Name:       "LightSource",
 		Type:       ExifUint16,
@@ -2772,7 +2772,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2:   "Fluorescent",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0x9209}: ExifTagDesc{
+	{ExifIFD, 0x9209}: {
 		Id:         0x9209,
 		Name:       "Flash",
 		Type:       ExifUint16,
@@ -2813,7 +2813,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			25: "Auto, Fired",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0x920a}: ExifTagDesc{
+	{ExifIFD, 0x920a}: {
 		Id:         0x920a,
 		Name:       "FocalLength",
 		Type:       ExifUrational,
@@ -2826,7 +2826,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x920b}: ExifTagDesc{
+	{ExifIFD, 0x920b}: {
 		Id:         0x920b,
 		Name:       "FlashEnergy",
 		Type:       ExifUndef,
@@ -2839,7 +2839,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9210}: ExifTagDesc{
+	{ExifIFD, 0x9210}: {
 		Id:         0x9210,
 		Name:       "FocalPlaneResolutionUnit",
 		Type:       ExifUndef,
@@ -2852,7 +2852,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9211}: ExifTagDesc{
+	{ExifIFD, 0x9211}: {
 		Id:         0x9211,
 		Name:       "ImageNumber",
 		Type:       ExifUint32,
@@ -2865,7 +2865,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9212}: ExifTagDesc{
+	{ExifIFD, 0x9212}: {
 		Id:         0x9212,
 		Name:       "SecurityClassification",
 		Type:       ExifString,
@@ -2884,7 +2884,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			"U": "Unclassified",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0x9213}: ExifTagDesc{
+	{ExifIFD, 0x9213}: {
 		Id:         0x9213,
 		Name:       "ImageHistory",
 		Type:       ExifString,
@@ -2897,7 +2897,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9214}: ExifTagDesc{
+	{ExifIFD, 0x9214}: {
 		Id:         0x9214,
 		Name:       "SubjectArea",
 		Type:       ExifUint16,
@@ -2910,7 +2910,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9217}: ExifTagDesc{
+	{ExifIFD, 0x9217}: {
 		Id:         0x9217,
 		Name:       "SensingMethod",
 		Type:       ExifUndef,
@@ -2923,7 +2923,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x927c}: ExifTagDesc{
+	{ExifIFD, 0x927c}: {
 		Id:         0x927c,
 		Name:       "MakerNote",
 		Type:       ExifUndef,
@@ -2936,7 +2936,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9286}: ExifTagDesc{
+	{ExifIFD, 0x9286}: {
 		Id:         0x9286,
 		Name:       "UserComment",
 		Type:       ExifUndef,
@@ -2949,7 +2949,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9290}: ExifTagDesc{
+	{ExifIFD, 0x9290}: {
 		Id:         0x9290,
 		Name:       "SubSecTime",
 		Type:       ExifString,
@@ -2962,7 +2962,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9291}: ExifTagDesc{
+	{ExifIFD, 0x9291}: {
 		Id:         0x9291,
 		Name:       "SubSecTimeOriginal",
 		Type:       ExifString,
@@ -2975,7 +2975,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9292}: ExifTagDesc{
+	{ExifIFD, 0x9292}: {
 		Id:         0x9292,
 		Name:       "SubSecTimeDigitized",
 		Type:       ExifString,
@@ -2988,7 +2988,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9330}: ExifTagDesc{
+	{ExifIFD, 0x9330}: {
 		Id:         0x9330,
 		Name:       "MSPropertySetStorage",
 		Type:       ExifUndef,
@@ -3001,7 +3001,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9331}: ExifTagDesc{
+	{ExifIFD, 0x9331}: {
 		Id:         0x9331,
 		Name:       "MSDocumentTextPosition",
 		Type:       ExifUndef,
@@ -3014,7 +3014,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x935c}: ExifTagDesc{
+	{RootIFD, 0x935c}: {
 		Id:         0x935c,
 		Name:       "ImageSourceData",
 		Type:       ExifUndef,
@@ -3027,7 +3027,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9400}: ExifTagDesc{
+	{ExifIFD, 0x9400}: {
 		Id:         0x9400,
 		Name:       "AmbientTemperature",
 		Type:       ExifRational,
@@ -3040,7 +3040,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9401}: ExifTagDesc{
+	{ExifIFD, 0x9401}: {
 		Id:         0x9401,
 		Name:       "Humidity",
 		Type:       ExifUrational,
@@ -3053,7 +3053,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9402}: ExifTagDesc{
+	{ExifIFD, 0x9402}: {
 		Id:         0x9402,
 		Name:       "Pressure",
 		Type:       ExifUrational,
@@ -3066,7 +3066,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9403}: ExifTagDesc{
+	{ExifIFD, 0x9403}: {
 		Id:         0x9403,
 		Name:       "WaterDepth",
 		Type:       ExifRational,
@@ -3079,7 +3079,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9404}: ExifTagDesc{
+	{ExifIFD, 0x9404}: {
 		Id:         0x9404,
 		Name:       "Acceleration",
 		Type:       ExifUrational,
@@ -3092,7 +3092,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0x9405}: ExifTagDesc{
+	{ExifIFD, 0x9405}: {
 		Id:         0x9405,
 		Name:       "CameraElevationAngle",
 		Type:       ExifRational,
@@ -3105,7 +3105,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x9c9b}: ExifTagDesc{
+	{RootIFD, 0x9c9b}: {
 		Id:         0x9c9b,
 		Name:       "XPTitle",
 		Type:       ExifUint8,
@@ -3118,7 +3118,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x9c9c}: ExifTagDesc{
+	{RootIFD, 0x9c9c}: {
 		Id:         0x9c9c,
 		Name:       "XPComment",
 		Type:       ExifUint8,
@@ -3131,7 +3131,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x9c9d}: ExifTagDesc{
+	{RootIFD, 0x9c9d}: {
 		Id:         0x9c9d,
 		Name:       "XPAuthor",
 		Type:       ExifUint8,
@@ -3144,7 +3144,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x9c9e}: ExifTagDesc{
+	{RootIFD, 0x9c9e}: {
 		Id:         0x9c9e,
 		Name:       "XPKeywords",
 		Type:       ExifUint8,
@@ -3157,7 +3157,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0x9c9f}: ExifTagDesc{
+	{RootIFD, 0x9c9f}: {
 		Id:         0x9c9f,
 		Name:       "XPSubject",
 		Type:       ExifUint8,
@@ -3170,7 +3170,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa000}: ExifTagDesc{
+	{ExifIFD, 0xa000}: {
 		Id:         0xa000,
 		Name:       "FlashpixVersion",
 		Type:       ExifUndef,
@@ -3183,7 +3183,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa001}: ExifTagDesc{
+	{ExifIFD, 0xa001}: {
 		Id:         0xa001,
 		Name:       "ColorSpace",
 		Type:       ExifUint16,
@@ -3202,7 +3202,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			65535: "Uncalibrated",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa002}: ExifTagDesc{
+	{ExifIFD, 0xa002}: {
 		Id:         0xa002,
 		Name:       "ExifImageWidth",
 		Type:       ExifUint16,
@@ -3215,7 +3215,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa003}: ExifTagDesc{
+	{ExifIFD, 0xa003}: {
 		Id:         0xa003,
 		Name:       "ExifImageHeight",
 		Type:       ExifUint16,
@@ -3228,7 +3228,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa004}: ExifTagDesc{
+	{ExifIFD, 0xa004}: {
 		Id:         0xa004,
 		Name:       "RelatedSoundFile",
 		Type:       ExifString,
@@ -3241,7 +3241,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa005}: ExifTagDesc{
+	{ExifIFD, 0xa005}: {
 		Id:         0xa005,
 		Name:       "InteropOffset",
 		Type:       ExifUint32,
@@ -3254,7 +3254,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa010}: ExifTagDesc{
+	{ExifIFD, 0xa010}: {
 		Id:         0xa010,
 		Name:       "SamsungRawPointersOffset",
 		Type:       ExifUndef,
@@ -3267,7 +3267,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa011}: ExifTagDesc{
+	{ExifIFD, 0xa011}: {
 		Id:         0xa011,
 		Name:       "SamsungRawPointersLength",
 		Type:       ExifUndef,
@@ -3280,7 +3280,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa101}: ExifTagDesc{
+	{ExifIFD, 0xa101}: {
 		Id:         0xa101,
 		Name:       "SamsungRawByteOrder",
 		Type:       ExifUndef,
@@ -3293,7 +3293,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa102}: ExifTagDesc{
+	{ExifIFD, 0xa102}: {
 		Id:         0xa102,
 		Name:       "SamsungRawUnknown",
 		Type:       ExifUndef,
@@ -3306,7 +3306,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa20b}: ExifTagDesc{
+	{ExifIFD, 0xa20b}: {
 		Id:         0xa20b,
 		Name:       "FlashEnergy_0xa20b",
 		Type:       ExifUrational,
@@ -3319,7 +3319,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa20c}: ExifTagDesc{
+	{ExifIFD, 0xa20c}: {
 		Id:         0xa20c,
 		Name:       "SpatialFrequencyResponse",
 		Type:       ExifUndef,
@@ -3332,7 +3332,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa20e}: ExifTagDesc{
+	{ExifIFD, 0xa20e}: {
 		Id:         0xa20e,
 		Name:       "FocalPlaneXResolution",
 		Type:       ExifUrational,
@@ -3345,7 +3345,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa20f}: ExifTagDesc{
+	{ExifIFD, 0xa20f}: {
 		Id:         0xa20f,
 		Name:       "FocalPlaneYResolution",
 		Type:       ExifUrational,
@@ -3358,7 +3358,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa210}: ExifTagDesc{
+	{ExifIFD, 0xa210}: {
 		Id:         0xa210,
 		Name:       "FocalPlaneResolutionUnit_0xa210",
 		Type:       ExifUint16,
@@ -3377,7 +3377,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			5: "um",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa214}: ExifTagDesc{
+	{ExifIFD, 0xa214}: {
 		Id:         0xa214,
 		Name:       "SubjectLocation",
 		Type:       ExifUint16,
@@ -3390,7 +3390,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa215}: ExifTagDesc{
+	{ExifIFD, 0xa215}: {
 		Id:         0xa215,
 		Name:       "ExposureIndex",
 		Type:       ExifUrational,
@@ -3403,7 +3403,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa217}: ExifTagDesc{
+	{ExifIFD, 0xa217}: {
 		Id:         0xa217,
 		Name:       "SensingMethod_0xa217",
 		Type:       ExifUint16,
@@ -3424,7 +3424,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			7: "Trilinear",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa300}: ExifTagDesc{
+	{ExifIFD, 0xa300}: {
 		Id:         0xa300,
 		Name:       "FileSource",
 		Type:       ExifUndef,
@@ -3437,7 +3437,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa301}: ExifTagDesc{
+	{ExifIFD, 0xa301}: {
 		Id:         0xa301,
 		Name:       "SceneType",
 		Type:       ExifUndef,
@@ -3450,7 +3450,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa302}: ExifTagDesc{
+	{ExifIFD, 0xa302}: {
 		Id:         0xa302,
 		Name:       "CFAPattern",
 		Type:       ExifUndef,
@@ -3463,7 +3463,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa401}: ExifTagDesc{
+	{ExifIFD, 0xa401}: {
 		Id:         0xa401,
 		Name:       "CustomRendered",
 		Type:       ExifUint16,
@@ -3485,7 +3485,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			8: "Portrait",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa402}: ExifTagDesc{
+	{ExifIFD, 0xa402}: {
 		Id:         0xa402,
 		Name:       "ExposureMode",
 		Type:       ExifUint16,
@@ -3502,7 +3502,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "Auto bracket",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa403}: ExifTagDesc{
+	{ExifIFD, 0xa403}: {
 		Id:         0xa403,
 		Name:       "WhiteBalance",
 		Type:       ExifUint16,
@@ -3518,7 +3518,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "Manual",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa404}: ExifTagDesc{
+	{ExifIFD, 0xa404}: {
 		Id:         0xa404,
 		Name:       "DigitalZoomRatio",
 		Type:       ExifUrational,
@@ -3531,7 +3531,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa405}: ExifTagDesc{
+	{ExifIFD, 0xa405}: {
 		Id:         0xa405,
 		Name:       "FocalLengthIn35mmFormat",
 		Type:       ExifUint16,
@@ -3544,7 +3544,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa406}: ExifTagDesc{
+	{ExifIFD, 0xa406}: {
 		Id:         0xa406,
 		Name:       "SceneCaptureType",
 		Type:       ExifUint16,
@@ -3563,7 +3563,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "Landscape",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa407}: ExifTagDesc{
+	{ExifIFD, 0xa407}: {
 		Id:         0xa407,
 		Name:       "GainControl",
 		Type:       ExifUint16,
@@ -3582,7 +3582,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			4: "High gain down",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa408}: ExifTagDesc{
+	{ExifIFD, 0xa408}: {
 		Id:         0xa408,
 		Name:       "Contrast",
 		Type:       ExifUint16,
@@ -3599,7 +3599,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "High",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa409}: ExifTagDesc{
+	{ExifIFD, 0xa409}: {
 		Id:         0xa409,
 		Name:       "Saturation",
 		Type:       ExifUint16,
@@ -3616,7 +3616,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "High",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa40a}: ExifTagDesc{
+	{ExifIFD, 0xa40a}: {
 		Id:         0xa40a,
 		Name:       "Sharpness",
 		Type:       ExifUint16,
@@ -3633,7 +3633,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "Hard",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa40b}: ExifTagDesc{
+	{ExifIFD, 0xa40b}: {
 		Id:         0xa40b,
 		Name:       "DeviceSettingDescription",
 		Type:       ExifUndef,
@@ -3646,7 +3646,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa40c}: ExifTagDesc{
+	{ExifIFD, 0xa40c}: {
 		Id:         0xa40c,
 		Name:       "SubjectDistanceRange",
 		Type:       ExifUint16,
@@ -3664,7 +3664,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			0: "Unknown",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa420}: ExifTagDesc{
+	{ExifIFD, 0xa420}: {
 		Id:         0xa420,
 		Name:       "ImageUniqueID",
 		Type:       ExifString,
@@ -3677,7 +3677,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa430}: ExifTagDesc{
+	{ExifIFD, 0xa430}: {
 		Id:         0xa430,
 		Name:       "OwnerName",
 		Type:       ExifString,
@@ -3690,7 +3690,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa431}: ExifTagDesc{
+	{ExifIFD, 0xa431}: {
 		Id:         0xa431,
 		Name:       "SerialNumber",
 		Type:       ExifString,
@@ -3703,7 +3703,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa432}: ExifTagDesc{
+	{ExifIFD, 0xa432}: {
 		Id:         0xa432,
 		Name:       "LensInfo",
 		Type:       ExifUrational,
@@ -3716,7 +3716,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa433}: ExifTagDesc{
+	{ExifIFD, 0xa433}: {
 		Id:         0xa433,
 		Name:       "LensMake",
 		Type:       ExifString,
@@ -3729,7 +3729,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa434}: ExifTagDesc{
+	{ExifIFD, 0xa434}: {
 		Id:         0xa434,
 		Name:       "LensModel",
 		Type:       ExifString,
@@ -3742,7 +3742,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa435}: ExifTagDesc{
+	{ExifIFD, 0xa435}: {
 		Id:         0xa435,
 		Name:       "LensSerialNumber",
 		Type:       ExifString,
@@ -3755,7 +3755,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa460}: ExifTagDesc{
+	{ExifIFD, 0xa460}: {
 		Id:         0xa460,
 		Name:       "CompositeImage",
 		Type:       ExifUint16,
@@ -3773,7 +3773,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			3: "Composite Image Captured While Shooting",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xa461}: ExifTagDesc{
+	{ExifIFD, 0xa461}: {
 		Id:         0xa461,
 		Name:       "CompositeImageCount",
 		Type:       ExifUint16,
@@ -3786,7 +3786,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa462}: ExifTagDesc{
+	{ExifIFD, 0xa462}: {
 		Id:         0xa462,
 		Name:       "CompositeImageExposureTimes",
 		Type:       ExifUndef,
@@ -3799,7 +3799,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xa480}: ExifTagDesc{
+	{RootIFD, 0xa480}: {
 		Id:         0xa480,
 		Name:       "GDALMetadata",
 		Type:       ExifString,
@@ -3812,7 +3812,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xa481}: ExifTagDesc{
+	{RootIFD, 0xa481}: {
 		Id:         0xa481,
 		Name:       "GDALNoData",
 		Type:       ExifString,
@@ -3825,7 +3825,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xa500}: ExifTagDesc{
+	{ExifIFD, 0xa500}: {
 		Id:         0xa500,
 		Name:       "Gamma",
 		Type:       ExifUrational,
@@ -3838,7 +3838,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xb4c3}: ExifTagDesc{
+	{ExifIFD, 0xb4c3}: {
 		Id:         0xb4c3,
 		Name:       "HasselbladRawImage",
 		Type:       ExifUndef,
@@ -3851,7 +3851,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbc01}: ExifTagDesc{
+	{ExifIFD, 0xbc01}: {
 		Id:         0xbc01,
 		Name:       "PixelFormat",
 		Type:       ExifUndef,
@@ -3864,7 +3864,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbc02}: ExifTagDesc{
+	{ExifIFD, 0xbc02}: {
 		Id:         0xbc02,
 		Name:       "Transformation",
 		Type:       ExifUndef,
@@ -3877,7 +3877,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbc03}: ExifTagDesc{
+	{ExifIFD, 0xbc03}: {
 		Id:         0xbc03,
 		Name:       "Uncompressed",
 		Type:       ExifUndef,
@@ -3890,7 +3890,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbc04}: ExifTagDesc{
+	{ExifIFD, 0xbc04}: {
 		Id:         0xbc04,
 		Name:       "ImageType",
 		Type:       ExifUndef,
@@ -3903,7 +3903,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbcc0}: ExifTagDesc{
+	{ExifIFD, 0xbcc0}: {
 		Id:         0xbcc0,
 		Name:       "ImageOffset",
 		Type:       ExifUndef,
@@ -3916,7 +3916,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbcc1}: ExifTagDesc{
+	{ExifIFD, 0xbcc1}: {
 		Id:         0xbcc1,
 		Name:       "ImageByteCount",
 		Type:       ExifUndef,
@@ -3929,7 +3929,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbcc2}: ExifTagDesc{
+	{ExifIFD, 0xbcc2}: {
 		Id:         0xbcc2,
 		Name:       "AlphaOffset",
 		Type:       ExifUndef,
@@ -3942,7 +3942,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbcc3}: ExifTagDesc{
+	{ExifIFD, 0xbcc3}: {
 		Id:         0xbcc3,
 		Name:       "AlphaByteCount",
 		Type:       ExifUndef,
@@ -3955,7 +3955,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbcc4}: ExifTagDesc{
+	{ExifIFD, 0xbcc4}: {
 		Id:         0xbcc4,
 		Name:       "ImageDataDiscard",
 		Type:       ExifUndef,
@@ -3968,7 +3968,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xbcc5}: ExifTagDesc{
+	{ExifIFD, 0xbcc5}: {
 		Id:         0xbcc5,
 		Name:       "AlphaDataDiscard",
 		Type:       ExifUndef,
@@ -3981,7 +3981,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xc44f}: ExifTagDesc{
+	{ExifIFD, 0xc44f}: {
 		Id:         0xc44f,
 		Name:       "Annotations",
 		Type:       ExifUndef,
@@ -3994,7 +3994,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc4a5}: ExifTagDesc{
+	{RootIFD, 0xc4a5}: {
 		Id:         0xc4a5,
 		Name:       "PrintIM",
 		Type:       ExifUndef,
@@ -4007,7 +4007,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xc51b}: ExifTagDesc{
+	{ExifIFD, 0xc51b}: {
 		Id:         0xc51b,
 		Name:       "HasselbladExif",
 		Type:       ExifUndef,
@@ -4020,7 +4020,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xc573}: ExifTagDesc{
+	{ExifIFD, 0xc573}: {
 		Id:         0xc573,
 		Name:       "OriginalFileName",
 		Type:       ExifUndef,
@@ -4033,7 +4033,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xc580}: ExifTagDesc{
+	{ExifIFD, 0xc580}: {
 		Id:         0xc580,
 		Name:       "USPTOOriginalContentType",
 		Type:       ExifUndef,
@@ -4046,7 +4046,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xc5e0}: ExifTagDesc{
+	{ExifIFD, 0xc5e0}: {
 		Id:         0xc5e0,
 		Name:       "CR2CFAPattern",
 		Type:       ExifUndef,
@@ -4059,7 +4059,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc612}: ExifTagDesc{
+	{RootIFD, 0xc612}: {
 		Id:         0xc612,
 		Name:       "DNGVersion",
 		Type:       ExifUint8,
@@ -4072,7 +4072,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc613}: ExifTagDesc{
+	{RootIFD, 0xc613}: {
 		Id:         0xc613,
 		Name:       "DNGBackwardVersion",
 		Type:       ExifUint8,
@@ -4085,7 +4085,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc614}: ExifTagDesc{
+	{RootIFD, 0xc614}: {
 		Id:         0xc614,
 		Name:       "UniqueCameraModel",
 		Type:       ExifString,
@@ -4098,7 +4098,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc615}: ExifTagDesc{
+	{RootIFD, 0xc615}: {
 		Id:         0xc615,
 		Name:       "LocalizedCameraModel",
 		Type:       ExifString,
@@ -4111,7 +4111,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc616}: ExifTagDesc{
+	{RootIFD, 0xc616}: {
 		Id:         0xc616,
 		Name:       "CFAPlaneColor",
 		Type:       ExifUint8,
@@ -4124,7 +4124,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc617}: ExifTagDesc{
+	{RootIFD, 0xc617}: {
 		Id:         0xc617,
 		Name:       "CFALayout",
 		Type:       ExifUint16,
@@ -4147,7 +4147,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			8: "Even rows offset down by 1/2 row, even columns offset left by 1/2 column",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc618}: ExifTagDesc{
+	{RootIFD, 0xc618}: {
 		Id:         0xc618,
 		Name:       "LinearizationTable",
 		Type:       ExifUint16,
@@ -4160,7 +4160,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc619}: ExifTagDesc{
+	{RootIFD, 0xc619}: {
 		Id:         0xc619,
 		Name:       "BlackLevelRepeatDim",
 		Type:       ExifUint16,
@@ -4173,7 +4173,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc61a}: ExifTagDesc{
+	{RootIFD, 0xc61a}: {
 		Id:         0xc61a,
 		Name:       "BlackLevel",
 		Type:       ExifUrational,
@@ -4186,7 +4186,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc61b}: ExifTagDesc{
+	{RootIFD, 0xc61b}: {
 		Id:         0xc61b,
 		Name:       "BlackLevelDeltaH",
 		Type:       ExifRational,
@@ -4199,7 +4199,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc61c}: ExifTagDesc{
+	{RootIFD, 0xc61c}: {
 		Id:         0xc61c,
 		Name:       "BlackLevelDeltaV",
 		Type:       ExifRational,
@@ -4212,7 +4212,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc61d}: ExifTagDesc{
+	{RootIFD, 0xc61d}: {
 		Id:         0xc61d,
 		Name:       "WhiteLevel",
 		Type:       ExifUint32,
@@ -4225,7 +4225,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc61e}: ExifTagDesc{
+	{RootIFD, 0xc61e}: {
 		Id:         0xc61e,
 		Name:       "DefaultScale",
 		Type:       ExifUrational,
@@ -4238,7 +4238,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc61f}: ExifTagDesc{
+	{RootIFD, 0xc61f}: {
 		Id:         0xc61f,
 		Name:       "DefaultCropOrigin",
 		Type:       ExifUint32,
@@ -4251,7 +4251,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc620}: ExifTagDesc{
+	{RootIFD, 0xc620}: {
 		Id:         0xc620,
 		Name:       "DefaultCropSize",
 		Type:       ExifUint32,
@@ -4264,7 +4264,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc621}: ExifTagDesc{
+	{RootIFD, 0xc621}: {
 		Id:         0xc621,
 		Name:       "ColorMatrix1",
 		Type:       ExifRational,
@@ -4277,7 +4277,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc622}: ExifTagDesc{
+	{RootIFD, 0xc622}: {
 		Id:         0xc622,
 		Name:       "ColorMatrix2",
 		Type:       ExifRational,
@@ -4290,7 +4290,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc623}: ExifTagDesc{
+	{RootIFD, 0xc623}: {
 		Id:         0xc623,
 		Name:       "CameraCalibration1",
 		Type:       ExifRational,
@@ -4303,7 +4303,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc624}: ExifTagDesc{
+	{RootIFD, 0xc624}: {
 		Id:         0xc624,
 		Name:       "CameraCalibration2",
 		Type:       ExifRational,
@@ -4316,7 +4316,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc625}: ExifTagDesc{
+	{RootIFD, 0xc625}: {
 		Id:         0xc625,
 		Name:       "ReductionMatrix1",
 		Type:       ExifRational,
@@ -4329,7 +4329,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc626}: ExifTagDesc{
+	{RootIFD, 0xc626}: {
 		Id:         0xc626,
 		Name:       "ReductionMatrix2",
 		Type:       ExifRational,
@@ -4342,7 +4342,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc627}: ExifTagDesc{
+	{RootIFD, 0xc627}: {
 		Id:         0xc627,
 		Name:       "AnalogBalance",
 		Type:       ExifUrational,
@@ -4355,7 +4355,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc628}: ExifTagDesc{
+	{RootIFD, 0xc628}: {
 		Id:         0xc628,
 		Name:       "AsShotNeutral",
 		Type:       ExifUrational,
@@ -4368,7 +4368,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc629}: ExifTagDesc{
+	{RootIFD, 0xc629}: {
 		Id:         0xc629,
 		Name:       "AsShotWhiteXY",
 		Type:       ExifUrational,
@@ -4381,7 +4381,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc62a}: ExifTagDesc{
+	{RootIFD, 0xc62a}: {
 		Id:         0xc62a,
 		Name:       "BaselineExposure",
 		Type:       ExifRational,
@@ -4394,7 +4394,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc62b}: ExifTagDesc{
+	{RootIFD, 0xc62b}: {
 		Id:         0xc62b,
 		Name:       "BaselineNoise",
 		Type:       ExifUrational,
@@ -4407,7 +4407,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc62c}: ExifTagDesc{
+	{RootIFD, 0xc62c}: {
 		Id:         0xc62c,
 		Name:       "BaselineSharpness",
 		Type:       ExifUrational,
@@ -4420,7 +4420,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc62d}: ExifTagDesc{
+	{RootIFD, 0xc62d}: {
 		Id:         0xc62d,
 		Name:       "BayerGreenSplit",
 		Type:       ExifUint32,
@@ -4433,7 +4433,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc62e}: ExifTagDesc{
+	{RootIFD, 0xc62e}: {
 		Id:         0xc62e,
 		Name:       "LinearResponseLimit",
 		Type:       ExifUrational,
@@ -4446,7 +4446,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc62f}: ExifTagDesc{
+	{RootIFD, 0xc62f}: {
 		Id:         0xc62f,
 		Name:       "CameraSerialNumber",
 		Type:       ExifString,
@@ -4459,7 +4459,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc630}: ExifTagDesc{
+	{RootIFD, 0xc630}: {
 		Id:         0xc630,
 		Name:       "DNGLensInfo",
 		Type:       ExifUrational,
@@ -4472,7 +4472,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc631}: ExifTagDesc{
+	{RootIFD, 0xc631}: {
 		Id:         0xc631,
 		Name:       "ChromaBlurRadius",
 		Type:       ExifUrational,
@@ -4485,7 +4485,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc632}: ExifTagDesc{
+	{RootIFD, 0xc632}: {
 		Id:         0xc632,
 		Name:       "AntiAliasStrength",
 		Type:       ExifUrational,
@@ -4498,7 +4498,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc633}: ExifTagDesc{
+	{RootIFD, 0xc633}: {
 		Id:         0xc633,
 		Name:       "ShadowScale",
 		Type:       ExifUrational,
@@ -4511,7 +4511,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc634}: ExifTagDesc{
+	{RootIFD, 0xc634}: {
 		Id:         0xc634,
 		Name:       "DNGPrivateData",
 		Type:       ExifUint8,
@@ -4524,7 +4524,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc635}: ExifTagDesc{
+	{RootIFD, 0xc635}: {
 		Id:         0xc635,
 		Name:       "MakerNoteSafety",
 		Type:       ExifUint16,
@@ -4540,7 +4540,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "Safe",
 		},
 	},
-	ExifIndexTag{ExifIFD, 0xc640}: ExifTagDesc{
+	{ExifIFD, 0xc640}: {
 		Id:         0xc640,
 		Name:       "RawImageSegmentation",
 		Type:       ExifUndef,
@@ -4553,7 +4553,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc65a}: ExifTagDesc{
+	{RootIFD, 0xc65a}: {
 		Id:         0xc65a,
 		Name:       "CalibrationIlluminant1",
 		Type:       ExifUint16,
@@ -4589,7 +4589,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			12:  "Daylight Fluorescent",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc65b}: ExifTagDesc{
+	{RootIFD, 0xc65b}: {
 		Id:         0xc65b,
 		Name:       "CalibrationIlluminant2",
 		Type:       ExifUint16,
@@ -4625,7 +4625,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			21:  "D65",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc65c}: ExifTagDesc{
+	{RootIFD, 0xc65c}: {
 		Id:         0xc65c,
 		Name:       "BestQualityScale",
 		Type:       ExifUrational,
@@ -4638,7 +4638,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc65d}: ExifTagDesc{
+	{RootIFD, 0xc65d}: {
 		Id:         0xc65d,
 		Name:       "RawDataUniqueID",
 		Type:       ExifUint8,
@@ -4651,7 +4651,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xc660}: ExifTagDesc{
+	{ExifIFD, 0xc660}: {
 		Id:         0xc660,
 		Name:       "AliasLayerMetadata",
 		Type:       ExifUndef,
@@ -4664,7 +4664,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc68b}: ExifTagDesc{
+	{RootIFD, 0xc68b}: {
 		Id:         0xc68b,
 		Name:       "OriginalRawFileName",
 		Type:       ExifString,
@@ -4677,7 +4677,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc68c}: ExifTagDesc{
+	{RootIFD, 0xc68c}: {
 		Id:         0xc68c,
 		Name:       "OriginalRawFileData",
 		Type:       ExifUndef,
@@ -4690,7 +4690,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc68d}: ExifTagDesc{
+	{RootIFD, 0xc68d}: {
 		Id:         0xc68d,
 		Name:       "ActiveArea",
 		Type:       ExifUint32,
@@ -4703,7 +4703,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc68e}: ExifTagDesc{
+	{RootIFD, 0xc68e}: {
 		Id:         0xc68e,
 		Name:       "MaskedAreas",
 		Type:       ExifUint32,
@@ -4716,7 +4716,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc68f}: ExifTagDesc{
+	{RootIFD, 0xc68f}: {
 		Id:         0xc68f,
 		Name:       "AsShotICCProfile",
 		Type:       ExifUndef,
@@ -4729,7 +4729,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc690}: ExifTagDesc{
+	{RootIFD, 0xc690}: {
 		Id:         0xc690,
 		Name:       "AsShotPreProfileMatrix",
 		Type:       ExifRational,
@@ -4742,7 +4742,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc691}: ExifTagDesc{
+	{RootIFD, 0xc691}: {
 		Id:         0xc691,
 		Name:       "CurrentICCProfile",
 		Type:       ExifUndef,
@@ -4755,7 +4755,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc692}: ExifTagDesc{
+	{RootIFD, 0xc692}: {
 		Id:         0xc692,
 		Name:       "CurrentPreProfileMatrix",
 		Type:       ExifRational,
@@ -4768,7 +4768,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6bf}: ExifTagDesc{
+	{RootIFD, 0xc6bf}: {
 		Id:         0xc6bf,
 		Name:       "ColorimetricReference",
 		Type:       ExifUint16,
@@ -4781,7 +4781,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6c5}: ExifTagDesc{
+	{RootIFD, 0xc6c5}: {
 		Id:         0xc6c5,
 		Name:       "SRawType",
 		Type:       ExifUndef,
@@ -4794,7 +4794,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6d2}: ExifTagDesc{
+	{RootIFD, 0xc6d2}: {
 		Id:         0xc6d2,
 		Name:       "PanasonicTitle",
 		Type:       ExifString,
@@ -4807,7 +4807,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6d3}: ExifTagDesc{
+	{RootIFD, 0xc6d3}: {
 		Id:         0xc6d3,
 		Name:       "PanasonicTitle2",
 		Type:       ExifString,
@@ -4820,7 +4820,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6f3}: ExifTagDesc{
+	{RootIFD, 0xc6f3}: {
 		Id:         0xc6f3,
 		Name:       "CameraCalibrationSig",
 		Type:       ExifString,
@@ -4833,7 +4833,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6f4}: ExifTagDesc{
+	{RootIFD, 0xc6f4}: {
 		Id:         0xc6f4,
 		Name:       "ProfileCalibrationSig",
 		Type:       ExifString,
@@ -4846,7 +4846,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6f5}: ExifTagDesc{
+	{RootIFD, 0xc6f5}: {
 		Id:         0xc6f5,
 		Name:       "ProfileIFD",
 		Type:       ExifUint32,
@@ -4859,7 +4859,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6f6}: ExifTagDesc{
+	{RootIFD, 0xc6f6}: {
 		Id:         0xc6f6,
 		Name:       "AsShotProfileName",
 		Type:       ExifString,
@@ -4872,7 +4872,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6f7}: ExifTagDesc{
+	{RootIFD, 0xc6f7}: {
 		Id:         0xc6f7,
 		Name:       "NoiseReductionApplied",
 		Type:       ExifUrational,
@@ -4885,7 +4885,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6f8}: ExifTagDesc{
+	{RootIFD, 0xc6f8}: {
 		Id:         0xc6f8,
 		Name:       "ProfileName",
 		Type:       ExifString,
@@ -4898,7 +4898,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6f9}: ExifTagDesc{
+	{RootIFD, 0xc6f9}: {
 		Id:         0xc6f9,
 		Name:       "ProfileHueSatMapDims",
 		Type:       ExifUint32,
@@ -4911,7 +4911,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6fa}: ExifTagDesc{
+	{RootIFD, 0xc6fa}: {
 		Id:         0xc6fa,
 		Name:       "ProfileHueSatMapData1",
 		Type:       ExifFloat,
@@ -4924,7 +4924,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6fb}: ExifTagDesc{
+	{RootIFD, 0xc6fb}: {
 		Id:         0xc6fb,
 		Name:       "ProfileHueSatMapData2",
 		Type:       ExifFloat,
@@ -4937,7 +4937,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6fc}: ExifTagDesc{
+	{RootIFD, 0xc6fc}: {
 		Id:         0xc6fc,
 		Name:       "ProfileToneCurve",
 		Type:       ExifFloat,
@@ -4950,7 +4950,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc6fd}: ExifTagDesc{
+	{RootIFD, 0xc6fd}: {
 		Id:         0xc6fd,
 		Name:       "ProfileEmbedPolicy",
 		Type:       ExifUint32,
@@ -4968,7 +4968,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			3: "No Restrictions",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc6fe}: ExifTagDesc{
+	{RootIFD, 0xc6fe}: {
 		Id:         0xc6fe,
 		Name:       "ProfileCopyright",
 		Type:       ExifString,
@@ -4981,7 +4981,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc714}: ExifTagDesc{
+	{RootIFD, 0xc714}: {
 		Id:         0xc714,
 		Name:       "ForwardMatrix1",
 		Type:       ExifRational,
@@ -4994,7 +4994,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc715}: ExifTagDesc{
+	{RootIFD, 0xc715}: {
 		Id:         0xc715,
 		Name:       "ForwardMatrix2",
 		Type:       ExifRational,
@@ -5007,7 +5007,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc716}: ExifTagDesc{
+	{RootIFD, 0xc716}: {
 		Id:         0xc716,
 		Name:       "PreviewApplicationName",
 		Type:       ExifString,
@@ -5020,7 +5020,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc717}: ExifTagDesc{
+	{RootIFD, 0xc717}: {
 		Id:         0xc717,
 		Name:       "PreviewApplicationVersion",
 		Type:       ExifString,
@@ -5033,7 +5033,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc718}: ExifTagDesc{
+	{RootIFD, 0xc718}: {
 		Id:         0xc718,
 		Name:       "PreviewSettingsName",
 		Type:       ExifString,
@@ -5046,7 +5046,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc719}: ExifTagDesc{
+	{RootIFD, 0xc719}: {
 		Id:         0xc719,
 		Name:       "PreviewSettingsDigest",
 		Type:       ExifUint8,
@@ -5059,7 +5059,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc71a}: ExifTagDesc{
+	{RootIFD, 0xc71a}: {
 		Id:         0xc71a,
 		Name:       "PreviewColorSpace",
 		Type:       ExifUint32,
@@ -5078,7 +5078,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			4: "ProPhoto RGB",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc71b}: ExifTagDesc{
+	{RootIFD, 0xc71b}: {
 		Id:         0xc71b,
 		Name:       "PreviewDateTime",
 		Type:       ExifString,
@@ -5091,7 +5091,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc71c}: ExifTagDesc{
+	{RootIFD, 0xc71c}: {
 		Id:         0xc71c,
 		Name:       "RawImageDigest",
 		Type:       ExifUint8,
@@ -5104,7 +5104,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc71d}: ExifTagDesc{
+	{RootIFD, 0xc71d}: {
 		Id:         0xc71d,
 		Name:       "OriginalRawFileDigest",
 		Type:       ExifUint8,
@@ -5117,7 +5117,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc725}: ExifTagDesc{
+	{RootIFD, 0xc725}: {
 		Id:         0xc725,
 		Name:       "ProfileLookTableDims",
 		Type:       ExifUint32,
@@ -5130,7 +5130,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc726}: ExifTagDesc{
+	{RootIFD, 0xc726}: {
 		Id:         0xc726,
 		Name:       "ProfileLookTableData",
 		Type:       ExifFloat,
@@ -5143,7 +5143,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc740}: ExifTagDesc{
+	{RootIFD, 0xc740}: {
 		Id:         0xc740,
 		Name:       "OpcodeList1",
 		Type:       ExifUndef,
@@ -5156,7 +5156,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc741}: ExifTagDesc{
+	{RootIFD, 0xc741}: {
 		Id:         0xc741,
 		Name:       "OpcodeList2",
 		Type:       ExifUndef,
@@ -5169,7 +5169,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc74e}: ExifTagDesc{
+	{RootIFD, 0xc74e}: {
 		Id:         0xc74e,
 		Name:       "OpcodeList3",
 		Type:       ExifUndef,
@@ -5182,7 +5182,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc761}: ExifTagDesc{
+	{RootIFD, 0xc761}: {
 		Id:         0xc761,
 		Name:       "NoiseProfile",
 		Type:       ExifDouble,
@@ -5195,7 +5195,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc763}: ExifTagDesc{
+	{RootIFD, 0xc763}: {
 		Id:         0xc763,
 		Name:       "TimeCodes",
 		Type:       ExifUint8,
@@ -5208,7 +5208,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc764}: ExifTagDesc{
+	{RootIFD, 0xc764}: {
 		Id:         0xc764,
 		Name:       "FrameRate",
 		Type:       ExifRational,
@@ -5221,7 +5221,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc772}: ExifTagDesc{
+	{RootIFD, 0xc772}: {
 		Id:         0xc772,
 		Name:       "TStop",
 		Type:       ExifUrational,
@@ -5234,7 +5234,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc789}: ExifTagDesc{
+	{RootIFD, 0xc789}: {
 		Id:         0xc789,
 		Name:       "ReelName",
 		Type:       ExifString,
@@ -5247,7 +5247,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc791}: ExifTagDesc{
+	{RootIFD, 0xc791}: {
 		Id:         0xc791,
 		Name:       "OriginalDefaultFinalSize",
 		Type:       ExifUint32,
@@ -5260,7 +5260,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc792}: ExifTagDesc{
+	{RootIFD, 0xc792}: {
 		Id:         0xc792,
 		Name:       "OriginalBestQualitySize",
 		Type:       ExifUint32,
@@ -5273,7 +5273,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc793}: ExifTagDesc{
+	{RootIFD, 0xc793}: {
 		Id:         0xc793,
 		Name:       "OriginalDefaultCropSize",
 		Type:       ExifUrational,
@@ -5286,7 +5286,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7a1}: ExifTagDesc{
+	{RootIFD, 0xc7a1}: {
 		Id:         0xc7a1,
 		Name:       "CameraLabel",
 		Type:       ExifString,
@@ -5299,7 +5299,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7a3}: ExifTagDesc{
+	{RootIFD, 0xc7a3}: {
 		Id:         0xc7a3,
 		Name:       "ProfileHueSatMapEncoding",
 		Type:       ExifUint32,
@@ -5315,7 +5315,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "sRGB",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc7a4}: ExifTagDesc{
+	{RootIFD, 0xc7a4}: {
 		Id:         0xc7a4,
 		Name:       "ProfileLookTableEncoding",
 		Type:       ExifUint32,
@@ -5331,7 +5331,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "sRGB",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc7a5}: ExifTagDesc{
+	{RootIFD, 0xc7a5}: {
 		Id:         0xc7a5,
 		Name:       "BaselineExposureOffset",
 		Type:       ExifRational,
@@ -5344,7 +5344,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7a6}: ExifTagDesc{
+	{RootIFD, 0xc7a6}: {
 		Id:         0xc7a6,
 		Name:       "DefaultBlackRender",
 		Type:       ExifUint32,
@@ -5360,7 +5360,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "None",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc7a7}: ExifTagDesc{
+	{RootIFD, 0xc7a7}: {
 		Id:         0xc7a7,
 		Name:       "NewRawImageDigest",
 		Type:       ExifUint8,
@@ -5373,7 +5373,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7a8}: ExifTagDesc{
+	{RootIFD, 0xc7a8}: {
 		Id:         0xc7a8,
 		Name:       "RawToPreviewGain",
 		Type:       ExifDouble,
@@ -5386,7 +5386,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7aa}: ExifTagDesc{
+	{RootIFD, 0xc7aa}: {
 		Id:         0xc7aa,
 		Name:       "CacheVersion",
 		Type:       ExifUint32,
@@ -5399,7 +5399,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7b5}: ExifTagDesc{
+	{RootIFD, 0xc7b5}: {
 		Id:         0xc7b5,
 		Name:       "DefaultUserCrop",
 		Type:       ExifUrational,
@@ -5412,7 +5412,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xc7d5}: ExifTagDesc{
+	{ExifIFD, 0xc7d5}: {
 		Id:         0xc7d5,
 		Name:       "NikonNEFInfo",
 		Type:       ExifUndef,
@@ -5425,7 +5425,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7e9}: ExifTagDesc{
+	{RootIFD, 0xc7e9}: {
 		Id:         0xc7e9,
 		Name:       "DepthFormat",
 		Type:       ExifUint16,
@@ -5442,7 +5442,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "Inverse",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc7ea}: ExifTagDesc{
+	{RootIFD, 0xc7ea}: {
 		Id:         0xc7ea,
 		Name:       "DepthNear",
 		Type:       ExifUrational,
@@ -5455,7 +5455,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7eb}: ExifTagDesc{
+	{RootIFD, 0xc7eb}: {
 		Id:         0xc7eb,
 		Name:       "DepthFar",
 		Type:       ExifUrational,
@@ -5468,7 +5468,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xc7ec}: ExifTagDesc{
+	{RootIFD, 0xc7ec}: {
 		Id:         0xc7ec,
 		Name:       "DepthUnits",
 		Type:       ExifUint16,
@@ -5484,7 +5484,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "Meters",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc7ed}: ExifTagDesc{
+	{RootIFD, 0xc7ed}: {
 		Id:         0xc7ed,
 		Name:       "DepthMeasureType",
 		Type:       ExifUint16,
@@ -5501,7 +5501,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			2: "Optical Ray",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xc7ee}: ExifTagDesc{
+	{RootIFD, 0xc7ee}: {
 		Id:         0xc7ee,
 		Name:       "EnhanceParams",
 		Type:       ExifString,
@@ -5514,7 +5514,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd2d}: ExifTagDesc{
+	{RootIFD, 0xcd2d}: {
 		Id:         0xcd2d,
 		Name:       "ProfileGainTableMap",
 		Type:       ExifUndef,
@@ -5527,7 +5527,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd2e}: ExifTagDesc{
+	{RootIFD, 0xcd2e}: {
 		Id:         0xcd2e,
 		Name:       "SemanticName",
 		Type:       ExifString,
@@ -5540,7 +5540,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd30}: ExifTagDesc{
+	{RootIFD, 0xcd30}: {
 		Id:         0xcd30,
 		Name:       "SemanticInstanceIFD",
 		Type:       ExifString,
@@ -5553,7 +5553,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd31}: ExifTagDesc{
+	{RootIFD, 0xcd31}: {
 		Id:         0xcd31,
 		Name:       "CalibrationIlluminant3",
 		Type:       ExifUint16,
@@ -5589,7 +5589,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			9:   "Fine Weather",
 		},
 	},
-	ExifIndexTag{RootIFD, 0xcd32}: ExifTagDesc{
+	{RootIFD, 0xcd32}: {
 		Id:         0xcd32,
 		Name:       "CameraCalibration3",
 		Type:       ExifRational,
@@ -5602,7 +5602,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd33}: ExifTagDesc{
+	{RootIFD, 0xcd33}: {
 		Id:         0xcd33,
 		Name:       "ColorMatrix3",
 		Type:       ExifRational,
@@ -5615,7 +5615,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd34}: ExifTagDesc{
+	{RootIFD, 0xcd34}: {
 		Id:         0xcd34,
 		Name:       "ForwardMatrix3",
 		Type:       ExifRational,
@@ -5628,7 +5628,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd35}: ExifTagDesc{
+	{RootIFD, 0xcd35}: {
 		Id:         0xcd35,
 		Name:       "IlluminantData1",
 		Type:       ExifUndef,
@@ -5641,7 +5641,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd36}: ExifTagDesc{
+	{RootIFD, 0xcd36}: {
 		Id:         0xcd36,
 		Name:       "IlluminantData2",
 		Type:       ExifUndef,
@@ -5654,7 +5654,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd37}: ExifTagDesc{
+	{RootIFD, 0xcd37}: {
 		Id:         0xcd37,
 		Name:       "IlluminantData3",
 		Type:       ExifUndef,
@@ -5667,7 +5667,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd38}: ExifTagDesc{
+	{RootIFD, 0xcd38}: {
 		Id:         0xcd38,
 		Name:       "MaskSubArea",
 		Type:       ExifUint32,
@@ -5680,7 +5680,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd39}: ExifTagDesc{
+	{RootIFD, 0xcd39}: {
 		Id:         0xcd39,
 		Name:       "ProfileHueSatMapData3",
 		Type:       ExifFloat,
@@ -5693,7 +5693,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd3a}: ExifTagDesc{
+	{RootIFD, 0xcd3a}: {
 		Id:         0xcd3a,
 		Name:       "ReductionMatrix3",
 		Type:       ExifRational,
@@ -5706,7 +5706,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{RootIFD, 0xcd3b}: ExifTagDesc{
+	{RootIFD, 0xcd3b}: {
 		Id:         0xcd3b,
 		Name:       "RGBTables",
 		Type:       ExifUndef,
@@ -5719,7 +5719,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xea1c}: ExifTagDesc{
+	{ExifIFD, 0xea1c}: {
 		Id:         0xea1c,
 		Name:       "Padding",
 		Type:       ExifUndef,
@@ -5732,7 +5732,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xea1d}: ExifTagDesc{
+	{ExifIFD, 0xea1d}: {
 		Id:         0xea1d,
 		Name:       "OffsetSchema",
 		Type:       ExifInt32,
@@ -5745,7 +5745,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  true,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfde8}: ExifTagDesc{
+	{ExifIFD, 0xfde8}: {
 		Id:         0xfde8,
 		Name:       "OwnerName_0xfde8",
 		Type:       ExifString,
@@ -5758,7 +5758,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfde9}: ExifTagDesc{
+	{ExifIFD, 0xfde9}: {
 		Id:         0xfde9,
 		Name:       "SerialNumber_0xfde9",
 		Type:       ExifString,
@@ -5771,7 +5771,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfdea}: ExifTagDesc{
+	{ExifIFD, 0xfdea}: {
 		Id:         0xfdea,
 		Name:       "Lens",
 		Type:       ExifString,
@@ -5784,7 +5784,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe00}: ExifTagDesc{
+	{ExifIFD, 0xfe00}: {
 		Id:         0xfe00,
 		Name:       "KDC_IFD",
 		Type:       ExifUndef,
@@ -5797,7 +5797,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe4c}: ExifTagDesc{
+	{ExifIFD, 0xfe4c}: {
 		Id:         0xfe4c,
 		Name:       "RawFile",
 		Type:       ExifString,
@@ -5810,7 +5810,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe4d}: ExifTagDesc{
+	{ExifIFD, 0xfe4d}: {
 		Id:         0xfe4d,
 		Name:       "Converter",
 		Type:       ExifString,
@@ -5823,7 +5823,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe4e}: ExifTagDesc{
+	{ExifIFD, 0xfe4e}: {
 		Id:         0xfe4e,
 		Name:       "WhiteBalance_0xfe4e",
 		Type:       ExifString,
@@ -5836,7 +5836,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe51}: ExifTagDesc{
+	{ExifIFD, 0xfe51}: {
 		Id:         0xfe51,
 		Name:       "Exposure",
 		Type:       ExifString,
@@ -5849,7 +5849,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe52}: ExifTagDesc{
+	{ExifIFD, 0xfe52}: {
 		Id:         0xfe52,
 		Name:       "Shadows",
 		Type:       ExifString,
@@ -5862,7 +5862,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe53}: ExifTagDesc{
+	{ExifIFD, 0xfe53}: {
 		Id:         0xfe53,
 		Name:       "Brightness",
 		Type:       ExifString,
@@ -5875,7 +5875,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe54}: ExifTagDesc{
+	{ExifIFD, 0xfe54}: {
 		Id:         0xfe54,
 		Name:       "Contrast_0xfe54",
 		Type:       ExifString,
@@ -5888,7 +5888,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe55}: ExifTagDesc{
+	{ExifIFD, 0xfe55}: {
 		Id:         0xfe55,
 		Name:       "Saturation_0xfe55",
 		Type:       ExifString,
@@ -5901,7 +5901,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe56}: ExifTagDesc{
+	{ExifIFD, 0xfe56}: {
 		Id:         0xfe56,
 		Name:       "Sharpness_0xfe56",
 		Type:       ExifString,
@@ -5914,7 +5914,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe57}: ExifTagDesc{
+	{ExifIFD, 0xfe57}: {
 		Id:         0xfe57,
 		Name:       "Smoothness",
 		Type:       ExifString,
@@ -5927,7 +5927,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{ExifIFD, 0xfe58}: ExifTagDesc{
+	{ExifIFD, 0xfe58}: {
 		Id:         0xfe58,
 		Name:       "MoireFilter",
 		Type:       ExifString,
@@ -5940,7 +5940,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0000}: ExifTagDesc{
+	{GpsIFD, 0x0000}: {
 		Id:         0x0000,
 		Name:       "GPSVersionID",
 		Type:       ExifUint8,
@@ -5953,7 +5953,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0001}: ExifTagDesc{
+	{GpsIFD, 0x0001}: {
 		Id:         0x0001,
 		Name:       "GPSLatitudeRef",
 		Type:       ExifString,
@@ -5966,7 +5966,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0002}: ExifTagDesc{
+	{GpsIFD, 0x0002}: {
 		Id:         0x0002,
 		Name:       "GPSLatitude",
 		Type:       ExifUrational,
@@ -5979,7 +5979,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0003}: ExifTagDesc{
+	{GpsIFD, 0x0003}: {
 		Id:         0x0003,
 		Name:       "GPSLongitudeRef",
 		Type:       ExifString,
@@ -5992,7 +5992,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0004}: ExifTagDesc{
+	{GpsIFD, 0x0004}: {
 		Id:         0x0004,
 		Name:       "GPSLongitude",
 		Type:       ExifUrational,
@@ -6005,7 +6005,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0005}: ExifTagDesc{
+	{GpsIFD, 0x0005}: {
 		Id:         0x0005,
 		Name:       "GPSAltitudeRef",
 		Type:       ExifUint8,
@@ -6021,7 +6021,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			0: "Above Sea Level",
 		},
 	},
-	ExifIndexTag{GpsIFD, 0x0006}: ExifTagDesc{
+	{GpsIFD, 0x0006}: {
 		Id:         0x0006,
 		Name:       "GPSAltitude",
 		Type:       ExifUrational,
@@ -6034,7 +6034,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0007}: ExifTagDesc{
+	{GpsIFD, 0x0007}: {
 		Id:         0x0007,
 		Name:       "GPSTimeStamp",
 		Type:       ExifUrational,
@@ -6047,7 +6047,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0008}: ExifTagDesc{
+	{GpsIFD, 0x0008}: {
 		Id:         0x0008,
 		Name:       "GPSSatellites",
 		Type:       ExifString,
@@ -6060,7 +6060,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0009}: ExifTagDesc{
+	{GpsIFD, 0x0009}: {
 		Id:         0x0009,
 		Name:       "GPSStatus",
 		Type:       ExifString,
@@ -6073,7 +6073,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x000a}: ExifTagDesc{
+	{GpsIFD, 0x000a}: {
 		Id:         0x000a,
 		Name:       "GPSMeasureMode",
 		Type:       ExifString,
@@ -6086,7 +6086,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x000b}: ExifTagDesc{
+	{GpsIFD, 0x000b}: {
 		Id:         0x000b,
 		Name:       "GPSDOP",
 		Type:       ExifUrational,
@@ -6099,7 +6099,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x000c}: ExifTagDesc{
+	{GpsIFD, 0x000c}: {
 		Id:         0x000c,
 		Name:       "GPSSpeedRef",
 		Type:       ExifString,
@@ -6112,7 +6112,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x000d}: ExifTagDesc{
+	{GpsIFD, 0x000d}: {
 		Id:         0x000d,
 		Name:       "GPSSpeed",
 		Type:       ExifUrational,
@@ -6125,7 +6125,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x000e}: ExifTagDesc{
+	{GpsIFD, 0x000e}: {
 		Id:         0x000e,
 		Name:       "GPSTrackRef",
 		Type:       ExifString,
@@ -6138,7 +6138,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x000f}: ExifTagDesc{
+	{GpsIFD, 0x000f}: {
 		Id:         0x000f,
 		Name:       "GPSTrack",
 		Type:       ExifUrational,
@@ -6151,7 +6151,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0010}: ExifTagDesc{
+	{GpsIFD, 0x0010}: {
 		Id:         0x0010,
 		Name:       "GPSImgDirectionRef",
 		Type:       ExifString,
@@ -6164,7 +6164,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0011}: ExifTagDesc{
+	{GpsIFD, 0x0011}: {
 		Id:         0x0011,
 		Name:       "GPSImgDirection",
 		Type:       ExifUrational,
@@ -6177,7 +6177,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0012}: ExifTagDesc{
+	{GpsIFD, 0x0012}: {
 		Id:         0x0012,
 		Name:       "GPSMapDatum",
 		Type:       ExifString,
@@ -6190,7 +6190,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0013}: ExifTagDesc{
+	{GpsIFD, 0x0013}: {
 		Id:         0x0013,
 		Name:       "GPSDestLatitudeRef",
 		Type:       ExifString,
@@ -6203,7 +6203,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0014}: ExifTagDesc{
+	{GpsIFD, 0x0014}: {
 		Id:         0x0014,
 		Name:       "GPSDestLatitude",
 		Type:       ExifUrational,
@@ -6216,7 +6216,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0015}: ExifTagDesc{
+	{GpsIFD, 0x0015}: {
 		Id:         0x0015,
 		Name:       "GPSDestLongitudeRef",
 		Type:       ExifString,
@@ -6229,7 +6229,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0016}: ExifTagDesc{
+	{GpsIFD, 0x0016}: {
 		Id:         0x0016,
 		Name:       "GPSDestLongitude",
 		Type:       ExifUrational,
@@ -6242,7 +6242,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0017}: ExifTagDesc{
+	{GpsIFD, 0x0017}: {
 		Id:         0x0017,
 		Name:       "GPSDestBearingRef",
 		Type:       ExifString,
@@ -6255,7 +6255,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0018}: ExifTagDesc{
+	{GpsIFD, 0x0018}: {
 		Id:         0x0018,
 		Name:       "GPSDestBearing",
 		Type:       ExifUrational,
@@ -6268,7 +6268,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x0019}: ExifTagDesc{
+	{GpsIFD, 0x0019}: {
 		Id:         0x0019,
 		Name:       "GPSDestDistanceRef",
 		Type:       ExifString,
@@ -6281,7 +6281,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x001a}: ExifTagDesc{
+	{GpsIFD, 0x001a}: {
 		Id:         0x001a,
 		Name:       "GPSDestDistance",
 		Type:       ExifUrational,
@@ -6294,7 +6294,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x001b}: ExifTagDesc{
+	{GpsIFD, 0x001b}: {
 		Id:         0x001b,
 		Name:       "GPSProcessingMethod",
 		Type:       ExifUndef,
@@ -6307,7 +6307,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x001c}: ExifTagDesc{
+	{GpsIFD, 0x001c}: {
 		Id:         0x001c,
 		Name:       "GPSAreaInformation",
 		Type:       ExifUndef,
@@ -6320,7 +6320,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x001d}: ExifTagDesc{
+	{GpsIFD, 0x001d}: {
 		Id:         0x001d,
 		Name:       "GPSDateStamp",
 		Type:       ExifString,
@@ -6333,7 +6333,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 		Protected:  false,
 		Values:     nil,
 	},
-	ExifIndexTag{GpsIFD, 0x001e}: ExifTagDesc{
+	{GpsIFD, 0x001e}: {
 		Id:         0x001e,
 		Name:       "GPSDifferential",
 		Type:       ExifUint16,
@@ -6349,7 +6349,7 @@ var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{
 			1: "Differential Corrected",
 		},
 	},
-	ExifIndexTag{GpsIFD, 0x001f}: ExifTagDesc{
+	{GpsIFD, 0x001f}: {
 		Id:         0x001f,
 		Name:       "GPSHPositioningError",
 		Type:       ExifUrational,

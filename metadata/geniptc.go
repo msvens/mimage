@@ -53,7 +53,7 @@ var IptcRecordName = map[IptcRecord]string{
 	IPTCObjectData:     "IPTCObjectData",
 }
 
-//IPTCApplication tag constants
+// IPTCApplication tag constants
 const (
 	IPTCApplication_ObjectPreviewData             IptcTag = 202
 	IPTCApplication_ShortDocumentID               IptcTag = 186
@@ -127,7 +127,7 @@ const (
 	IPTCApplication_SubjectReference              IptcTag = 12
 )
 
-//IPTCEnvelope tag constants
+// IPTCEnvelope tag constants
 const (
 	IPTCEnvelope_ProductID             IptcTag = 50
 	IPTCEnvelope_EnvelopePriority      IptcTag = 60
@@ -145,10 +145,10 @@ const (
 	IPTCEnvelope_CodedCharacterSet     IptcTag = 90
 )
 
-//IPTCFotoStation tag constants
+// IPTCFotoStation tag constants
 const ()
 
-//IPTCNewsPhoto tag constants
+// IPTCNewsPhoto tag constants
 const (
 	IPTCNewsPhoto_QuantizationMethod     IptcTag = 120
 	IPTCNewsPhoto_ColorPalette           IptcTag = 85
@@ -178,17 +178,17 @@ const (
 	IPTCNewsPhoto_IPTCImageHeight        IptcTag = 30
 )
 
-//IPTCObjectData tag constants
+// IPTCObjectData tag constants
 const (
 	IPTCObjectData_SubFile IptcTag = 10
 )
 
-//IPTCPostObjectData tag constants
+// IPTCPostObjectData tag constants
 const (
 	IPTCPostObjectData_ConfirmedObjectSize IptcTag = 10
 )
 
-//IPTCPreObjectData tag constants
+// IPTCPreObjectData tag constants
 const (
 	IPTCPreObjectData_MaxSubfileSize      IptcTag = 20
 	IPTCPreObjectData_SizeMode            IptcTag = 10
@@ -196,9 +196,9 @@ const (
 	IPTCPreObjectData_MaximumObjectSize   IptcTag = 95
 )
 
-//IPTC Tag Descriptions
+// IPTC Tag Descriptions
 var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
-	IptcRecordTag{IPTCNewsPhoto, 120}: IptcTagDesc{
+	{IPTCNewsPhoto, 120}: {
 		Id:         120,
 		Name:       "QuantizationMethod",
 		Type:       IptcUint8,
@@ -218,7 +218,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			3: "Linear Dot Percent",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 85}: IptcTagDesc{
+	{IPTCNewsPhoto, 85}: {
 		Id:         85,
 		Name:       "ColorPalette",
 		Type:       IptcUndef,
@@ -229,7 +229,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   false,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 64}: IptcTagDesc{
+	{IPTCNewsPhoto, 64}: {
 		Id:         64,
 		Name:       "InterchangeColorSpace",
 		Type:       IptcUint8,
@@ -249,7 +249,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			5: "CMY (K) Device Dependent",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 20}: IptcTagDesc{
+	{IPTCNewsPhoto, 20}: {
 		Id:         20,
 		Name:       "IPTCImageWidth",
 		Type:       IptcUint16,
@@ -260,7 +260,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 130}: IptcTagDesc{
+	{IPTCNewsPhoto, 130}: {
 		Id:         130,
 		Name:       "ExcursionTolerance",
 		Type:       IptcUint8,
@@ -274,7 +274,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			1: "Allowed",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 0}: IptcTagDesc{
+	{IPTCNewsPhoto, 0}: {
 		Id:         0,
 		Name:       "NewsPhotoVersion",
 		Type:       IptcUint16,
@@ -285,7 +285,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 84}: IptcTagDesc{
+	{IPTCNewsPhoto, 84}: {
 		Id:         84,
 		Name:       "NumIndexEntries",
 		Type:       IptcUint16,
@@ -296,7 +296,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 40}: IptcTagDesc{
+	{IPTCNewsPhoto, 40}: {
 		Id:         40,
 		Name:       "IPTCPixelWidth",
 		Type:       IptcUint16,
@@ -307,7 +307,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 65}: IptcTagDesc{
+	{IPTCNewsPhoto, 65}: {
 		Id:         65,
 		Name:       "ColorSequence",
 		Type:       IptcUint8,
@@ -318,7 +318,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 55}: IptcTagDesc{
+	{IPTCNewsPhoto, 55}: {
 		Id:         55,
 		Name:       "SupplementalType",
 		Type:       IptcUint8,
@@ -334,7 +334,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			0: "Main Image",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 102}: IptcTagDesc{
+	{IPTCNewsPhoto, 102}: {
 		Id:         102,
 		Name:       "IPTCImageRotation",
 		Type:       IptcUint8,
@@ -350,7 +350,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			2: "180",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 140}: IptcTagDesc{
+	{IPTCNewsPhoto, 140}: {
 		Id:         140,
 		Name:       "MaximumDensityRange",
 		Type:       IptcUint16,
@@ -361,7 +361,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 90}: IptcTagDesc{
+	{IPTCNewsPhoto, 90}: {
 		Id:         90,
 		Name:       "SampleStructure",
 		Type:       IptcUint8,
@@ -376,7 +376,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			2: "CompressionDependent",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 100}: IptcTagDesc{
+	{IPTCNewsPhoto, 100}: {
 		Id:         100,
 		Name:       "ScanningDirection",
 		Type:       IptcUint8,
@@ -396,7 +396,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			7: "Bottom-Top, R-L",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 110}: IptcTagDesc{
+	{IPTCNewsPhoto, 110}: {
 		Id:         110,
 		Name:       "DataCompressionMethod",
 		Type:       IptcUint32,
@@ -407,7 +407,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 145}: IptcTagDesc{
+	{IPTCNewsPhoto, 145}: {
 		Id:         145,
 		Name:       "GammaCompensatedValue",
 		Type:       IptcUint16,
@@ -418,7 +418,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 66}: IptcTagDesc{
+	{IPTCNewsPhoto, 66}: {
 		Id:         66,
 		Name:       "ICC_Profile",
 		Type:       IptcUndef,
@@ -429,7 +429,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   false,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 135}: IptcTagDesc{
+	{IPTCNewsPhoto, 135}: {
 		Id:         135,
 		Name:       "BitsPerComponent",
 		Type:       IptcUint8,
@@ -440,7 +440,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 80}: IptcTagDesc{
+	{IPTCNewsPhoto, 80}: {
 		Id:         80,
 		Name:       "LookupTable",
 		Type:       IptcUndef,
@@ -451,7 +451,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   false,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 10}: IptcTagDesc{
+	{IPTCNewsPhoto, 10}: {
 		Id:         10,
 		Name:       "IPTCPictureNumber",
 		Type:       IptcString,
@@ -462,7 +462,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 70}: IptcTagDesc{
+	{IPTCNewsPhoto, 70}: {
 		Id:         70,
 		Name:       "ColorCalibrationMatrix",
 		Type:       IptcUndef,
@@ -473,7 +473,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   false,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 125}: IptcTagDesc{
+	{IPTCNewsPhoto, 125}: {
 		Id:         125,
 		Name:       "EndPoints",
 		Type:       IptcUndef,
@@ -484,7 +484,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   false,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 86}: IptcTagDesc{
+	{IPTCNewsPhoto, 86}: {
 		Id:         86,
 		Name:       "IPTCBitsPerSample",
 		Type:       IptcUint8,
@@ -495,7 +495,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 50}: IptcTagDesc{
+	{IPTCNewsPhoto, 50}: {
 		Id:         50,
 		Name:       "IPTCPixelHeight",
 		Type:       IptcUint16,
@@ -506,7 +506,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCNewsPhoto, 60}: IptcTagDesc{
+	{IPTCNewsPhoto, 60}: {
 		Id:         60,
 		Name:       "ColorRepresentation",
 		Type:       IptcUint16,
@@ -532,7 +532,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			1024: "4 Components, Single Frame",
 		},
 	},
-	IptcRecordTag{IPTCNewsPhoto, 30}: IptcTagDesc{
+	{IPTCNewsPhoto, 30}: {
 		Id:         30,
 		Name:       "IPTCImageHeight",
 		Type:       IptcUint16,
@@ -543,7 +543,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCObjectData, 10}: IptcTagDesc{
+	{IPTCObjectData, 10}: {
 		Id:         10,
 		Name:       "SubFile",
 		Type:       IptcUndef,
@@ -554,7 +554,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCPostObjectData, 10}: IptcTagDesc{
+	{IPTCPostObjectData, 10}: {
 		Id:         10,
 		Name:       "ConfirmedObjectSize",
 		Type:       IptcUint32,
@@ -565,7 +565,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCPreObjectData, 20}: IptcTagDesc{
+	{IPTCPreObjectData, 20}: {
 		Id:         20,
 		Name:       "MaxSubfileSize",
 		Type:       IptcUint32,
@@ -576,7 +576,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCPreObjectData, 10}: IptcTagDesc{
+	{IPTCPreObjectData, 10}: {
 		Id:         10,
 		Name:       "SizeMode",
 		Type:       IptcUint8,
@@ -590,7 +590,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			1: "Size Known",
 		},
 	},
-	IptcRecordTag{IPTCPreObjectData, 90}: IptcTagDesc{
+	{IPTCPreObjectData, 90}: {
 		Id:         90,
 		Name:       "ObjectSizeAnnounced",
 		Type:       IptcUint32,
@@ -601,7 +601,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCPreObjectData, 95}: IptcTagDesc{
+	{IPTCPreObjectData, 95}: {
 		Id:         95,
 		Name:       "MaximumObjectSize",
 		Type:       IptcUint32,
@@ -612,7 +612,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 202}: IptcTagDesc{
+	{IPTCApplication, 202}: {
 		Id:         202,
 		Name:       "ObjectPreviewData",
 		Type:       IptcUndef,
@@ -623,7 +623,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 186}: IptcTagDesc{
+	{IPTCApplication, 186}: {
 		Id:         186,
 		Name:       "ShortDocumentID",
 		Type:       IptcString,
@@ -634,7 +634,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 185}: IptcTagDesc{
+	{IPTCApplication, 185}: {
 		Id:         185,
 		Name:       "MasterDocumentID",
 		Type:       IptcString,
@@ -645,7 +645,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 37}: IptcTagDesc{
+	{IPTCApplication, 37}: {
 		Id:         37,
 		Name:       "ExpirationDate",
 		Type:       IptcDigits,
@@ -656,7 +656,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 151}: IptcTagDesc{
+	{IPTCApplication, 151}: {
 		Id:         151,
 		Name:       "AudioSamplingRate",
 		Type:       IptcDigits,
@@ -667,7 +667,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 100}: IptcTagDesc{
+	{IPTCApplication, 100}: {
 		Id:         100,
 		Name:       "CountryPrimaryLocationCode",
 		Type:       IptcString,
@@ -678,7 +678,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 187}: IptcTagDesc{
+	{IPTCApplication, 187}: {
 		Id:         187,
 		Name:       "UniqueDocumentID",
 		Type:       IptcString,
@@ -689,7 +689,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 228}: IptcTagDesc{
+	{IPTCApplication, 228}: {
 		Id:         228,
 		Name:       "SimilarityIndex",
 		Type:       IptcString,
@@ -700,7 +700,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 45}: IptcTagDesc{
+	{IPTCApplication, 45}: {
 		Id:         45,
 		Name:       "ReferenceService",
 		Type:       IptcString,
@@ -711,7 +711,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 25}: IptcTagDesc{
+	{IPTCApplication, 25}: {
 		Id:         25,
 		Name:       "Keywords",
 		Type:       IptcString,
@@ -722,7 +722,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 122}: IptcTagDesc{
+	{IPTCApplication, 122}: {
 		Id:         122,
 		Name:       "WriterEditor",
 		Type:       IptcString,
@@ -733,7 +733,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 70}: IptcTagDesc{
+	{IPTCApplication, 70}: {
 		Id:         70,
 		Name:       "ProgramVersion",
 		Type:       IptcString,
@@ -744,7 +744,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 103}: IptcTagDesc{
+	{IPTCApplication, 103}: {
 		Id:         103,
 		Name:       "OriginalTransmissionReference",
 		Type:       IptcString,
@@ -755,7 +755,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 230}: IptcTagDesc{
+	{IPTCApplication, 230}: {
 		Id:         230,
 		Name:       "DocumentNotes",
 		Type:       IptcString,
@@ -766,7 +766,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 80}: IptcTagDesc{
+	{IPTCApplication, 80}: {
 		Id:         80,
 		Name:       "Byline",
 		Type:       IptcString,
@@ -777,7 +777,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 65}: IptcTagDesc{
+	{IPTCApplication, 65}: {
 		Id:         65,
 		Name:       "OriginatingProgram",
 		Type:       IptcString,
@@ -788,7 +788,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 55}: IptcTagDesc{
+	{IPTCApplication, 55}: {
 		Id:         55,
 		Name:       "DateCreated",
 		Type:       IptcDigits,
@@ -799,7 +799,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 35}: IptcTagDesc{
+	{IPTCApplication, 35}: {
 		Id:         35,
 		Name:       "ReleaseTime",
 		Type:       IptcString,
@@ -810,7 +810,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 38}: IptcTagDesc{
+	{IPTCApplication, 38}: {
 		Id:         38,
 		Name:       "ExpirationTime",
 		Type:       IptcString,
@@ -821,7 +821,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 130}: IptcTagDesc{
+	{IPTCApplication, 130}: {
 		Id:         130,
 		Name:       "ImageType",
 		Type:       IptcString,
@@ -832,7 +832,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 26}: IptcTagDesc{
+	{IPTCApplication, 26}: {
 		Id:         26,
 		Name:       "ContentLocationCode",
 		Type:       IptcString,
@@ -843,7 +843,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 15}: IptcTagDesc{
+	{IPTCApplication, 15}: {
 		Id:         15,
 		Name:       "Category",
 		Type:       IptcString,
@@ -854,7 +854,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 232}: IptcTagDesc{
+	{IPTCApplication, 232}: {
 		Id:         232,
 		Name:       "ExifCameraInfo",
 		Type:       IptcString,
@@ -865,7 +865,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 120}: IptcTagDesc{
+	{IPTCApplication, 120}: {
 		Id:         120,
 		Name:       "CaptionAbstract",
 		Type:       IptcString,
@@ -876,7 +876,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 116}: IptcTagDesc{
+	{IPTCApplication, 116}: {
 		Id:         116,
 		Name:       "CopyrightNotice",
 		Type:       IptcString,
@@ -887,7 +887,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 27}: IptcTagDesc{
+	{IPTCApplication, 27}: {
 		Id:         27,
 		Name:       "ContentLocationName",
 		Type:       IptcString,
@@ -898,7 +898,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 47}: IptcTagDesc{
+	{IPTCApplication, 47}: {
 		Id:         47,
 		Name:       "ReferenceDate",
 		Type:       IptcDigits,
@@ -909,7 +909,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 8}: IptcTagDesc{
+	{IPTCApplication, 8}: {
 		Id:         8,
 		Name:       "EditorialUpdate",
 		Type:       IptcDigits,
@@ -922,7 +922,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"01": "Additional language",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 115}: IptcTagDesc{
+	{IPTCApplication, 115}: {
 		Id:         115,
 		Name:       "Source",
 		Type:       IptcString,
@@ -933,7 +933,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 7}: IptcTagDesc{
+	{IPTCApplication, 7}: {
 		Id:         7,
 		Name:       "EditStatus",
 		Type:       IptcString,
@@ -944,7 +944,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 200}: IptcTagDesc{
+	{IPTCApplication, 200}: {
 		Id:         200,
 		Name:       "ObjectPreviewFileFormat",
 		Type:       IptcUint16,
@@ -986,7 +986,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			5:  "AppleSingle (Apple Computer Inc)",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 95}: IptcTagDesc{
+	{IPTCApplication, 95}: {
 		Id:         95,
 		Name:       "ProvinceState",
 		Type:       IptcString,
@@ -997,7 +997,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 255}: IptcTagDesc{
+	{IPTCApplication, 255}: {
 		Id:         255,
 		Name:       "CatalogSets",
 		Type:       IptcString,
@@ -1008,7 +1008,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 184}: IptcTagDesc{
+	{IPTCApplication, 184}: {
 		Id:         184,
 		Name:       "JobID",
 		Type:       IptcString,
@@ -1019,7 +1019,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 42}: IptcTagDesc{
+	{IPTCApplication, 42}: {
 		Id:         42,
 		Name:       "ActionAdvised",
 		Type:       IptcDigits,
@@ -1036,7 +1036,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"04": "Object Reference",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 22}: IptcTagDesc{
+	{IPTCApplication, 22}: {
 		Id:         22,
 		Name:       "FixtureIdentifier",
 		Type:       IptcString,
@@ -1047,7 +1047,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 154}: IptcTagDesc{
+	{IPTCApplication, 154}: {
 		Id:         154,
 		Name:       "AudioOutcue",
 		Type:       IptcString,
@@ -1058,7 +1058,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 201}: IptcTagDesc{
+	{IPTCApplication, 201}: {
 		Id:         201,
 		Name:       "ObjectPreviewFileVersion",
 		Type:       IptcUint16,
@@ -1069,7 +1069,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 4}: IptcTagDesc{
+	{IPTCApplication, 4}: {
 		Id:         4,
 		Name:       "ObjectAttributeReference",
 		Type:       IptcString,
@@ -1080,7 +1080,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 118}: IptcTagDesc{
+	{IPTCApplication, 118}: {
 		Id:         118,
 		Name:       "Contact",
 		Type:       IptcString,
@@ -1091,7 +1091,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 110}: IptcTagDesc{
+	{IPTCApplication, 110}: {
 		Id:         110,
 		Name:       "Credit",
 		Type:       IptcString,
@@ -1102,7 +1102,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 152}: IptcTagDesc{
+	{IPTCApplication, 152}: {
 		Id:         152,
 		Name:       "AudioSamplingResolution",
 		Type:       IptcDigits,
@@ -1113,7 +1113,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 90}: IptcTagDesc{
+	{IPTCApplication, 90}: {
 		Id:         90,
 		Name:       "City",
 		Type:       IptcString,
@@ -1124,7 +1124,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 60}: IptcTagDesc{
+	{IPTCApplication, 60}: {
 		Id:         60,
 		Name:       "TimeCreated",
 		Type:       IptcString,
@@ -1135,7 +1135,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 50}: IptcTagDesc{
+	{IPTCApplication, 50}: {
 		Id:         50,
 		Name:       "ReferenceNumber",
 		Type:       IptcDigits,
@@ -1146,7 +1146,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 30}: IptcTagDesc{
+	{IPTCApplication, 30}: {
 		Id:         30,
 		Name:       "ReleaseDate",
 		Type:       IptcDigits,
@@ -1157,7 +1157,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 125}: IptcTagDesc{
+	{IPTCApplication, 125}: {
 		Id:         125,
 		Name:       "RasterizedCaption",
 		Type:       IptcUndef,
@@ -1168,7 +1168,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 131}: IptcTagDesc{
+	{IPTCApplication, 131}: {
 		Id:         131,
 		Name:       "ImageOrientation",
 		Type:       IptcString,
@@ -1183,7 +1183,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"S": "Square",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 10}: IptcTagDesc{
+	{IPTCApplication, 10}: {
 		Id:         10,
 		Name:       "Urgency",
 		Type:       IptcDigits,
@@ -1205,7 +1205,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"8": "8 (least urgent)",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 121}: IptcTagDesc{
+	{IPTCApplication, 121}: {
 		Id:         121,
 		Name:       "LocalCaption",
 		Type:       IptcString,
@@ -1216,7 +1216,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 135}: IptcTagDesc{
+	{IPTCApplication, 135}: {
 		Id:         135,
 		Name:       "LanguageIdentifier",
 		Type:       IptcString,
@@ -1227,7 +1227,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 221}: IptcTagDesc{
+	{IPTCApplication, 221}: {
 		Id:         221,
 		Name:       "Prefs",
 		Type:       IptcString,
@@ -1238,7 +1238,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 40}: IptcTagDesc{
+	{IPTCApplication, 40}: {
 		Id:         40,
 		Name:       "SpecialInstructions",
 		Type:       IptcString,
@@ -1249,7 +1249,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 20}: IptcTagDesc{
+	{IPTCApplication, 20}: {
 		Id:         20,
 		Name:       "SupplementalCategories",
 		Type:       IptcString,
@@ -1260,7 +1260,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 0}: IptcTagDesc{
+	{IPTCApplication, 0}: {
 		Id:         0,
 		Name:       "ApplicationRecordVersion",
 		Type:       IptcUint16,
@@ -1271,7 +1271,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 75}: IptcTagDesc{
+	{IPTCApplication, 75}: {
 		Id:         75,
 		Name:       "ObjectCycle",
 		Type:       IptcString,
@@ -1286,7 +1286,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"p": "Evening",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 225}: IptcTagDesc{
+	{IPTCApplication, 225}: {
 		Id:         225,
 		Name:       "ClassifyState",
 		Type:       IptcString,
@@ -1297,7 +1297,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 231}: IptcTagDesc{
+	{IPTCApplication, 231}: {
 		Id:         231,
 		Name:       "DocumentHistory",
 		Type:       IptcString,
@@ -1308,7 +1308,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 153}: IptcTagDesc{
+	{IPTCApplication, 153}: {
 		Id:         153,
 		Name:       "AudioDuration",
 		Type:       IptcDigits,
@@ -1319,7 +1319,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 92}: IptcTagDesc{
+	{IPTCApplication, 92}: {
 		Id:         92,
 		Name:       "Sublocation",
 		Type:       IptcString,
@@ -1330,7 +1330,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 85}: IptcTagDesc{
+	{IPTCApplication, 85}: {
 		Id:         85,
 		Name:       "BylineTitle",
 		Type:       IptcString,
@@ -1341,7 +1341,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 105}: IptcTagDesc{
+	{IPTCApplication, 105}: {
 		Id:         105,
 		Name:       "Headline",
 		Type:       IptcString,
@@ -1352,7 +1352,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 62}: IptcTagDesc{
+	{IPTCApplication, 62}: {
 		Id:         62,
 		Name:       "DigitalCreationDate",
 		Type:       IptcDigits,
@@ -1363,7 +1363,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 101}: IptcTagDesc{
+	{IPTCApplication, 101}: {
 		Id:         101,
 		Name:       "CountryPrimaryLocationName",
 		Type:       IptcString,
@@ -1374,7 +1374,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 150}: IptcTagDesc{
+	{IPTCApplication, 150}: {
 		Id:         150,
 		Name:       "AudioType",
 		Type:       IptcString,
@@ -1403,7 +1403,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"2W": "Stereo Wrap",
 		},
 	},
-	IptcRecordTag{IPTCApplication, 63}: IptcTagDesc{
+	{IPTCApplication, 63}: {
 		Id:         63,
 		Name:       "DigitalCreationTime",
 		Type:       IptcString,
@@ -1414,7 +1414,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 5}: IptcTagDesc{
+	{IPTCApplication, 5}: {
 		Id:         5,
 		Name:       "ObjectName",
 		Type:       IptcString,
@@ -1425,7 +1425,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 3}: IptcTagDesc{
+	{IPTCApplication, 3}: {
 		Id:         3,
 		Name:       "ObjectTypeReference",
 		Type:       IptcString,
@@ -1436,7 +1436,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 188}: IptcTagDesc{
+	{IPTCApplication, 188}: {
 		Id:         188,
 		Name:       "OwnerID",
 		Type:       IptcString,
@@ -1447,7 +1447,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCApplication, 12}: IptcTagDesc{
+	{IPTCApplication, 12}: {
 		Id:         12,
 		Name:       "SubjectReference",
 		Type:       IptcString,
@@ -1458,7 +1458,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 50}: IptcTagDesc{
+	{IPTCEnvelope, 50}: {
 		Id:         50,
 		Name:       "ProductID",
 		Type:       IptcString,
@@ -1469,7 +1469,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 60}: IptcTagDesc{
+	{IPTCEnvelope, 60}: {
 		Id:         60,
 		Name:       "EnvelopePriority",
 		Type:       IptcDigits,
@@ -1491,7 +1491,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			"6": "6",
 		},
 	},
-	IptcRecordTag{IPTCEnvelope, 30}: IptcTagDesc{
+	{IPTCEnvelope, 30}: {
 		Id:         30,
 		Name:       "ServiceIdentifier",
 		Type:       IptcString,
@@ -1502,7 +1502,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 22}: IptcTagDesc{
+	{IPTCEnvelope, 22}: {
 		Id:         22,
 		Name:       "FileVersion",
 		Type:       IptcUint16,
@@ -1513,7 +1513,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 40}: IptcTagDesc{
+	{IPTCEnvelope, 40}: {
 		Id:         40,
 		Name:       "EnvelopeNumber",
 		Type:       IptcDigits,
@@ -1524,7 +1524,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 20}: IptcTagDesc{
+	{IPTCEnvelope, 20}: {
 		Id:         20,
 		Name:       "FileFormat",
 		Type:       IptcUint16,
@@ -1566,7 +1566,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 			5:  "AppleSingle (Apple Computer Inc)",
 		},
 	},
-	IptcRecordTag{IPTCEnvelope, 0}: IptcTagDesc{
+	{IPTCEnvelope, 0}: {
 		Id:         0,
 		Name:       "EnvelopeRecordVersion",
 		Type:       IptcUint16,
@@ -1577,7 +1577,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 122}: IptcTagDesc{
+	{IPTCEnvelope, 122}: {
 		Id:         122,
 		Name:       "ARMVersion",
 		Type:       IptcUint16,
@@ -1588,7 +1588,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 70}: IptcTagDesc{
+	{IPTCEnvelope, 70}: {
 		Id:         70,
 		Name:       "DateSent",
 		Type:       IptcDigits,
@@ -1599,7 +1599,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 100}: IptcTagDesc{
+	{IPTCEnvelope, 100}: {
 		Id:         100,
 		Name:       "UniqueObjectName",
 		Type:       IptcString,
@@ -1610,7 +1610,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 5}: IptcTagDesc{
+	{IPTCEnvelope, 5}: {
 		Id:         5,
 		Name:       "Destination",
 		Type:       IptcString,
@@ -1621,7 +1621,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 80}: IptcTagDesc{
+	{IPTCEnvelope, 80}: {
 		Id:         80,
 		Name:       "TimeSent",
 		Type:       IptcString,
@@ -1632,7 +1632,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 120}: IptcTagDesc{
+	{IPTCEnvelope, 120}: {
 		Id:         120,
 		Name:       "ARMIdentifier",
 		Type:       IptcUint16,
@@ -1643,7 +1643,7 @@ var IptcTagDescriptions = map[IptcRecordTag]IptcTagDesc{
 		Writable:   true,
 		Values:     nil,
 	},
-	IptcRecordTag{IPTCEnvelope, 90}: IptcTagDesc{
+	{IPTCEnvelope, 90}: {
 		Id:         90,
 		Name:       "CodedCharacterSet",
 		Type:       IptcString,
