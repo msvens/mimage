@@ -2,9 +2,11 @@ package img
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/disintegration/imaging"
 	"github.com/msvens/mimage/metadata"
 	"image"
+	"image/color"
 	"image/jpeg"
 	"os"
 	"time"
@@ -84,6 +86,9 @@ type Options struct {
 	Anchor    CropAnchor
 	Transform TransformType
 	Strategy  ResampleStrategy
+	X         int
+	Y         int
+	Angle     int
 	CopyExif  bool
 }
 
@@ -155,6 +160,24 @@ func NewOptions(transform TransformType, width, height int, copyExif bool) Optio
 		Transform: transform, Strategy: Lanczos, CopyExif: copyExif}
 }
 
+func Open(fileName string) (image.Image, error) {
+	img, _, err := OpenOpts(fileName, false, false)
+	return img, err
+}
+
+func OpenOpts(fileName string, autoOrientation bool, srcBytes bool) (image.Image, []byte, error) {
+	if !srcBytes {
+		img, err := imaging.Open(fileName, imaging.AutoOrientation(autoOrientation))
+		return img, nil, err
+	}
+	src, err := os.ReadFile(fileName)
+	if err != nil {
+		return nil, nil, err
+	}
+	img, err := imaging.Decode(bytes.NewReader(src), imaging.AutoOrientation(autoOrientation))
+	return img, src, err
+}
+
 func openForExifCopy(sourceFile string) (image.Image, []byte, error) {
 	srcBytes, err := os.ReadFile(sourceFile)
 	if err != nil {
@@ -186,6 +209,110 @@ func saveWithExif(srcBytes []byte, dstImage image.Image, opt Options, fileName s
 		return err
 	}
 	return mde.WriteFile(fileName)
+}
+
+func Save(image image.Image, fileName string) error {
+	return SaveOpts(image, fileName, 90, nil)
+}
+
+func SaveOpts(image image.Image, fileName string, quality int, srcExif []byte) error {
+	if quality < 1 || quality > 100 {
+		quality = 90
+	}
+	if srcExif == nil {
+		return imaging.Save(image, fileName, imaging.JPEGQuality(quality))
+	}
+	//we will add exif information
+	dstBytes := new(bytes.Buffer)
+	err := imaging.Encode(dstBytes, image, imaging.JPEG, imaging.JPEGQuality(quality))
+	if err != nil {
+		return err
+	}
+	mde, err := metadata.NewJpegEditor(dstBytes.Bytes())
+	if err != nil {
+		return err
+	}
+	err = mde.CopyMetaData(srcExif)
+	if err != nil {
+		return err
+	}
+	err = mde.Exif().SetDate(metadata.ModifyDate, time.Now())
+	if err != nil {
+		return err
+	}
+	return mde.WriteFile(fileName)
+}
+
+// negative angle indicates a counter clockwise rotation
+func CropImage(img image.Image, crop image.Rectangle) image.Image {
+	if crop.Empty() || !crop.In(img.Bounds()) {
+		return img
+	}
+	return imaging.Crop(img, crop)
+}
+
+func RotateImage(img image.Image, angle int) image.Image {
+	//fix angle first:
+	angle = angle % 360
+	if angle == 0 {
+		return img
+	}
+	if angle < 0 {
+		angle = -angle
+	} else {
+		angle = 360 - angle
+	}
+	return imaging.Rotate(img, float64(angle), color.Black)
+}
+
+func RotateAndCropFile(source string, dest string, opts Options) error {
+
+	angle := opts.Angle
+	crop := opts.Rectangle()
+	if angle == 0 && crop.Empty() {
+		return fmt.Errorf("Neither angle or crop was provided")
+	}
+
+	srcImg, srcBytes, err := OpenOpts(source, false, opts.CopyExif)
+	if err != nil {
+		return err
+	}
+
+	srcImg = RotateImage(srcImg, angle)
+	srcImg = CropImage(srcImg, crop)
+
+	return SaveOpts(srcImg, dest, opts.Quality, srcBytes)
+
+	/*	angle := opts.Angle
+		crop := opts.Rectangle()
+		if angle == 0 && crop.Empty() {
+			return fmt.Errorf("Neither angle or crop was provided")
+		}
+
+		srcImg, srcBytes, err := openForExifCopy(source)
+		if err != nil {
+			return err
+		}
+
+		var destImg *image.NRGBA
+		//We should add tests for nil here
+		if angle != 0 && !crop.Empty() {
+			destImg = imaging.Rotate(srcImg, angle, color.Black)
+			destImg = imaging.Crop(destImg, crop)
+		} else if angle != 0 {
+			destImg = imaging.Rotate(srcImg, angle, color.Black)
+		} else {
+			destImg = imaging.Crop(srcImg, crop)
+		}
+		if opts.CopyExif {
+			err = saveWithExif(srcBytes, destImg, opts, dest)
+		} else {
+			err = imaging.Save(destImg, dest, imaging.JPEGQuality(opts.Quality))
+		}
+		if err != nil {
+			return err
+		}
+		return nil*/
 }
 
 // TransformFile creates versions of source based on destinations
