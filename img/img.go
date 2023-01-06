@@ -160,11 +160,13 @@ func NewOptions(transform TransformType, width, height int, copyExif bool) Optio
 		Transform: transform, Strategy: Lanczos, CopyExif: copyExif}
 }
 
+// Open an image for editing
 func Open(fileName string) (image.Image, error) {
 	img, _, err := OpenOpts(fileName, false, false)
 	return img, err
 }
 
+// OpenOpts opens an Image for editing. Possibly returning the src file as a byte slice
 func OpenOpts(fileName string, autoOrientation bool, srcBytes bool) (image.Image, []byte, error) {
 	if !srcBytes {
 		img, err := imaging.Open(fileName, imaging.AutoOrientation(autoOrientation))
@@ -211,10 +213,13 @@ func saveWithExif(srcBytes []byte, dstImage image.Image, opt Options, fileName s
 	return mde.WriteFile(fileName)
 }
 
+// Save an image (defaults to Jpeg Quality 90)
 func Save(image image.Image, fileName string) error {
 	return SaveOpts(image, fileName, 90, nil)
 }
 
+// SaveOpts saves an image. If srcExif is != nil it will try to extract and exif information from that
+// and append it to the new file
 func SaveOpts(image image.Image, fileName string, quality int, srcExif []byte) error {
 	if quality < 1 || quality > 100 {
 		quality = 90
@@ -243,7 +248,7 @@ func SaveOpts(image image.Image, fileName string, quality int, srcExif []byte) e
 	return mde.WriteFile(fileName)
 }
 
-// negative angle indicates a counter clockwise rotation
+// CropImage crops an Image.
 func CropImage(img image.Image, crop image.Rectangle) image.Image {
 	if crop.Empty() || !crop.In(img.Bounds()) {
 		return img
@@ -251,12 +256,14 @@ func CropImage(img image.Image, crop image.Rectangle) image.Image {
 	return imaging.Crop(img, crop)
 }
 
+// RotateImage rotates an image. Negative angle indicates a counter clockwise rotation
 func RotateImage(img image.Image, angle int) image.Image {
 	//fix angle first:
 	angle = angle % 360
 	if angle == 0 {
 		return img
 	}
+	//imaging rotate counter clockwise so need to adjust for that
 	if angle < 0 {
 		angle = -angle
 	} else {
@@ -265,10 +272,11 @@ func RotateImage(img image.Image, angle int) image.Image {
 	return imaging.Rotate(img, float64(angle), color.Black)
 }
 
+// RotateAndCropFile rotates and crops an image file and saves the result
 func RotateAndCropFile(source string, dest string, opts Options) error {
 
 	angle := opts.Angle
-	crop := opts.Rectangle()
+	crop := opts.rectangle()
 	if angle == 0 && crop.Empty() {
 		return fmt.Errorf("Neither angle or crop was provided")
 	}
