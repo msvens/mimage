@@ -52,10 +52,6 @@ func (r Rat) IsZero() bool {
 	return r.Numerator == 0 && r.Denominator == 0
 }
 
-func (r Rat) IsNan() bool {
-	return r.Denominator == 0
-}
-
 func (r Rat) String() string {
 	return fmt.Sprintf("%v/%v", r.Numerator, r.Denominator)
 }
@@ -85,10 +81,6 @@ func (r URat) Float32() float32 {
 // IsZero true if both Numerator and Denominator are 0
 func (r URat) IsZero() bool {
 	return r.Numerator == 0 && r.Denominator == 0
-}
-
-func (r URat) IsNan() bool {
-	return r.Denominator == 0
 }
 
 func (r URat) toRational() exifcommon.Rational {
