@@ -9,6 +9,7 @@ import (
 	"image/color"
 	"image/jpeg"
 	"os"
+	"path"
 	"time"
 )
 
@@ -323,15 +324,33 @@ func RotateAndCropFile(source string, dest string, opts Options) error {
 		return nil*/
 }
 
-// TransformFile creates versions of source based on destinations
+func isJpegFile(fname string) bool {
+	ext := path.Ext(fname)
+	return ext == ".jpg" || ext == ".jpeg"
+}
+
+// TransformFile creates versions of source based on destinations. Supported formats are
+// "gif", "tif", "bmp", "jpg", and "png". Quality and CopyExif are only supported for
+// jpg images. Transform file uses the file extension to determine input and output format
 func TransformFile(source string, destinations map[string]Options) error {
-	srcImg, srcBytes, err := openForExifCopy(source)
+	var srcBytes []byte
+	var srcImg image.Image
+	var err error
+	sourceJpeg := isJpegFile(source)
+	if sourceJpeg {
+		srcImg, srcBytes, err = openForExifCopy(source)
+	} else {
+		srcImg, err = Open(source)
+	}
 	if err != nil {
 		return err
 	}
 	for dest, options := range destinations {
 		destImg := transform(srcImg, options)
-		if options.CopyExif {
+		destJpg := isJpegFile(dest)
+		if !destJpg {
+			err = imaging.Save(destImg, dest)
+		} else if sourceJpeg && options.CopyExif {
 			err = saveWithExif(srcBytes, destImg, options, dest)
 		} else {
 			err = imaging.Save(destImg, dest, imaging.JPEGQuality(options.Quality))
@@ -342,6 +361,48 @@ func TransformFile(source string, destinations map[string]Options) error {
 	}
 	return nil
 }
+
+/*
+func TranformFile(source string, destinations map[string]Options) error {
+	ext := path.Ext(source)
+	if ext == ".jpg" || ext == ".jpeg" {
+		srcImg, srcBytes, err := openForExifCopy(source)
+		if err != nil {
+			return err
+		}
+		for dest, options := range destinations {
+			destImg := transform(srcImg, options)
+			if options.CopyExif {
+				err = saveWithExif(srcBytes, destImg, options, dest)
+			} else {
+				err = imaging.Save(destImg, dest, imaging.JPEGQuality(options.Quality))
+			}
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	} else {
+		return transformPngFile(source, destinations)
+
+	}
+}
+
+func transformPngFile(source string, destinations map[string]Options) error {
+	srcImg, err := Open(source)
+	if err != nil {
+		return err
+	}
+	for dest, options := range destinations {
+		destImg := transform(srcImg, options)
+		err = imaging.Save(destImg, dest)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+*/
 
 func transform(src image.Image, opt Options) image.Image {
 	var dstImage image.Image
