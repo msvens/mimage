@@ -94,7 +94,7 @@ func TestJpegEditor_Bytes(t *testing.T) {
 
 	//Test 1: Just write bytes and read them back again
 	if b, err = je.Bytes(); err != nil {
-		t.Errorf(err.Error())
+		t.Errorf("%s", err.Error())
 	} else {
 		je, err = NewJpegEditor(b)
 		if err != nil {
@@ -108,7 +108,7 @@ func TestJpegEditor_Bytes(t *testing.T) {
 		t.Fatalf("Could not set date: %v", err)
 	}
 	if b, err = je.Bytes(); err != nil {
-		t.Errorf(err.Error())
+		t.Errorf("%s", err.Error())
 	} else {
 		_, err = NewJpegEditor(b)
 		if err != nil {
