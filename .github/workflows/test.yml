@@ -4,21 +4,18 @@ on:
   push:
   pull_request:
 
-env:
-  GO111MODULE: on
-
 jobs:
   golangci-lint:
     name: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v5
         with:
-          go-version: '1.17'
+          go-version: '1.23'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: golangci/golangci-lint-action@v2
+      - uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           args: --verbose
@@ -31,14 +28,13 @@ jobs:
         - ubuntu-latest
         - macOS-latest
         go:
-        - 16
-        - 17
-    name: '${{ matrix.platform }} | 1.${{ matrix.go }}.x'
+        - '1.23'
+        - '1.24'
+    name: '${{ matrix.platform }} | ${{ matrix.go }}'
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v5
         with:
-          go-version: 1.${{ matrix.go }}.x
-      - uses: actions/checkout@v2
-  #    - run: go get -t ./...
+          go-version: ${{ matrix.go }}
+      - uses: actions/checkout@v4
       - run: go test ./...
