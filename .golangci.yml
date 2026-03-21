@@ -1,37 +1,40 @@
-
-run:
-  timeout: 5m
-
-issues:
-  exclude-use-default: false
-
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
-    #default linters
     - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - typecheck
-    - unused
-    #additional linters
     - errname
     - gocyclo
+    - govet
+    - ineffassign
     - misspell
     - revive
+    - staticcheck
+    - unused
+  settings:
+    revive:
+      rules:
+        - name: var-naming
+          arguments:
+            - - ID
+              - Id
+            - []
+          disabled: false
+        - name: exported
+          severity: warning
+          disabled: false
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
     - gofmt
-
-linters-settings:
-  revive:
-    rules:
-      - name: var-naming
-        disabled: false
-        arguments:
-          - [ "ID", "Id" ] # AllowList
-          - [] # DenyList
-      - name: exported
-        disabled: false
-        severity: warning
-
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

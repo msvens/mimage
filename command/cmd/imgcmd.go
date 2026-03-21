@@ -35,7 +35,7 @@ var imgCommand = &cobra.Command{
 		height, _ := cmd.Flags().GetUint("ydim")
 		quality, _ := cmd.Flags().GetUint("quality")
 		if quality > 100 {
-			return fmt.Errorf("Quality has to be between 0-100, %v", quality)
+			return fmt.Errorf("quality has to be between 0-100, %v", quality)
 		}
 		if width == 0 && height == 0 {
 			return fmt.Errorf("xdim and ydim cannot both be 0")
@@ -73,7 +73,7 @@ func parseStrategyFlag(cmd *cobra.Command) (img.ResampleStrategy, error) {
 	case "NearestNeighbor":
 		return img.NearestNeighbor, nil
 	default:
-		return img.Lanczos, fmt.Errorf("Unknown resample strategy: %s", s)
+		return img.Lanczos, fmt.Errorf("unknown resample strategy: %s", s)
 	}
 }
 
@@ -89,7 +89,7 @@ func parseTypeFlag(cmd *cobra.Command) (img.TransformType, error) {
 	case "ResizeAndFit":
 		return img.ResizeAndFit, nil
 	default:
-		return img.ResizeAndCrop, fmt.Errorf("Unknown Transform Type: %s", t)
+		return img.ResizeAndCrop, fmt.Errorf("unknown transform type: %s", t)
 	}
 }
 
@@ -113,7 +113,7 @@ func parseCropFlag(cmd *cobra.Command) (img.CropAnchor, error) {
 	case "BottomRight":
 		return img.BottomRight, nil
 	default:
-		return img.Center, fmt.Errorf("Unrecognized Crop: %s", crop)
+		return img.Center, fmt.Errorf("unrecognized crop: %s", crop)
 	}
 }
 

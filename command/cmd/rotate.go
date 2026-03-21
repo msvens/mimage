@@ -24,7 +24,7 @@ var rotateCommand = &cobra.Command{
 		angle, _ := cmd.Flags().GetInt("angle")
 		quality, _ := cmd.Flags().GetUint("quality")
 		if quality > 100 {
-			return fmt.Errorf("Quality has to be between 0-100, %v", quality)
+			return fmt.Errorf("quality has to be between 0-100, %v", quality)
 		}
 
 		source := args[0]

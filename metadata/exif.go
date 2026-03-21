@@ -13,11 +13,11 @@ import (
 
 // Exif errors
 var (
-	ErrExifNoData        = errors.New("No Exif data")
+	ErrExifNoData        = errors.New("no exif data")
 	ErrExifTagNotFound   = errors.New("Ifd tag not found")
 	ErrExifValueNotFound = errors.New("Ifd value not found")
 	ErrExifParseTag      = errors.New("Exif tag could not be parsed")
-	ErrExifUndefinedType = errors.New("Tag type undefined")
+	ErrExifUndefinedType = errors.New("tag type undefined")
 )
 
 // Exif Time formats
@@ -576,7 +576,7 @@ func (ed *ExifData) ScanExifDate(dateTag ExifDate, dest *time.Time) error {
 			return err
 		}
 	default:
-		return fmt.Errorf("Unknown date to scan: %v", dateTag)
+		return fmt.Errorf("unknown date to scan: %v", dateTag)
 	}
 	return nil
 }

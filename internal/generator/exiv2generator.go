@@ -112,10 +112,10 @@ func parseExifTags(rd []string) (rawExifTag, string, error) {
 	ret := rawExifTag{}
 	ifd := ""
 	if len(rd) != 6 {
-		return ret, ifd, fmt.Errorf("Wrong number of table row elements")
+		return ret, ifd, fmt.Errorf("wrong number of table row elements")
 	}
 	//id
-	cleaned := strings.Replace(rd[0], "0x", "", -1)
+	cleaned := strings.ReplaceAll(rd[0], "0x", "")
 	id, err := strconv.ParseUint(cleaned, 16, 16)
 	if err != nil {
 		return ret, ifd, err
@@ -193,7 +193,7 @@ func findNode(node *html.Node, matcher matcher) (*html.Node, error) {
 	}
 	f(node)
 	if ret == nil {
-		return ret, fmt.Errorf("Node not found")
+		return ret, fmt.Errorf("node not found")
 	}
 	return ret, nil
 

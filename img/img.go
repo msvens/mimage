@@ -279,7 +279,7 @@ func RotateAndCropFile(source string, dest string, opts Options) error {
 	angle := opts.Angle
 	crop := opts.rectangle()
 	if angle == 0 && crop.Empty() {
-		return fmt.Errorf("Neither angle or crop was provided")
+		return fmt.Errorf("neither angle or crop was provided")
 	}
 
 	srcImg, srcBytes, err := OpenOpts(source, false, opts.CopyExif)
@@ -295,7 +295,7 @@ func RotateAndCropFile(source string, dest string, opts Options) error {
 	/*	angle := opts.Angle
 		crop := opts.Rectangle()
 		if angle == 0 && crop.Empty() {
-			return fmt.Errorf("Neither angle or crop was provided")
+			return fmt.Errorf("neither angle or crop was provided")
 		}
 
 		srcImg, srcBytes, err := openForExifCopy(source)

@@ -29,7 +29,7 @@ type IptcEditor struct {
 // NewIptcEditor from a jpeg segment list
 func NewIptcEditor(sl *jpegstructure.SegmentList) (*IptcEditor, error) {
 	if sl == nil {
-		return nil, fmt.Errorf("Segmentlist is nil")
+		return nil, fmt.Errorf("segmentlist is nil")
 	}
 	ret := IptcEditor{}
 	ret.raw = map[IptcRecordTag]IptcRecordDataset{}

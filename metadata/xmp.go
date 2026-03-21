@@ -17,7 +17,7 @@ type XmpData struct {
 }
 
 // ErrNoXmp when a jpeg image does not contain any xmp data
-var ErrNoXmp = errors.New("No XMP data")
+var ErrNoXmp = errors.New("no XMP data")
 
 // NewXmpData creates an XmpData struct from a jpeg segment list
 func NewXmpData(segments *jpegstructure.SegmentList) (XmpData, error) {
