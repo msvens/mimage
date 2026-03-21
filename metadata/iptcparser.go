@@ -32,7 +32,7 @@ func clearMsb(n uint16) uint16 {
 }
 
 func hasMsb(n uint16) bool {
-	return !(n&msb == 0)
+	return n&msb != 0
 }
 
 // IptcRecordDataset contains the iptc data for a Record/Tag. If
@@ -167,7 +167,7 @@ func decodeIptcRecordData(r io.Reader) (IptcRecordTag, []byte, error) {
 	if err = binary.Read(r, defaultEncoding, &tuint8); err != nil {
 		return recTag, nil, err
 	} else if tuint8 != tagMarker {
-		return recTag, nil, fmt.Errorf("Invalid IPTC Tag Marker")
+		return recTag, nil, fmt.Errorf("invalid IPTC tag marker")
 	}
 	//record
 	if err = binary.Read(r, defaultEncoding, &tuint8); err != nil {
@@ -191,20 +191,21 @@ func decodeIptcRecordData(r io.Reader) (IptcRecordTag, []byte, error) {
 		size = uint64(size16)
 	} else {
 		sizeLen := clearMsb(size16)
-		if sizeLen == 4 {
+		switch sizeLen {
+		case 4:
 			if err = binary.Read(r, defaultEncoding, &size32); err != nil {
 				return recTag, nil, err
 			}
 			size = uint64(size32)
-		} else if sizeLen == 8 {
-			return recTag, nil, fmt.Errorf("Cannot handle data larger than MaxInt")
-		} else {
-			return recTag, nil, fmt.Errorf("Unknown data size: %v", sizeLen)
+		case 8:
+			return recTag, nil, fmt.Errorf("cannot handle data larger than MaxInt")
+		default:
+			return recTag, nil, fmt.Errorf("unknown data size: %v", sizeLen)
 		}
 	}
 	//read the data:
 	if size > maxInt {
-		return recTag, nil, fmt.Errorf("Data Size exceeds MaxInt")
+		return recTag, nil, fmt.Errorf("data size exceeds MaxInt")
 	}
 	data := make([]byte, size)
 	if _, err = io.ReadFull(r, data); err != nil {
@@ -255,7 +256,7 @@ func encodeIptcRecordData(bw *bufio.Writer, record IptcRecord, tag IptcTag, val 
 	var err error
 	writeSize := func(length int) error {
 		if length < 0 {
-			return fmt.Errorf("Negative size")
+			return fmt.Errorf("negative size")
 		}
 		if length < msb {
 			return binary.Write(bw, defaultEncoding, uint16(length))

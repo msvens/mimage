@@ -27,13 +27,13 @@ const photoshopResourceSignature = "8BIM"
 var defaultEncoding = binary.BigEndian
 
 // ErrNoPrefix expected photoshop block prefix
-var ErrNoPrefix = fmt.Errorf("Block does not contain photoshop prefix")
+var ErrNoPrefix = fmt.Errorf("block does not contain photoshop prefix")
 
 // ErrNoData no data in block
-var ErrNoData = fmt.Errorf("Block contains no data")
+var ErrNoData = fmt.Errorf("block contains no data")
 
 // ErrNoPhotoshopBlock could not find a photoshop segment/block in an image
-var ErrNoPhotoshopBlock = fmt.Errorf("Image contained no photoshop data")
+var ErrNoPhotoshopBlock = fmt.Errorf("image contained no photoshop data")
 
 func odd(n uint) bool {
 	return n%2 == 1
@@ -72,47 +72,47 @@ func decodeImageResource(br *bufio.Reader) (ImageResource, error) {
 	}
 	ret.Signature = string(signature) //should check that it is correct 8BIM
 	if ret.Signature != photoshopResourceSignature {
-		return ret, fmt.Errorf("Wrong signature expected %s got %v", photoshopResourceSignature, ret.Signature)
+		return ret, fmt.Errorf("wrong signature expected %s got %v", photoshopResourceSignature, ret.Signature)
 	}
 
 	//resource id
 	if err = binary.Read(br, defaultEncoding, &ret.ResourceId); err != nil {
-		return ret, fmt.Errorf("Could not read resourceId: %v", err)
+		return ret, fmt.Errorf("could not read resourceId: %v", err)
 	}
 
 	//name (padded to make it even)
 	nSize := uint8(0)
 	if err = binary.Read(br, defaultEncoding, &nSize); err != nil {
-		return ret, fmt.Errorf("Could not name size: %v", err)
+		return ret, fmt.Errorf("could not name size: %v", err)
 	}
 	if nSize > 0 {
 		name := make([]byte, nSize)
 		if _, err = io.ReadFull(br, name); err != nil {
-			return ret, fmt.Errorf("Could not name: %v", err)
+			return ret, fmt.Errorf("could not name: %v", err)
 		}
 		ret.Name = string(name)
 	}
 	if nSize == 0 || odd(uint(nSize+1)) { //need to account for the size byte
 		if _, err = br.ReadByte(); err != nil {
-			return ret, fmt.Errorf("Could not read name padding byte: %v", err)
+			return ret, fmt.Errorf("could not read name padding byte: %v", err)
 		}
 	}
 
 	//data
 	dSize := uint32(0)
 	if err = binary.Read(br, defaultEncoding, &dSize); err != nil {
-		return ret, fmt.Errorf("Could not read daa size: %v", err)
+		return ret, fmt.Errorf("could not read daa size: %v", err)
 	}
 	data := make([]byte, dSize)
 	if _, err = io.ReadFull(br, data); err != nil {
-		return ret, fmt.Errorf("Could not read data: %v", err)
+		return ret, fmt.Errorf("could not read data: %v", err)
 	}
 	ret.Data = data
 
 	//padded to make it even)
 	if odd(uint(dSize)) {
 		if _, err = br.ReadByte(); err != nil {
-			return ret, fmt.Errorf("Could not read data padding byte: %v", err)
+			return ret, fmt.Errorf("could not read data padding byte: %v", err)
 		}
 	}
 	return ret, nil
@@ -121,48 +121,48 @@ func decodeImageResource(br *bufio.Reader) (ImageResource, error) {
 func encodeImageResource(bw *bufio.Writer, r ImageResource) error {
 	//first write signature
 	if r.Signature != photoshopResourceSignature {
-		return fmt.Errorf("Expected signature %s got %s", photoshopResourceSignature, r.Signature)
+		return fmt.Errorf("expected signature %s got %s", photoshopResourceSignature, r.Signature)
 	}
 	var err error
 	//signature
 	if _, err = bw.WriteString(r.Signature); err != nil {
-		return fmt.Errorf("Could not write signature: %v", err)
+		return fmt.Errorf("could not write signature: %v", err)
 	}
 	//resourceId
 	if err = binary.Write(bw, defaultEncoding, r.ResourceId); err != nil {
-		return fmt.Errorf("Could not write resourceId: %v", err)
+		return fmt.Errorf("could not write resourceId: %v", err)
 	}
 	//name
 	if r.Name == "" {
 		b := []byte{0, 0}
 		if _, err = bw.Write(b); err != nil {
-			return fmt.Errorf("Could not write empty name: %v", err)
+			return fmt.Errorf("could not write empty name: %v", err)
 		}
 	} else if len(r.Name) < 255 {
 		size := uint8(len(r.Name))
 		if err = binary.Write(bw, defaultEncoding, size); err != nil {
-			return fmt.Errorf("Could not write name length: %v", err)
+			return fmt.Errorf("could not write name length: %v", err)
 		}
 		if _, err = bw.WriteString(r.Name); err != nil {
-			return fmt.Errorf("Could not write name: %v", err)
+			return fmt.Errorf("could not write name: %v", err)
 		}
 		if odd(uint(size + 1)) { //need to account for size byte
 			if err = bw.WriteByte(0); err != nil {
-				return fmt.Errorf("Could not write name padding: %v", err)
+				return fmt.Errorf("could not write name padding: %v", err)
 			}
 		}
 	}
 	//data size:
 	dSize := uint32(len(r.Data))
 	if err = binary.Write(bw, defaultEncoding, dSize); err != nil {
-		return fmt.Errorf("Could not write data size: %v", err)
+		return fmt.Errorf("could not write data size: %v", err)
 	}
 	if _, err = bw.Write(r.Data); err != nil {
-		return fmt.Errorf("Could not write data: %v", err)
+		return fmt.Errorf("could not write data: %v", err)
 	}
 	if odd(uint(dSize)) {
 		if err = bw.WriteByte(0); err != nil {
-			return fmt.Errorf("Could not write data padding byte: %v", err)
+			return fmt.Errorf("could not write data padding byte: %v", err)
 		}
 	}
 	return nil
@@ -205,7 +205,7 @@ func Encode(w io.Writer, source map[uint16]ImageResource, addPrefix bool) error 
 	var err error
 
 	if len(source) == 0 {
-		return fmt.Errorf("No photoshop resources to write")
+		return fmt.Errorf("no photoshop resources to write")
 	}
 	if addPrefix {
 		if _, err = bw.WriteString(photoshopBlockPrefix); err != nil {

@@ -20,7 +20,7 @@ var generateCommand = &cobra.Command{
 		json, _ := cmd.Flags().GetBool("json")
 
 		if !iptc && !exif && !json {
-			return fmt.Errorf("You need to specific either iptc, exif, or json")
+			return fmt.Errorf("you need to specific either iptc, exif, or json")
 		}
 		if json {
 			fmt.Println("Generating iptc json sources using assets/iptc.pl")

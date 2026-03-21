@@ -94,7 +94,7 @@ func (r URat) String() string {
 func newLensInfoFromRational(vals []exifcommon.Rational) (LensInfo, error) {
 	ret := LensInfo{}
 	if len(vals) != 4 {
-		return ret, fmt.Errorf("Expected 4 lensinfo values got %v", len(vals))
+		return ret, fmt.Errorf("expected 4 lensinfo values got %v", len(vals))
 	}
 	ret.MinFocalLength = newURatFromRational(vals[0])
 	ret.MaxFocalLength = newURatFromRational(vals[1])

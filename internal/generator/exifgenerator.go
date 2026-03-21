@@ -219,19 +219,20 @@ func alignType(tag etExifTag, exivMaps map[string]map[uint16]rawExifTag) string 
 }
 
 func alignIFD(rawIfd string) string {
-	if rawIfd == "ExifIFD" {
+	switch rawIfd {
+	case "ExifIFD":
 		return rawIfd
-	} else if rawIfd == "InteropIFD" {
+	case "InteropIFD":
 		return rawIfd
-	} else if rawIfd == "GpsIFD" {
+	case "GpsIFD":
 		return rawIfd
-	} else {
+	default:
 		return "RootIFD"
 	}
 }
 
 func alignName(rawName string) string {
-	return strings.Replace(rawName, "-", "", -1)
+	return strings.ReplaceAll(rawName, "-", "")
 }
 
 // GenerateExifTagsFromMasterExifJSON generate exif sources from exif json file
@@ -288,7 +289,7 @@ func generateExifTagDescriptions(raw map[string][]etExifTag, sb *strings.Builder
 				}
 			}
 			tagDesc := fmt.Sprintf(descFmt, t.Id, fixTagName(t.Name), t.Writable, t.Mandatory, t.Ifd, adjustedCnt, t.Offset, t.OffsetPair, t.Permanent, t.Protected, valueMap)
-			sb.WriteString(fmt.Sprintf("%s: %s,\n", indexTag, tagDesc))
+			fmt.Fprintf(sb, "%s: %s,\n", indexTag, tagDesc)
 		}
 	}
 	sb.WriteString("}\n")
@@ -303,7 +304,7 @@ func generateExifConstants(raw map[string][]etExifTag, sb *strings.Builder) erro
 	sb.WriteString("//IFD Tag Ids (includes all IFD, IFD1, etc tags)\nconst(\n")
 	for _, t := range tags {
 		if t.Ifd == "RootIFD" {
-			sb.WriteString(fmt.Sprintf("  IFD_%s ExifTag = %#04x\n", fixTagName(t.Name), t.Id))
+			fmt.Fprintf(sb, "  IFD_%s ExifTag = %#04x\n", fixTagName(t.Name), t.Id)
 		}
 	}
 	sb.WriteString(")\n")
@@ -312,7 +313,7 @@ func generateExifConstants(raw map[string][]etExifTag, sb *strings.Builder) erro
 	sb.WriteString("//ExifIFD Tag Ids\nconst(\n")
 	for _, t := range tags {
 		if t.Ifd == "ExifIFD" {
-			sb.WriteString(fmt.Sprintf("  ExifIFD_%s ExifTag = %#04x\n", t.Name, t.Id))
+			fmt.Fprintf(sb, "  ExifIFD_%s ExifTag = %#04x\n", t.Name, t.Id)
 		}
 	}
 	sb.WriteString(")\n")
@@ -321,7 +322,7 @@ func generateExifConstants(raw map[string][]etExifTag, sb *strings.Builder) erro
 	sb.WriteString("//InteropIFD Tag Ids\nconst(\n")
 	for _, t := range tags {
 		if t.Ifd == "InteropIFD" {
-			sb.WriteString(fmt.Sprintf("  InteropIFD_%s ExifTag = %#04x\n", t.Name, t.Id))
+			fmt.Fprintf(sb, "  InteropIFD_%s ExifTag = %#04x\n", t.Name, t.Id)
 		}
 	}
 	sb.WriteString(")\n")
@@ -330,7 +331,7 @@ func generateExifConstants(raw map[string][]etExifTag, sb *strings.Builder) erro
 	tags = raw[rawGps]
 	sb.WriteString("//GpsIFD Tag Ids\nconst(\n")
 	for _, t := range tags {
-		sb.WriteString(fmt.Sprintf("  GpsIFD_%s ExifTag = %#04x\n", t.Name, t.Id))
+		fmt.Fprintf(sb, "  GpsIFD_%s ExifTag = %#04x\n", t.Name, t.Id)
 	}
 	sb.WriteString(")\n")
 
@@ -369,7 +370,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 	case "ExifString":
 		buff.WriteString("map[string]string{\n")
 		for k, v := range tag.Values {
-			buff.WriteString(fmt.Sprintf("    \"%s\": \"%s\",\n", k, v))
+			fmt.Fprintf(&buff, "    \"%s\": \"%s\",\n", k, v)
 		}
 		buff.WriteString("  }")
 	case "ExifFloat":
@@ -378,7 +379,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 			if err := checkNumber(k, 32, true, false); err != nil {
 				fmt.Println("could not parse value key:", k)
 			} else {
-				buff.WriteString(fmt.Sprintf("    %s: \"%s\",\n", k, v))
+				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
 			}
 		}
 		buff.WriteString("  }")
@@ -388,7 +389,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 			if err := checkNumber(k, 64, true, false); err != nil {
 				fmt.Println("could not parse value key:", k)
 			} else {
-				buff.WriteString(fmt.Sprintf("    %s: \"%s\",\n", k, v))
+				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
 			}
 		}
 		buff.WriteString("  }")
@@ -398,7 +399,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 			if err := checkNumber(k, 8, false, true); err != nil {
 				fmt.Println("could not parse value key:", k)
 			} else {
-				buff.WriteString(fmt.Sprintf("    %s: \"%s\",\n", k, v))
+				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
 			}
 		}
 		buff.WriteString("  }")
@@ -408,7 +409,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 			if err := checkNumber(k, 16, false, true); err != nil {
 				fmt.Println("could not parse value key:", k)
 			} else {
-				buff.WriteString(fmt.Sprintf("    %s: \"%s\",\n", k, v))
+				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
 			}
 		}
 		buff.WriteString("  }")
@@ -418,7 +419,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 			if err := checkNumber(k, 32, false, true); err != nil {
 				fmt.Println("could not parse value key:", k)
 			} else {
-				buff.WriteString(fmt.Sprintf("    %s: \"%s\",\n", k, v))
+				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
 			}
 		}
 		buff.WriteString("  }")
@@ -428,7 +429,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 			if err := checkNumber(k, 16, false, false); err != nil {
 				fmt.Println("could not parse value key:", k)
 			} else {
-				buff.WriteString(fmt.Sprintf("    %s: \"%s\",\n", k, v))
+				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
 			}
 		}
 		buff.WriteString("  }")
@@ -438,7 +439,7 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 			if err := checkNumber(k, 32, false, false); err != nil {
 				fmt.Println("could not parse value key:", k)
 			} else {
-				buff.WriteString(fmt.Sprintf("    %s: \"%s\",\n", k, v))
+				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
 			}
 		}
 		buff.WriteString("  }")

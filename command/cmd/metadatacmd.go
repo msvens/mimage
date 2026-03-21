@@ -13,7 +13,7 @@ var metadataCommand = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return fmt.Errorf("No file specified")
+			return fmt.Errorf("no file specified")
 		}
 		md, err := metadata.NewMetaDataFromFile(args[0])
 		if err != nil {

@@ -11,10 +11,10 @@ import (
 
 // Iptc related errors
 var (
-	ErrNoIptc            = errors.New("No IPTC data")
+	ErrNoIptc            = errors.New("no IPTC data")
 	ErrIptcTagNotFound   = errors.New("Iptc tag not found")
 	ErrIptcTagValue      = errors.New("Iptc tag value not corret")
-	ErrIptcUndefinedType = errors.New("Could not parse ")
+	ErrIptcUndefinedType = errors.New("could not parse ")
 )
 
 var iptcUtfCharSet = string([]byte{27, 37, 71})
@@ -87,7 +87,7 @@ func IptcTagName(record IptcRecord, tag IptcTag) string {
 // NewIptcData creates IptcData from a jpeg segment list
 func NewIptcData(segments *jpegstructure.SegmentList) (*IptcData, error) {
 	if segments == nil {
-		return nil, fmt.Errorf("Segmentlist is nil")
+		return nil, fmt.Errorf("segmentlist is nil")
 	}
 	raw, err := ParseIptcJpeg(segments)
 	return &IptcData{raw}, err
@@ -274,9 +274,9 @@ func (ipd *IptcData) String() string {
 	for k, v := range ipd.raw {
 		name := IptcTagName(k.Record, k.Tag)
 		if k.Record == IPTCEnvelope && k.Tag == IPTCEnvelope_CodedCharacterSet && v.Data == iptcUtfCharSet {
-			buff.WriteString(fmt.Sprintf("%s (%v,%v): %v\n", name, k.Record, k.Tag, "UTF"))
+			fmt.Fprintf(&buff, "%s (%v,%v): %v\n", name, k.Record, k.Tag, "UTF")
 		} else {
-			buff.WriteString(fmt.Sprintf("%s (%v,%v): %v\n", name, k.Record, k.Tag, v.Data))
+			fmt.Fprintf(&buff, "%s (%v,%v): %v\n", name, k.Record, k.Tag, v.Data)
 		}
 
 	}

@@ -198,7 +198,7 @@ func TestIptcEditor_SetTag(t *testing.T) {
 		if err := md.Iptc().Scan(IPTCNewsPhoto, IPTCNewsPhoto_ExcursionTolerance, &actExcursiontolerance); err != nil {
 			t.Fatalf("Could not scan IPTCEnvelope_ProductId for image %s got err %v", fname, err)
 		}
-		if !(expExcursionTolerance == actExcursiontolerance) {
+		if expExcursionTolerance != actExcursiontolerance {
 			t.Errorf("Expected %v got %v", expExcursionTolerance, actExcursiontolerance)
 		}
 	}

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-var errJpegWrongFileExt = errors.New("File does not end with .jpg or .jpeg")
+var errJpegWrongFileExt = errors.New("file does not end with .jpg or .jpeg")
 
 // JpegEditor holds the exif, xmp and iptc editors as well as the jpeg segment list
 type JpegEditor struct {
@@ -143,16 +143,17 @@ func (je *JpegEditor) DropExif() error {
 // DropXmp removes xmp data from this editor
 func (je *JpegEditor) DropXmp() error {
 	i, _, err := je.sl.FindXmp()
-	if err == nil {
+	switch err {
+	case nil:
 		segments := je.sl.Segments()
 		segments = append(segments[:i], segments[i+1:]...)
 		je.sl = jpegstructure.NewSegmentList(segments)
 		je.xe.Clear(false)
 		return nil
-	} else if err == jpegstructure.ErrNoXmp {
+	case jpegstructure.ErrNoXmp:
 		je.xe.Clear(false)
 		return nil
-	} else {
+	default:
 		return err
 	}
 }
@@ -160,11 +161,12 @@ func (je *JpegEditor) DropXmp() error {
 // DropIptc removes iptc data from this editor
 func (je *JpegEditor) DropIptc() error {
 	i, _, err := je.sl.FindIptc()
-	if err == nil {
+	switch err {
+	case nil:
 		segments := je.sl.Segments()
 		segments = append(segments[:i], segments[i+1:]...)
 		je.sl = jpegstructure.NewSegmentList(segments)
-	} else if err == jpegstructure.ErrNoIptc {
+	case jpegstructure.ErrNoIptc:
 		return nil
 	}
 	return nil
@@ -240,14 +242,15 @@ func (je *JpegEditor) setXmp() error {
 		return err
 	}
 	_, s, err := je.sl.FindXmp()
-	if err == nil { //replace existing XmpEditor data
+	switch err {
+	case nil: //replace existing XmpEditor data
 		s.Data = xmpBytes
 		return nil
-	} else if err == jpegstructure.ErrNoXmp { //add XmpEditor data
+	case jpegstructure.ErrNoXmp: //add XmpEditor data
 		xmpS := &jpegstructure.Segment{MarkerId: jpegstructure.MARKER_APP1, Data: xmpBytes}
 		je.appendSegment(1, xmpS)
 		return nil
-	} else {
+	default:
 		return err
 	}
 }

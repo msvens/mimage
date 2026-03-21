@@ -114,7 +114,7 @@ func (ee *ExifEditor) SetDate(dateTag ExifDate, time time.Time) error {
 			return err
 		}
 	default:
-		return fmt.Errorf("Unknown date to set: %v", dateTag)
+		return fmt.Errorf("unknown date to set: %v", dateTag)
 	}
 	return nil
 }
