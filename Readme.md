@@ -1,9 +1,8 @@
-[![](https://img.shields.io/github/workflow/status/msvens/mimage/Test?longCache=tru&label=Test&logo=github%20actions&logoColor=fff)](https://github.com/msvens/mimage/actions?query=workflow%3ATest)
-[![codecov](https://codecov.io/gh/dsoprea/go-exif/branch/master/graph/badge.svg)](https://codecov.io/gh/msvens/mimage)
+[![Test](https://github.com/msvens/mimage/actions/workflows/test.yml/badge.svg)](https://github.com/msvens/mimage/actions/workflows/test.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/msvens/mimage)](https://goreportcard.com/report/github.com/msvens/mimage)
-[![GoDoc](https://godoc.org/github.com/msvens/mimage/v3?status.svg)](https://godoc.org/github.com/msvens/mimage)
+[![Go Reference](https://pkg.go.dev/badge/github.com/msvens/mimage.svg)](https://pkg.go.dev/github.com/msvens/mimage)
 
-# Overiew
+# Overview
 
 mimage is a native go package for handling 
 image meta information (exif, iptc, xmp) as well as some basic
