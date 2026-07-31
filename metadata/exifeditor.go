@@ -1,12 +1,12 @@
 package metadata
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dsoprea/go-exif/v3"
 	exifcommon "github.com/dsoprea/go-exif/v3/common"
 	exifundefined "github.com/dsoprea/go-exif/v3/undefined"
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
-	"github.com/go-errors/errors"
 	"time"
 )
 
