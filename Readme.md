@@ -31,7 +31,11 @@ if you want to manipulate the actual image (crop,resize,thumbnails)
 
 mimage has 3 main use cases: reading and writing metadata (exif, iptc, xmp) and "resizing" images.
 
-**Note**: For now this package assumes jpeg images and will not work with other formats
+**Note on formats**: metadata reading and editing is **jpeg only** - `metadata` parses the
+jpeg container to find the exif, IPTC and XMP segments. Image transformation is not: `img`
+reads and writes `gif`, `tif`, `bmp`, `jpg` and `png`, choosing the format from the file
+extension, so converting a tiff to a jpeg works. Quality and `CopyExif` only apply when the
+destination is a jpeg, and metadata is only carried across when the *source* is a jpeg too.
 
 ## Accessing Metadata
 
@@ -142,10 +146,15 @@ The second function of image is to manipulate/transform images - typically to cr
 landscape and other scaled versions of your original image. These copy functions will also respect and copy
 and original image metadata information - which the standard jpeg writers dont do.
 
-The package *"github.com/msvens/mimage/img"* exposes one function
+The main entry point of *"github.com/msvens/mimage/img"* is
 ```go
 func TransformFile(source string, destinations map[string]Options) error 
 ```
+which produces several outputs from one source in a single pass. The package also exposes
+`Open`/`OpenOpts` and `Save`/`SaveOpts` for reading and writing individual images,
+`CropImage` and `RotateImage` for working on an `image.Image` in memory, `RotateAndCropFile`
+for doing both against a file, and `NewOptions` to build the `Options` the transform
+functions take.
 
 In the follwoing example we use TransformFile to create a number of versions of our sourceImage.
 
@@ -186,7 +195,77 @@ needs to be installed. In effect making mphotos slighly less portable.
 
 mimage seeks to remedy this by offering similar functionality using only go native code
 
+# Regenerating the tag tables
+
+`metadata/genexif.go` and `metadata/geniptc.go` are generated. **Neither exiftool nor perl
+is needed to build or use mimage** - they are only needed to refresh these tables, which is
+rare, since the standard exif and IPTC tag sets barely change.
+
+Exif tags come from exiftool's own tag database:
+
+    exiftool -listx -EXIF:all > assets/exiftool-listx.xml    # or: mimage generate -j
+    mimage generate -e                                       # -> metadata/genexif.go
+
+`assets/exiftool-listx.xml` is committed, so regenerating the go sources only needs
+exiftool if you also want to pick up a newer exiftool release. The current file was
+produced with **exiftool 13.55**.
+
+A few tags need explicit handling, all of it in `internal/generator/exifgenerator.go`:
+
+- `subDirTags` - tags exiftool models as SubDirectory entries, so they never appear in a
+  `-listx` dump. These are pointers to another ifd, `IFD_ExifOffset` among them.
+- `nameOverrides` - keeps exported constant names stable where exiftool leads with a
+  different variant name for a tag id.
+- `typeOverrides` - restores types that exiftool's tables carry but `-listx` reports as `?`.
+
+IPTC tags still come from `assets/iptc.pl`, because `-listx` does not expose whether an
+IPTC tag is repeatable and `IptcTagDesc.Repeatable` needs it:
+
+    mimage generate -j    # runs perl assets/iptc.pl
+    mimage generate -i    # -> metadata/geniptc.go
+
 # Releases
+
+## v0.0.19
+
+**Breaking**: `ExifTagDesc` lost the `Mandatory`, `Offset`, `OffsetPair`, `Permanent` and
+`Protected` fields. Nothing in mimage read them and the new tag source cannot populate them,
+so they only ever held zero values. `Id`, `Name`, `Type`, `Ifd`, `Count` and `Values` are
+unchanged, and no tag, tag name or exif constant was removed or renamed.
+
+Fixes:
+
+- `Summary.ISO` reported 0 for every image. ISO is declared in the exif spec with count
+  "any", which sent it down the multi value scan path, where the scalar `Summary.ISO`
+  destination had no case. Scanning now dispatches on the destination rather than on the
+  declared count, so a tag can be read into either a scalar or a slice. The failure was also
+  recorded in `SummaryErr()`, where it masked any later error.
+- Jpeg file extensions are matched case insensitively. A `.JPG` source - which cameras
+  commonly produce - was treated as a non jpeg, so `TransformFile` silently skipped
+  `CopyExif` and wrote output with all metadata stripped, without returning an error.
+  `JpegEditor.WriteFile` also rejected a `.JPG` destination outright.
+
+New:
+
+- MakerNote detection and write policy, see the MakerNotes section above.
+  `MetaData.HasMakerNote`, `ExifData.MakerNoteSize`, `ExifEditor.DropMakerNote`,
+  `JpegEditor.SetMakerNotePolicy` and `img.Options.MakerNote`, plus `img.SaveOptsMakerNote`.
+  The default, `MakerNotePreserve`, is what mimage has always done, so nothing changes unless
+  you opt in.
+
+Internal:
+
+- Exif tag tables are generated from `exiftool -listx` instead of a forked copy of exiftool's
+  `EXIF.pm` plus a scrape of exiv2.org, see [Regenerating the tag
+  tables](#regenerating-the-tag-tables). 204 tags were added and none removed.
+  `golang.org/x/net` is no longer a direct dependency and `govulncheck` reports no
+  vulnerabilities.
+
+## v0.0.18
+
+Dependency refresh. `golang.org/x/net` 0.52.0 -> 0.57.0 and `golang.org/x/image` 0.37.0 ->
+0.44.0, clearing reachable TIFF and BMP decoder issues. CI tests go 1.25 and 1.26 and runs
+`govulncheck`.
 
 # Todo
 - Add finer grained control over editing (only accept allowed values, etc)

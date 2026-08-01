@@ -33,27 +33,20 @@ var generateCommand = &cobra.Command{
 			}
 			_ = os.WriteFile("assets/exiftool-iptctags.json", out.Bytes(), 0644)
 
-			fmt.Println("Generating exif json sources using assets/exif.pl")
-			cmd = exec.Command("perl", "assets/exif.pl")
+			fmt.Printf("Generating exif sources using exiftool into %s\n", generator.ListxFile)
+			cmd = exec.Command("exiftool", "-listx", "-EXIF:all")
 			out.Reset()
 			cmd.Stdout = &out
 			if err = cmd.Run(); err != nil {
-				return err
+				return fmt.Errorf("could not run exiftool, is it installed?: %w", err)
 			}
-			_ = os.WriteFile("assets/exiftool-exiftags.json", out.Bytes(), 0644)
-
-			fmt.Println("Genereting exiv2 exif sources")
-			if err = generator.GenerateExiv2ExifJSON(); err != nil {
-				return err
-			}
-			fmt.Println("Generate master exif json")
-			if err = generator.GenerateMasterExifJSON(); err != nil {
+			if err = os.WriteFile(generator.ListxFile, out.Bytes(), 0644); err != nil {
 				return err
 			}
 		}
 		if exif {
 			fmt.Println("Generate Exif Tags")
-			if err := generator.GenerateExifTagsFromMasterExifJSON(); err != nil {
+			if err := generator.GenerateExifTagsFromListx(); err != nil {
 				return err
 			}
 		}
