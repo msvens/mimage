@@ -533,11 +533,33 @@ func (ed *ExifData) Scan(ifdIndex ExifIndex, tagId ExifTag, dest interface{}) er
 		return ErrExifValueNotFound
 	}
 
-	if tagDesc.Count == 1 || tagDesc.Type == ExifString || tagDesc.Type == ExifUndef {
+	//strings and undefined values are always read as a single value, and this
+	//must be checked before the destination since *[]byte is also *[]uint8
+	if tagDesc.Type == ExifString || tagDesc.Type == ExifUndef {
 		return scanExifValue(tagDesc, value, dest)
 	}
 
-	return scanMultipleExifValue(tagDesc, value, dest)
+	//otherwise let the destination decide. A multi value destination wants
+	//every value, anything else wants the first one. The tag count is only a
+	//hint about the source: ISO for example is declared with count "any" but
+	//in practice holds a single value, so scanning it into a *uint16 has to
+	//work
+	if isMultiValueDest(dest) {
+		return scanMultipleExifValue(tagDesc, value, dest)
+	}
+
+	return scanExifValue(tagDesc, value, dest)
+}
+
+// isMultiValueDest reports whether dest is one of the destinations handled by
+// scanMultipleExifValue
+func isMultiValueDest(dest interface{}) bool {
+	switch dest.(type) {
+	case *[]uint8, *[]uint16, *[]uint32, *[]int16, *[]int32,
+		*[]float32, *[]float64, *[]URat, *[]Rat, *LensInfo:
+		return true
+	}
+	return false
 }
 
 // ScanExifDate reads the given dateTag into dest
