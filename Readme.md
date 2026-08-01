@@ -103,8 +103,10 @@ tags get fresh, correct offsets - but a preserved MakerNote is copied verbatim t
 the bytes survive intact while any offsets within them can end up pointing at the
 wrong place.
 
-Round tripping `assets/canon.jpg` through an edit shows this concretely: the 8152
-byte blob is byte for byte identical afterwards, and has moved 63 bytes.
+Round tripping `assets/canon.jpg` through a `SetTitle` shows this concretely: the
+8152 byte blob comes out byte for byte identical, but sitting at a different offset.
+How far it moves depends on how much the surrounding exif data grew or shrank, so it
+varies with the edit - a couple of dozen bytes either way is typical.
 
 mimage cannot fix this, so it lets you choose:
 
