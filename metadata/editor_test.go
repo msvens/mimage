@@ -388,6 +388,18 @@ func TestJpegEditor_WriteFile(t *testing.T) {
 	} else if err != errJpegWrongFileExt {
 		t.Errorf("Expecteded error %v got %v", errJpegWrongFileExt, err)
 	}
+
+	//uppercase extensions are valid jpeg, cameras commonly emit .JPG
+	for _, ext := range []string{".JPG", ".JPEG", ".Jpg"} {
+		upperOut := filepath.Join(os.TempDir(), "TestWriteFile"+ext)
+		if err := je.WriteFile(upperOut); err != nil {
+			t.Errorf("Write file should accept a %s extension, got %v", ext, err)
+			continue
+		}
+		if err := os.Remove(upperOut); err != nil {
+			t.Errorf("Could not delete temp file: %v", err)
+		}
+	}
 }
 
 func ExampleJpegEditor_SetTitle() {

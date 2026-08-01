@@ -10,6 +10,7 @@ import (
 	"image/jpeg"
 	"os"
 	"path"
+	"strings"
 	"time"
 )
 
@@ -324,8 +325,10 @@ func RotateAndCropFile(source string, dest string, opts Options) error {
 		return nil*/
 }
 
+// isJpegFile reports whether fname has a jpeg extension. The comparison is
+// case insensitive since cameras commonly emit .JPG
 func isJpegFile(fname string) bool {
-	ext := path.Ext(fname)
+	ext := strings.ToLower(path.Ext(fname))
 	return ext == ".jpg" || ext == ".jpeg"
 }
 

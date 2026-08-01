@@ -2,6 +2,7 @@ package img
 
 import (
 	"fmt"
+	"github.com/msvens/mimage/metadata"
 	"os"
 	"path"
 	"testing"
@@ -13,6 +14,33 @@ func TestNewOptions(t *testing.T) {
 
 func TestTransformFile(t *testing.T) {
 
+}
+
+// Cameras commonly emit .JPG. Those sources must still be recognised as jpeg
+// so that CopyExif carries the metadata across, see isJpegFile
+func TestTransformFileUppercaseSource(t *testing.T) {
+	src, err := os.ReadFile("../assets/leica.jpg")
+	if err != nil {
+		t.Fatalf("Could not read source image: %v", err)
+	}
+	for _, ext := range []string{".JPG", ".JPEG", ".jpg"} {
+		upperSrc := path.Join(t.TempDir(), "leica"+ext)
+		if err = os.WriteFile(upperSrc, src, 0644); err != nil {
+			t.Fatalf("Could not write %s: %v", ext, err)
+		}
+		dest := path.Join(t.TempDir(), "out.jpg")
+		opts := NewOptions(Resize, 400, 0, true)
+		if err = TransformFile(upperSrc, map[string]Options{dest: opts}); err != nil {
+			t.Fatalf("Could not transform %s: %v", ext, err)
+		}
+		md, err := metadata.NewMetaDataFromFile(dest)
+		if err != nil {
+			t.Fatalf("Could not read metadata from %s output: %v", ext, err)
+		}
+		if make := md.Summary().CameraMake; make == "" {
+			t.Errorf("%s source: expected exif to be copied, got empty CameraMake", ext)
+		}
+	}
 }
 
 func ExampleTransformFile() {
