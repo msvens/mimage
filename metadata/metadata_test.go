@@ -11,6 +11,8 @@ const LeicaImg = AssetPath + "leica.jpg"
 const NoExifImg = AssetPath + "noexif.jpg"
 const NikonImg = AssetPath + "nikon.jpg"
 const GPSImg = AssetPath + "gps.jpg"
+
+// CanonImg is the only asset carrying an exif MakerNote
 const CanonImg = AssetPath + "canon.jpg"
 const Xe3Img = AssetPath + "xe3.jpg"
 const NonImageFile = AssetPath + "exiftool-leica-g1.json"

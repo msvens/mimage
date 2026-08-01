@@ -90,6 +90,53 @@ je.Bytes() //Get []byte of the entire image
 je.WriteFile(someFile) //Calls je.Bytes() then writes to someFile
 ```
 
+### MakerNotes
+
+A **MakerNote** (ExifIFD tag `0x927c`) is a manufacturer specific blob that mimage
+treats as opaque. Writing an image re-encodes the entire Exif Ifd chain, so standard
+tags get fresh, correct offsets - but a preserved MakerNote is copied verbatim to a
+*new* offset. Several manufacturers store absolute offsets **inside** that blob, so
+the bytes survive intact while any offsets within them can end up pointing at the
+wrong place.
+
+Round tripping `assets/canon.jpg` through an edit shows this concretely: the 8152
+byte blob is byte for byte identical afterwards, and has moved 63 bytes.
+
+mimage cannot fix this, so it lets you choose:
+
+```go
+je.SetMakerNotePolicy(metadata.MakerNoteStrip)
+```
+
+| Policy | Behaviour |
+| --- | --- |
+| `MakerNotePreserve` | Copy the blob through, accepting the new offset. **Default** - this is how mimage has always behaved |
+| `MakerNoteStrip` | Remove the MakerNote entirely |
+| `MakerNoteFail` | Return `ErrMakerNotePresent` instead of writing |
+
+**Which to use.** For derived images - thumbnails, web sizes, anything you generate
+rather than archive - prefer `MakerNoteStrip`. Nothing downstream reads the MakerNote,
+and an absent MakerNote is unambiguously correct where a relocated one is only
+probably correct. Use `MakerNoteFail` on archival paths where writing a possibly
+stale MakerNote is worse than refusing. Keep the default when you are editing
+originals and want to retain as much camera data as possible.
+
+You can check before deciding:
+
+```go
+md, _ := metadata.NewMetaDataFromFile("../assets/canon.jpg")
+if md.HasMakerNote() {
+	fmt.Printf("makernote present, %d bytes\n", md.Exif().MakerNoteSize())
+}
+```
+
+The same policy is available when transforming images, via `img.Options`:
+
+```go
+opts := img.NewOptions(img.ResizeAndCrop, 1200, 628, true)
+opts.MakerNote = img.MakerNoteStrip
+```
+
 ## Copy and Manipulating Images
 The second function of image is to manipulate/transform images - typically to create thumbnails, portrait,
 landscape and other scaled versions of your original image. These copy functions will also respect and copy
