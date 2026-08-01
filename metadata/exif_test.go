@@ -394,3 +394,55 @@ func ExampleExifData_ScanIfdRoot() {
 	fmt.Printf("Make: %s\n", cameraMake)
 	//Output: Make: LEICA CAMERA AG
 }
+
+// ISO is declared with count "any" in the exif spec, so it used to route to
+// scanMultipleExifValue and fail against the scalar Summary.ISO destination,
+// leaving every image reporting ISO 0. Values verified against
+// exiftool -n -ISO
+func TestSummary_ISO(t *testing.T) {
+	expected := map[string]uint16{
+		LeicaImg:  100,
+		CanonImg:  1600,
+		NikonImg:  200,
+		Xe3Img:    1600,
+		GPSImg:    200,
+		NoExifImg: 0,
+	}
+	for asset, want := range expected {
+		md := getMetaData(asset, t)
+		if got := md.Summary().ISO; got != want {
+			t.Errorf("%s: ISO = %d, want %d", asset, got, want)
+		}
+	}
+}
+
+// A count "any" tag must be readable into both a scalar and a slice
+func TestExifData_ScanCountAnyTag(t *testing.T) {
+	md := getMetaData(LeicaImg, t)
+
+	var scalar uint16
+	if err := md.Exif().ScanIfdExif(ExifIFD_ISO, &scalar); err != nil {
+		t.Errorf("scanning ISO into a scalar: %v", err)
+	} else if scalar != 100 {
+		t.Errorf("scalar ISO = %d, want 100", scalar)
+	}
+
+	var slice []uint16
+	if err := md.Exif().ScanIfdExif(ExifIFD_ISO, &slice); err != nil {
+		t.Errorf("scanning ISO into a slice: %v", err)
+	} else if len(slice) != 1 || slice[0] != 100 {
+		t.Errorf("slice ISO = %v, want [100]", slice)
+	}
+}
+
+// The ISO failure was recorded in summaryErr, where it also masked any later
+// error, so a clean image must now produce no summary error at all
+func TestMetaData_SummaryErrClean(t *testing.T) {
+	for _, asset := range []string{LeicaImg, CanonImg, NikonImg, Xe3Img, GPSImg} {
+		md := getMetaData(asset, t)
+		_ = md.Summary()
+		if err := md.SummaryErr(); err != nil {
+			t.Errorf("%s: unexpected summary error: %v", asset, err)
+		}
+	}
+}
