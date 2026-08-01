@@ -153,6 +153,15 @@ func (md *MetaData) Exif() *ExifData {
 	return md.exifData
 }
 
+// HasMakerNote reports whether this image carries an exif MakerNote. See
+// ExifData.HasMakerNote for why this matters when editing
+func (md *MetaData) HasMakerNote() bool {
+	if md.exifData == nil {
+		return false
+	}
+	return md.exifData.HasMakerNote()
+}
+
 // Iptc returns the iptc portion of the MetaData. Can be nil
 func (md *MetaData) Iptc() *IptcData {
 	return md.iptcData

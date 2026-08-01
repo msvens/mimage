@@ -333,6 +333,46 @@ func (ed *ExifData) GetUserComment() string {
 	return string(ret.EncodingBytes)
 }
 
+// makerNoteEntry returns the ExifIFD MakerNote tag entry, or nil if this image
+// has no exif data, no ExifIFD, or no MakerNote
+func (ed *ExifData) makerNoteEntry() *exif.IfdTagEntry {
+	exifIfd := ed.Ifd(ExifIFD)
+	if exifIfd == nil {
+		return nil
+	}
+	entries, err := exifIfd.FindTagWithId(uint16(ExifIFD_MakerNote))
+	if err != nil || len(entries) == 0 {
+		return nil
+	}
+	return entries[0]
+}
+
+// HasMakerNote reports whether this image carries an exif MakerNote
+// (ExifIFD tag 0x927c).
+//
+// A MakerNote is a manufacturer specific blob that mimage treats as opaque.
+// Because writing re-encodes the whole Ifd chain, a preserved MakerNote ends
+// up at a different offset than it had in the source image, which can
+// invalidate absolute offsets stored inside the blob by some manufacturers.
+// Callers that care can use this to pick a MakerNotePolicy before editing.
+func (ed *ExifData) HasMakerNote() bool {
+	return ed.makerNoteEntry() != nil
+}
+
+// MakerNoteSize returns the size in bytes of the MakerNote blob, or 0 if this
+// image has no MakerNote
+func (ed *ExifData) MakerNoteSize() int {
+	ite := ed.makerNoteEntry()
+	if ite == nil {
+		return 0
+	}
+	b, err := ite.GetRawBytes()
+	if err != nil {
+		return 0
+	}
+	return len(b)
+}
+
 // HasIfd checks if the specified index exists in this Ifd
 func (ed *ExifData) HasIfd(index ExifIndex) bool {
 	if ed.IsEmpty() {

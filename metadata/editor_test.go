@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -420,4 +421,112 @@ func ExampleJpegEditor_SetTitle() {
 	fmt.Printf("New Title: %v\n", md.Summary().Title)
 
 	//Output: New Title: some new title
+}
+
+func TestExifData_HasMakerNote(t *testing.T) {
+	//canon.jpg is currently the only asset carrying a MakerNote
+	withMakerNote := []string{CanonImg}
+	withoutMakerNote := []string{LeicaImg, NikonImg, Xe3Img, GPSImg, NoExifImg}
+
+	for _, asset := range withMakerNote {
+		md := getMetaData(asset, t)
+		if !md.HasMakerNote() {
+			t.Errorf("%s: expected a makernote", asset)
+		}
+		if size := md.Exif().MakerNoteSize(); size <= 0 {
+			t.Errorf("%s: expected a non zero makernote size, got %d", asset, size)
+		}
+	}
+	for _, asset := range withoutMakerNote {
+		md := getMetaData(asset, t)
+		if md.HasMakerNote() {
+			t.Errorf("%s: expected no makernote", asset)
+		}
+		if size := md.Exif().MakerNoteSize(); size != 0 {
+			t.Errorf("%s: expected makernote size 0, got %d", asset, size)
+		}
+	}
+}
+
+// The default policy must not change what earlier releases wrote
+func TestJpegEditor_MakerNotePreserve(t *testing.T) {
+	je := getJpegEditor(CanonImg, t)
+	if !je.HasMakerNote() {
+		t.Fatalf("expected canon.jpg to have a makernote")
+	}
+	if err := je.SetTitle("makernote preserve"); err != nil {
+		t.Fatalf("could not set title: %v", err)
+	}
+	md := jpegEditorMD(je, t)
+	if !md.HasMakerNote() {
+		t.Errorf("makernote should have been preserved by default")
+	}
+}
+
+func TestJpegEditor_MakerNoteStrip(t *testing.T) {
+	je := getJpegEditor(CanonImg, t)
+	je.SetMakerNotePolicy(MakerNoteStrip)
+	if err := je.SetTitle("makernote strip"); err != nil {
+		t.Fatalf("could not set title: %v", err)
+	}
+	md := jpegEditorMD(je, t)
+	if md.HasMakerNote() {
+		t.Errorf("makernote should have been stripped")
+	}
+	//the rest of the exif must survive
+	if make := md.Summary().CameraMake; make == "" {
+		t.Errorf("stripping the makernote should not remove the rest of the exif")
+	}
+	if title := md.Summary().Title; title != "makernote strip" {
+		t.Errorf("expected title to be set, got %q", title)
+	}
+}
+
+func TestJpegEditor_MakerNoteFail(t *testing.T) {
+	je := getJpegEditor(CanonImg, t)
+	je.SetMakerNotePolicy(MakerNoteFail)
+	if err := je.SetTitle("makernote fail"); err != nil {
+		t.Fatalf("could not set title: %v", err)
+	}
+	if _, err := je.Bytes(); !errors.Is(err, ErrMakerNotePresent) {
+		t.Errorf("expected ErrMakerNotePresent, got %v", err)
+	}
+
+	//an image without a makernote must still write
+	je = getJpegEditor(LeicaImg, t)
+	je.SetMakerNotePolicy(MakerNoteFail)
+	if err := je.SetTitle("makernote fail"); err != nil {
+		t.Fatalf("could not set title: %v", err)
+	}
+	if _, err := je.Bytes(); err != nil {
+		t.Errorf("expected an image without a makernote to write, got %v", err)
+	}
+}
+
+// Stripping against an image with no exif must not error and must not fabricate
+// an ExifIFD, see ExifEditor.DropMakerNote
+func TestJpegEditor_MakerNoteStripNoExif(t *testing.T) {
+	je := getJpegEditor(NoExifImg, t)
+	je.SetMakerNotePolicy(MakerNoteStrip)
+	n, err := je.Exif().DropMakerNote()
+	if err != nil {
+		t.Fatalf("dropping a makernote from a file without exif should not error: %v", err)
+	}
+	if n != 0 {
+		t.Errorf("expected 0 removed makernotes, got %d", n)
+	}
+	if je.Exif().IsDirty() {
+		t.Errorf("dropping a non existent makernote should not dirty the editor")
+	}
+	b, err := je.Bytes()
+	if err != nil {
+		t.Fatalf("could not write bytes: %v", err)
+	}
+	md, err := NewMetaData(b)
+	if err != nil {
+		t.Fatalf("could not reopen written image: %v", err)
+	}
+	if !md.Exif().IsEmpty() {
+		t.Errorf("stripping should not have fabricated exif data")
+	}
 }

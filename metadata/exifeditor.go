@@ -63,6 +63,43 @@ func (ee *ExifEditor) Clear(dirty bool) error {
 
 }
 
+// DropMakerNote removes the MakerNote tag from the ExifIFD and returns how many
+// entries were removed. The editor is marked dirty only when something was
+// actually removed. Images without exif data, without an ExifIFD, or without a
+// MakerNote are left untouched and return (0, nil)
+func (ee *ExifEditor) DropMakerNote() (int, error) {
+	if ee.rootIb == nil {
+		return 0, nil
+	}
+	//deliberately not GetOrCreateIbFromRootIb: that would fabricate an ExifIFD
+	//for images that have none and dirty an editor we never needed to touch
+	exifIb, err := ee.rootIb.ChildWithTagId(uint16(IFD_ExifOffset))
+	if err != nil || exifIb == nil {
+		return 0, nil
+	}
+	n, err := exifIb.DeleteAll(uint16(ExifIFD_MakerNote))
+	if err != nil {
+		return 0, err
+	}
+	if n > 0 {
+		ee.dirty = true
+	}
+	return n, nil
+}
+
+// HasMakerNote reports whether the ExifIFD currently holds a MakerNote tag
+func (ee *ExifEditor) HasMakerNote() bool {
+	if ee.rootIb == nil {
+		return false
+	}
+	exifIb, err := ee.rootIb.ChildWithTagId(uint16(IFD_ExifOffset))
+	if err != nil || exifIb == nil {
+		return false
+	}
+	_, err = exifIb.FindTag(uint16(ExifIFD_MakerNote))
+	return err == nil
+}
+
 // IsDirty if this editor has made any edits
 func (ee ExifEditor) IsDirty() bool {
 	return ee.dirty

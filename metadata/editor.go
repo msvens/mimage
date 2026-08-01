@@ -12,12 +12,45 @@ import (
 
 var errJpegWrongFileExt = errors.New("file does not end with .jpg or .jpeg")
 
+// ErrMakerNotePresent is returned by JpegEditor.Bytes when the editor is set to
+// MakerNoteFail and the image carries a MakerNote
+var ErrMakerNotePresent = errors.New("image contains an exif makernote")
+
+// MakerNotePolicy controls what a JpegEditor does with an exif MakerNote when
+// it writes an image.
+//
+// A MakerNote (ExifIFD tag 0x927c) is a manufacturer specific blob that mimage
+// treats as opaque. Writing re-encodes the entire Ifd chain, so a preserved
+// MakerNote is copied verbatim to a new offset. Manufacturers that store
+// absolute offsets inside the blob can end up with a MakerNote that no longer
+// resolves correctly, even though its bytes are unchanged.
+type MakerNotePolicy int
+
+const (
+	// MakerNotePreserve copies the MakerNote blob through unchanged, accepting
+	// that it is written at a new offset. This is the default and matches how
+	// mimage has always behaved.
+	MakerNotePreserve MakerNotePolicy = iota
+
+	// MakerNoteStrip removes the MakerNote so the written image has none.
+	// Prefer this for derived images such as thumbnails and web sizes, where
+	// nothing reads the MakerNote: an absent MakerNote is unambiguously
+	// correct, whereas a relocated one is only probably correct.
+	MakerNoteStrip
+
+	// MakerNoteFail makes Bytes return ErrMakerNotePresent instead of writing.
+	// Use this on archival paths where emitting a possibly stale MakerNote is
+	// worse than refusing to write at all.
+	MakerNoteFail
+)
+
 // JpegEditor holds the exif, xmp and iptc editors as well as the jpeg segment list
 type JpegEditor struct {
-	sl *jpegstructure.SegmentList
-	xe *XmpEditor
-	ee *ExifEditor
-	ie *IptcEditor
+	sl        *jpegstructure.SegmentList
+	xe        *XmpEditor
+	ee        *ExifEditor
+	ie        *IptcEditor
+	makerNote MakerNotePolicy
 }
 
 // NewJpegEditorFile from a jpeg image file
@@ -48,6 +81,35 @@ func NewJpegEditor(data []byte) (*JpegEditor, error) {
 	return &ret, nil
 }
 
+// applyMakerNotePolicy enforces the configured MakerNotePolicy. Acts on the
+// presence of a MakerNote rather than on whether the editor is dirty, so that
+// MakerNoteStrip always yields an image without one
+func (je *JpegEditor) applyMakerNotePolicy() error {
+	switch je.makerNote {
+	case MakerNoteFail:
+		if je.HasMakerNote() {
+			return ErrMakerNotePresent
+		}
+	case MakerNoteStrip:
+		if _, err := je.ee.DropMakerNote(); err != nil {
+			return err
+		}
+	case MakerNotePreserve:
+	}
+	return nil
+}
+
+// HasMakerNote reports whether this editor currently holds an exif MakerNote
+func (je *JpegEditor) HasMakerNote() bool {
+	return je.ee.HasMakerNote()
+}
+
+// SetMakerNotePolicy sets how this editor treats an exif MakerNote when
+// writing. The default is MakerNotePreserve
+func (je *JpegEditor) SetMakerNotePolicy(policy MakerNotePolicy) {
+	je.makerNote = policy
+}
+
 func (je *JpegEditor) appendSegment(idx int, s *jpegstructure.Segment) {
 	newS := je.sl.Segments()
 	newS = append(newS[:idx+1], newS[idx:]...)
@@ -55,8 +117,13 @@ func (je *JpegEditor) appendSegment(idx int, s *jpegstructure.Segment) {
 	je.sl = jpegstructure.NewSegmentList(newS)
 }
 
-// Bytes return jpeg image bytes from this editor. Any edits will be committed
+// Bytes return jpeg image bytes from this editor. Any edits will be committed.
+// The configured MakerNotePolicy is applied first and may drop the MakerNote or
+// return ErrMakerNotePresent
 func (je *JpegEditor) Bytes() ([]byte, error) {
+	if err := je.applyMakerNotePolicy(); err != nil {
+		return nil, err
+	}
 	if je.ie.IsDirty() {
 		if err := je.setIptc(); err != nil {
 			return nil, err

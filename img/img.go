@@ -80,6 +80,20 @@ const (
 	ResizeAndFit
 )
 
+// MakerNotePolicy controls what happens to an exif MakerNote when metadata is
+// copied to a transformed image. See metadata.MakerNotePolicy
+type MakerNotePolicy = metadata.MakerNotePolicy
+
+// MakerNote policies, aliased from the metadata package
+const (
+	//MakerNotePreserve copies the MakerNote through to the new image. Default
+	MakerNotePreserve = metadata.MakerNotePreserve
+	//MakerNoteStrip removes the MakerNote from the new image
+	MakerNoteStrip = metadata.MakerNoteStrip
+	//MakerNoteFail aborts with metadata.ErrMakerNotePresent if a MakerNote is present
+	MakerNoteFail = metadata.MakerNoteFail
+)
+
 // Options holds all options for a given image transformation job
 type Options struct {
 	Width     int
@@ -92,6 +106,9 @@ type Options struct {
 	Y         int
 	Angle     int
 	CopyExif  bool
+	//MakerNote controls what happens to an exif MakerNote when CopyExif is set.
+	//The zero value preserves it, matching earlier releases
+	MakerNote MakerNotePolicy
 }
 
 func resampleFiler(strategy ResampleStrategy) imaging.ResampleFilter {
@@ -208,6 +225,7 @@ func saveWithExif(srcBytes []byte, dstImage image.Image, opt Options, fileName s
 	if err != nil {
 		return err
 	}
+	mde.SetMakerNotePolicy(opt.MakerNote)
 	err = mde.Exif().SetDate(metadata.ModifyDate, time.Now())
 	if err != nil {
 		return err
@@ -221,8 +239,15 @@ func Save(image image.Image, fileName string) error {
 }
 
 // SaveOpts saves an image. If srcExif is != nil it will try to extract and exif information from that
-// and append it to the new file
+// and append it to the new file. Any MakerNote in srcExif is preserved, use
+// SaveOptsMakerNote to control that
 func SaveOpts(image image.Image, fileName string, quality int, srcExif []byte) error {
+	return SaveOptsMakerNote(image, fileName, quality, srcExif, MakerNotePreserve)
+}
+
+// SaveOptsMakerNote is SaveOpts with control over what happens to an exif
+// MakerNote carried in srcExif
+func SaveOptsMakerNote(image image.Image, fileName string, quality int, srcExif []byte, policy MakerNotePolicy) error {
 	if quality < 1 || quality > 100 {
 		quality = 90
 	}
@@ -243,6 +268,7 @@ func SaveOpts(image image.Image, fileName string, quality int, srcExif []byte) e
 	if err != nil {
 		return err
 	}
+	mde.SetMakerNotePolicy(policy)
 	err = mde.Exif().SetDate(metadata.ModifyDate, time.Now())
 	if err != nil {
 		return err
@@ -291,7 +317,7 @@ func RotateAndCropFile(source string, dest string, opts Options) error {
 	srcImg = RotateImage(srcImg, angle)
 	srcImg = CropImage(srcImg, crop)
 
-	return SaveOpts(srcImg, dest, opts.Quality, srcBytes)
+	return SaveOptsMakerNote(srcImg, dest, opts.Quality, srcBytes, opts.MakerNote)
 
 	/*	angle := opts.Angle
 		crop := opts.Rectangle()
