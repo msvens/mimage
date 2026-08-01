@@ -7,6 +7,7 @@ import (
 	jpegstructure "github.com/dsoprea/go-jpeg-image-structure/v2"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var errJpegWrongFileExt = errors.New("file does not end with .jpg or .jpeg")
@@ -258,8 +259,10 @@ func (je *JpegEditor) setXmp() error {
 // WriteFile writes this editor to file by first committing any edits. Any existing
 // file will be truncated. Destination needs to have jpg or jpeg extension
 func (je *JpegEditor) WriteFile(dest string) error {
-	//make sure dest has the right file extension
-	if filepath.Ext(dest) != ".jpg" && filepath.Ext(dest) != ".jpeg" {
+	//make sure dest has the right file extension. Compared case insensitively
+	//since cameras commonly emit .JPG
+	ext := strings.ToLower(filepath.Ext(dest))
+	if ext != ".jpg" && ext != ".jpeg" {
 		return errJpegWrongFileExt
 	}
 	out, err := je.Bytes()
