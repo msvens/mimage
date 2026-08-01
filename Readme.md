@@ -139,6 +139,35 @@ needs to be installed. In effect making mphotos slighly less portable.
 
 mimage seeks to remedy this by offering similar functionality using only go native code
 
+# Regenerating the tag tables
+
+`metadata/genexif.go` and `metadata/geniptc.go` are generated. **Neither exiftool nor perl
+is needed to build or use mimage** - they are only needed to refresh these tables, which is
+rare, since the standard exif and IPTC tag sets barely change.
+
+Exif tags come from exiftool's own tag database:
+
+    exiftool -listx -EXIF:all > assets/exiftool-listx.xml    # or: mimage generate -j
+    mimage generate -e                                       # -> metadata/genexif.go
+
+`assets/exiftool-listx.xml` is committed, so regenerating the go sources only needs
+exiftool if you also want to pick up a newer exiftool release. The current file was
+produced with **exiftool 13.55**.
+
+A few tags need explicit handling, all of it in `internal/generator/exifgenerator.go`:
+
+- `subDirTags` - tags exiftool models as SubDirectory entries, so they never appear in a
+  `-listx` dump. These are pointers to another ifd, `IFD_ExifOffset` among them.
+- `nameOverrides` - keeps exported constant names stable where exiftool leads with a
+  different variant name for a tag id.
+- `typeOverrides` - restores types that exiftool's tables carry but `-listx` reports as `?`.
+
+IPTC tags still come from `assets/iptc.pl`, because `-listx` does not expose whether an
+IPTC tag is repeatable and `IptcTagDesc.Repeatable` needs it:
+
+    mimage generate -j    # runs perl assets/iptc.pl
+    mimage generate -i    # -> metadata/geniptc.go
+
 # Releases
 
 # Todo

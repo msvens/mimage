@@ -1,7 +1,7 @@
 package generator
 
 import (
-	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"os"
 	"sort"
@@ -9,42 +9,135 @@ import (
 	"strings"
 )
 
-type etExifTag struct {
-	Id          uint16
-	Name        string
-	Writable    string
-	Mandatory   bool
-	Fmt         string
-	Ifd         string
-	Count       int
-	SubDir      bool
-	DirName     string
-	Offset      bool
-	OffsetPair  uint16
-	Permanent   bool
-	Protected   bool
-	Description string
-	Notes       string
-	Values      map[string]string
-}
+// ListxFile is the exiftool -listx dump the exif tables are generated from
+const ListxFile = "assets/exiftool-listx.xml"
 
-/*
-var exifTypeMapping = map[string]string{
-	"double":      "ExifDouble",
-	"float":       "ExifFloat",
-	"int16s":      "ExifInt16",
-	"int16u":      "ExifUint16",
-	"int32s":      "ExifInt32",
-	"int32u":      "ExifUint32",
-	"int8u":       "ExifUint8",
-	"rational64s": "ExifRational",
-	"rational64u": "ExifUrational",
-	"string":      "ExifString",
-	"undef":       "ExifUndef",
-}*/
+// exiftool table names we care about. Everything else in the dump (Composite,
+// Extra, PanasonicRaw, ...) describes tags that are not plain exif entries
+const (
+	listxExifTable = "Exif::Main"
+	listxGpsTable  = "GPS::Main"
+)
 
 const rawMain = "main"
 const rawGps = "gps"
+
+// listxTagInfo mirrors the <taginfo> document produced by exiftool -listx
+type listxTagInfo struct {
+	Tables []listxTable `xml:"table"`
+}
+
+type listxTable struct {
+	Name string     `xml:"name,attr"`
+	Tags []listxTag `xml:"tag"`
+}
+
+type listxTag struct {
+	ID     string       `xml:"id,attr"`
+	Name   string       `xml:"name,attr"`
+	Type   string       `xml:"type,attr"`
+	Count  string       `xml:"count,attr"`
+	G1     string       `xml:"g1,attr"`
+	Values *listxValues `xml:"values"`
+}
+
+type listxValues struct {
+	Keys []listxKey `xml:"key"`
+}
+
+type listxKey struct {
+	ID   string     `xml:"id,attr"`
+	Vals []listxVal `xml:"val"`
+}
+
+type listxVal struct {
+	Lang string `xml:"lang,attr"`
+	Text string `xml:",chardata"`
+}
+
+// exifTag is the normalised tag the generator emits from
+type exifTag struct {
+	Id     uint16
+	Name   string
+	Type   string
+	Ifd    string
+	Count  int
+	Values map[string]string
+}
+
+// subDirTags are tags exiftool models as SubDirectory entries rather than plain
+// tags, so they never appear in a -listx dump. They are all pointers to another
+// ifd or data block. mimage still needs them: IFD_ExifOffset in particular is
+// used by ExifEditor.DropMakerNote to find the ExifIFD without creating one
+var subDirTags = []exifTag{
+	{Id: 0x0190, Name: "GlobalParametersIFD", Type: "ExifUndef", Ifd: "ExifIFD", Count: -1},
+	{Id: 0x4748, Name: "StitchInfo", Type: "ExifUndef", Ifd: "ExifIFD", Count: -1},
+	{Id: 0x8290, Name: "KodakIFD", Type: "ExifUndef", Ifd: "ExifIFD", Count: -1},
+	{Id: 0x8568, Name: "AFCP_IPTC", Type: "ExifUndef", Ifd: "ExifIFD", Count: -1},
+	{Id: 0x8606, Name: "LeafData", Type: "ExifUndef", Ifd: "ExifIFD", Count: -1},
+	{Id: 0x8649, Name: "PhotoshopSettings", Type: "ExifUndef", Ifd: "RootIFD", Count: -1},
+	{Id: 0x8769, Name: "ExifOffset", Type: "ExifUint32", Ifd: "RootIFD", Count: 1},
+	{Id: 0x8773, Name: "ICC_Profile", Type: "ExifUndef", Ifd: "RootIFD", Count: -1},
+	{Id: 0x8825, Name: "GPSInfo", Type: "ExifUint32", Ifd: "RootIFD", Count: 1},
+	{Id: 0x888a, Name: "LeafSubIFD", Type: "ExifUint32", Ifd: "ExifIFD", Count: 1},
+	{Id: 0xa005, Name: "InteropOffset", Type: "ExifUint32", Ifd: "ExifIFD", Count: 1},
+	{Id: 0xc51b, Name: "HasselbladExif", Type: "ExifUndef", Ifd: "ExifIFD", Count: -1},
+	{Id: 0xc6f5, Name: "ProfileIFD", Type: "ExifUint32", Ifd: "RootIFD", Count: 1},
+	{Id: 0xc7d5, Name: "NikonNEFInfo", Type: "ExifUndef", Ifd: "ExifIFD", Count: -1},
+	{Id: 0xcd3b, Name: "RGBTables", Type: "ExifUndef", Ifd: "RootIFD", Count: -1},
+	{Id: 0xfe00, Name: "KDC_IFD", Type: "ExifUndef", Ifd: "ExifIFD", Count: -1},
+}
+
+// ifdOverrides pins tags whose -listx group does not match where mimage reads
+// them. ThumbnailOffset/ThumbnailLength are reported as ExifIFD but belong with
+// the root ifd chain here
+var ifdOverrides = map[uint16]string{
+	0x0201: "RootIFD",
+	0x0202: "RootIFD",
+}
+
+// nameOverrides keeps exported constant names stable where the name exiftool
+// lists first differs from the one mimage has always used. Renaming any of
+// these would silently break callers, so every entry here is deliberate.
+//
+// The first group is tags where -listx leads with a different variant name.
+// The second is the older duplicate ids that exiftool also lists: they share a
+// name with a tag mimage already exports, and being numerically lower they
+// would otherwise claim the unsuffixed name and push the established tag to a
+// suffixed one
+var nameOverrides = map[uint16]string{
+	0x014a: "SubIFDs",             //-listx lists only the A100DataOffset variant
+	0x0111: "StripOffsets",        //-listx leads with PreviewImageStart
+	0x0117: "StripByteCounts",     //-listx leads with PreviewImageLength
+	0x927c: "MakerNote",           //-listx leads with MakerNoteApple
+	0xc634: "DNGPrivateData",      //-listx leads with DNGAdobeData
+	0xcd30: "SemanticInstanceIFD", //exiftool renamed this to SemanticInstanceID
+
+	0x920c: "SpatialFrequencyResponse_0x920c", //duplicate of 0xa20c
+	0x920e: "FocalPlaneXResolution_0x920e",    //duplicate of 0xa20e
+	0x920f: "FocalPlaneYResolution_0x920f",    //duplicate of 0xa20f
+	0x9215: "ExposureIndex_0x9215",            //duplicate of 0xa215
+	0x7310: "BlackLevel_0x7310",               //duplicate of 0xc61a
+}
+
+// typeOverrides restores types that exiftool's EXIF.pm tables carry but that
+// -listx reports as "?". Without these the affected tags would silently drop to
+// ExifUndef and be scanned as raw bytes instead of their real type
+var typeOverrides = map[uint16]string{
+	0x014a: "ExifUint32", //SubIFDs
+	0x0153: "ExifUint16", //SampleFormat
+	0x8649: "ExifUint8",  //PhotoshopSettings
+	0x9009: "ExifUint8",  //GooglePlusUploadCode
+	0x9101: "ExifUint8",  //ComponentsConfiguration
+	0xc616: "ExifUint8",  //CFAPlaneColor
+	0xc617: "ExifUint16", //CFALayout
+	0xc634: "ExifUint8",  //DNGPrivateData
+	0xc6d2: "ExifString", //PanasonicTitle
+	0xc6d3: "ExifString", //PanasonicTitle2
+	0xcd2e: "ExifString", //SemanticName
+	0xcd30: "ExifString", //SemanticInstanceIFD
+	0xcd38: "ExifUint32", //MaskSubArea
+}
 
 const exifTypesSrc = `
 type ExifTag uint16
@@ -95,137 +188,46 @@ type ExifTagDesc struct {
   Id        ExifTag  ` + "`json:\"id\"`" + `
   Name      string ` + "`json:\"name\"`" + `
   Type  ExifTagType ` + "`json:\"type\"`" + `
-  Mandatory  bool ` + "`json:\"mandatory\"`" + `
   Ifd  ExifIndex ` + "`json:\"ifd\"`" + `
   Count int ` + "`json:\"count\"`" + `
-  Offset bool ` + "`json:\"offset\"`" + `
-  OffsetPair ExifTag ` + "`json:\"offsetPair\"`" + `
-  Permanent bool ` + "`json:\"permanent\"`" + `
-  Protected bool ` + "`json:\"protected\"`" + `
   Values interface{} ` + "`json:\"values\"`" + `
 }
 `
 
-// GenerateMasterExifJSON aligns types and adds type/description info to tags from exiv2 json. Sorts the file based on TagId
-func GenerateMasterExifJSON() error {
-	b, err := os.ReadFile("assets/exiftool-exiftags.json")
-	if err != nil {
-		return err
-	}
-	exifMap := make(map[string][]*etExifTag)
-	err = json.Unmarshal(b, &exifMap)
-	if err != nil {
-		return err
-	}
-	b, err = os.ReadFile("assets/exiv2-exiftags.json")
-	if err != nil {
-		return err
-	}
-	exivMap := make(map[string][]rawExifTag)
-	err = json.Unmarshal(b, &exivMap)
-	if err != nil {
-		return err
-	}
-
-	//sort
-	sort.Slice(exifMap[rawMain], func(i, j int) bool {
-		return exifMap[rawMain][i].Id < exifMap[rawMain][j].Id
-	})
-	sort.Slice(exifMap[rawGps], func(i, j int) bool {
-		return exifMap[rawGps][i].Id < exifMap[rawGps][j].Id
-	})
-
-	//create exiv2 maps
-	exivIdMaps := map[string]map[uint16]rawExifTag{}
-	for k, v := range exivMap {
-		m := map[uint16]rawExifTag{}
-		for _, t := range v {
-			m[t.Id] = t
-		}
-		exivIdMaps[k] = m
-	}
-
-	//align information in exiftool json and handle duplicate names (we know of one at least)
-	for _, v := range exifMap {
-		tagNames := map[string]bool{}
-		for _, t := range v {
-			t.Name = alignName(t.Name)
-			t.Ifd = alignIFD(t.Ifd)
-			t.Writable = alignType(*t, exivIdMaps)
-			t.Description = alignDesc(*t, exivIdMaps)
-			if _, found := tagNames[t.Ifd+t.Name]; found {
-				//fmt.Println("found duplicate")
-				t.Name = fmt.Sprintf("%s_%#04x", t.Name, t.Id)
-				//fmt.Println("found duplicate: ", t.Name)
-			} else {
-				tagNames[t.Ifd+t.Name] = true
-			}
-		}
-	}
-
-	//write
-	outBytes, err := json.MarshalIndent(exifMap, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile("./assets/master-exiftags.json", outBytes, 0644)
-
+// exifTypeMapping translates an exiftool -listx type to a mimage ExifTagType.
+// "?", "binary" and "undef" all mean the value has no fixed scalar type
+var exifTypeMapping = map[string]string{
+	"string":      "ExifString",
+	"int8u":       "ExifUint8",
+	"int16u":      "ExifUint16",
+	"int32u":      "ExifUint32",
+	"int16s":      "ExifInt16",
+	"int32s":      "ExifInt32",
+	"rational64u": "ExifUrational",
+	"rational64s": "ExifRational",
+	"float":       "ExifFloat",
+	"double":      "ExifDouble",
 }
 
-func alignDesc(tag etExifTag, exivMaps map[string]map[uint16]rawExifTag) string {
-	exivType, found := exivMaps[tag.Ifd][tag.Id]
-	if found && tag.Description == "" {
-		return exivType.Description
+func exifType(listxType string) string {
+	if t, found := exifTypeMapping[listxType]; found {
+		return t
 	}
-	return tag.Description
+	return "ExifUndef"
 }
 
-func alignType(tag etExifTag, exivMaps map[string]map[uint16]rawExifTag) string {
-	t := tag.Writable
-	if t == "undef" && tag.Fmt != "undef" {
-		t = tag.Fmt
+// exifIfd maps a -listx table and group to a mimage ExifIndex. Anything that is
+// not explicitly the exif or interop ifd belongs with the root ifd, which is
+// how the previous exiftool sourced generator behaved as well
+func exifIfd(table, g1 string) string {
+	if table == listxGpsTable {
+		return "GpsIFD"
 	}
-	ret := "ExifUndef"
-	switch t {
-	case "string":
-		return "ExifString"
-	case "int8u":
-		return "ExifUint8"
-	case "int16u":
-		return "ExifUint16"
-	case "int32u":
-		return "ExifUint32"
-	case "int16s":
-		return "ExifInt16"
-	case "int32s":
-		return "ExifInt32"
-	case "rational64u":
-		return "ExifUrational"
-	case "rational64s":
-		return "ExifRational"
-	case "float":
-		return "ExifFloat"
-	case "double":
-		return "ExifDouble"
-	}
-	if exivType, found := exivMaps[tag.Ifd][tag.Id]; found {
-		if ret != exivType.TypeName {
-			ret = exivType.TypeName
-		}
-	}
-
-	return ret
-}
-
-func alignIFD(rawIfd string) string {
-	switch rawIfd {
+	switch g1 {
 	case "ExifIFD":
-		return rawIfd
+		return "ExifIFD"
 	case "InteropIFD":
-		return rawIfd
-	case "GpsIFD":
-		return rawIfd
+		return "InteropIFD"
 	default:
 		return "RootIFD"
 	}
@@ -235,116 +237,195 @@ func alignName(rawName string) string {
 	return strings.ReplaceAll(rawName, "-", "")
 }
 
-// GenerateExifTagsFromMasterExifJSON generate exif sources from exif json file
-func GenerateExifTagsFromMasterExifJSON() error {
-	raw, err := readMasterExifJSON()
+// englishValues picks the en translation out of a -listx <values> block
+func englishValues(v *listxValues) map[string]string {
+	if v == nil || len(v.Keys) == 0 {
+		return nil
+	}
+	ret := map[string]string{}
+	for _, k := range v.Keys {
+		for _, val := range k.Vals {
+			if val.Lang == "en" {
+				ret[k.ID] = strings.TrimSpace(val.Text)
+				break
+			}
+		}
+	}
+	if len(ret) == 0 {
+		return nil
+	}
+	return ret
+}
+
+// ReadListxExifTags parses the committed exiftool -listx dump into the tag set
+// the exif sources are generated from
+func ReadListxExifTags() (map[string][]exifTag, error) {
+	b, err := os.ReadFile(ListxFile)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
+	}
+	var doc listxTagInfo
+	if err = xml.Unmarshal(b, &doc); err != nil {
+		return nil, err
+	}
+
+	ret := map[string][]exifTag{rawMain: {}, rawGps: {}}
+	for _, table := range doc.Tables {
+		if table.Name != listxExifTable && table.Name != listxGpsTable {
+			continue
+		}
+		group := rawMain
+		if table.Name == listxGpsTable {
+			group = rawGps
+		}
+		for _, t := range table.Tags {
+			id, e := strconv.ParseUint(t.ID, 10, 16)
+			if e != nil {
+				//composite entries use non numeric ids such as Exif-JpgFromRaw
+				continue
+			}
+			tag := exifTag{
+				Id:     uint16(id),
+				Name:   alignName(t.Name),
+				Type:   exifType(t.Type),
+				Ifd:    exifIfd(table.Name, t.G1),
+				Count:  -1,
+				Values: englishValues(t.Values),
+			}
+			if t.Count != "" {
+				if c, e := strconv.Atoi(t.Count); e == nil {
+					tag.Count = c
+				}
+			}
+			if override, found := ifdOverrides[tag.Id]; found {
+				tag.Ifd = override
+			}
+			ret[group] = append(ret[group], tag)
+		}
+	}
+
+	ret[rawMain] = append(ret[rawMain], subDirTags...)
+	collapseVariants(ret)
+	dedupeNames(ret)
+	return ret, nil
+}
+
+// collapseVariants keeps a single record per ifd and tag id. exiftool lists the
+// same id several times when its meaning depends on context, for instance
+// 0x0201 is ThumbnailOffset, PreviewImageStart, JpgFromRawStart and
+// OtherImageStart. mimage keys tags on ifd and id so it can only hold one, and
+// the first listed variant is the one it has always used
+func collapseVariants(tags map[string][]exifTag) {
+	for _, group := range []string{rawMain, rawGps} {
+		seen := map[string]bool{}
+		kept := make([]exifTag, 0, len(tags[group]))
+		for _, t := range tags[group] {
+			key := fmt.Sprintf("%s%d", t.Ifd, t.Id)
+			if seen[key] {
+				continue
+			}
+			seen[key] = true
+			if name, found := nameOverrides[t.Id]; found {
+				t.Name = name
+			}
+			if typ, found := typeOverrides[t.Id]; found {
+				t.Type = typ
+			}
+			kept = append(kept, t)
+		}
+		sort.Slice(kept, func(i, j int) bool { return kept[i].Id < kept[j].Id })
+		tags[group] = kept
+	}
+}
+
+// dedupeNames suffixes a duplicate name within an ifd with its tag id, matching
+// what the previous generator did for the few exif tags that share a name
+func dedupeNames(tags map[string][]exifTag) {
+	for _, group := range []string{rawMain, rawGps} {
+		seen := map[string]bool{}
+		for i := range tags[group] {
+			t := &tags[group][i]
+			key := t.Ifd + t.Name
+			if seen[key] {
+				t.Name = fmt.Sprintf("%s_%#04x", t.Name, t.Id)
+			} else {
+				seen[key] = true
+			}
+		}
+	}
+}
+
+// GenerateExifTagsFromListx generates metadata/genexif.go from the exiftool
+// -listx dump in assets
+func GenerateExifTagsFromListx() error {
+	raw, err := ReadListxExifTags()
+	if err != nil {
 		return err
 	}
 	sb := strings.Builder{}
 	sb.WriteString(`package metadata
-//Do not edit! This is an automatically generated file (see generator.GenerateExifTagsFromExifTool()).
-//This file was generated based on https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/EXIF.pm
+//Do not edit! This is an automatically generated file (see generator.GenerateExifTagsFromListx()).
+//Generated from assets/exiftool-listx.xml, produced by: exiftool -listx -EXIF:all
 `)
 	sb.WriteString(exifTypesSrc)
 	sb.WriteString(exifIndexSrc)
 	sb.WriteString(exifTypeConstSrc)
 	sb.WriteString(exifTagDescSrc)
-	_ = generateExifConstants(raw, &sb)
-	_ = generateExifTagDescriptions(raw, &sb)
+	generateExifConstants(raw, &sb)
+	generateExifTagDescriptions(raw, &sb)
 
-	err = os.WriteFile("./metadata/genexif.go", []byte(sb.String()), 0644)
-	return err
+	return os.WriteFile("./metadata/genexif.go", []byte(sb.String()), 0644)
 }
 
-func generateExifTagDescriptions(raw map[string][]etExifTag, sb *strings.Builder) error {
+func generateExifTagDescriptions(raw map[string][]exifTag, sb *strings.Builder) {
 	sb.WriteString("//Exif Tag Descriptions\n")
 	sb.WriteString("var ExifTagDescriptions = map[ExifIndexTag]ExifTagDesc{\n")
 
-	order := []string{rawMain, rawGps}
-	for _, v := range order {
-		for _, t := range raw[v] {
-			valueMap := generateExifValueMap(t.Writable, t)
-			indexTag := fmt.Sprintf("ExifIndexTag{%s,%#04x}", t.Ifd, t.Id)
+	for _, group := range []string{rawMain, rawGps} {
+		for _, t := range raw[group] {
+			valueMap := generateExifValueMap(t)
 			descFmt := `ExifTagDesc{
   Id: %#04x,
   Name: "%s",
   Type: %v,
-  Mandatory: %v,
   Ifd: %s,
   Count: %v,
-  Offset: %v,
-  OffsetPair: %v,
-  Permanent: %v,
-  Protected: %v,
   Values: %s,
 }`
-			adjustedCnt := t.Count
-			if adjustedCnt == 0 {
-				if t.Writable == "ExifString" || t.Writable == "ExifUndef" {
-					adjustedCnt = -1
-				} else {
-					adjustedCnt = 1
-				}
-			}
-			tagDesc := fmt.Sprintf(descFmt, t.Id, fixTagName(t.Name), t.Writable, t.Mandatory, t.Ifd, adjustedCnt, t.Offset, t.OffsetPair, t.Permanent, t.Protected, valueMap)
-			fmt.Fprintf(sb, "%s: %s,\n", indexTag, tagDesc)
+			tagDesc := fmt.Sprintf(descFmt, t.Id, t.Name, t.Type, t.Ifd, t.Count, valueMap)
+			fmt.Fprintf(sb, "ExifIndexTag{%s,%#04x}: %s,\n", t.Ifd, t.Id, tagDesc)
 		}
 	}
 	sb.WriteString("}\n")
-	return nil
 }
 
-func generateExifConstants(raw map[string][]etExifTag, sb *strings.Builder) error {
-	tags := raw[rawMain]
-	//ifds := map[string]bool{}
-
-	//generate ifd constants
-	sb.WriteString("//IFD Tag Ids (includes all IFD, IFD1, etc tags)\nconst(\n")
-	for _, t := range tags {
-		if t.Ifd == "RootIFD" {
-			fmt.Fprintf(sb, "  IFD_%s ExifTag = %#04x\n", fixTagName(t.Name), t.Id)
+func generateExifConstants(raw map[string][]exifTag, sb *strings.Builder) {
+	emit := func(header, prefix, ifd string, tags []exifTag) {
+		fmt.Fprintf(sb, "//%s\nconst(\n", header)
+		for _, t := range tags {
+			if ifd != "" && t.Ifd != ifd {
+				continue
+			}
+			fmt.Fprintf(sb, "  %s%s ExifTag = %#04x\n", prefix, t.Name, t.Id)
 		}
+		sb.WriteString(")\n")
 	}
-	sb.WriteString(")\n")
-
-	//generate exififd constants
-	sb.WriteString("//ExifIFD Tag Ids\nconst(\n")
-	for _, t := range tags {
-		if t.Ifd == "ExifIFD" {
-			fmt.Fprintf(sb, "  ExifIFD_%s ExifTag = %#04x\n", t.Name, t.Id)
-		}
-	}
-	sb.WriteString(")\n")
-
-	//generate exifInterop constants
-	sb.WriteString("//InteropIFD Tag Ids\nconst(\n")
-	for _, t := range tags {
-		if t.Ifd == "InteropIFD" {
-			fmt.Fprintf(sb, "  InteropIFD_%s ExifTag = %#04x\n", t.Name, t.Id)
-		}
-	}
-	sb.WriteString(")\n")
-
-	//generate gps constants
-	tags = raw[rawGps]
-	sb.WriteString("//GpsIFD Tag Ids\nconst(\n")
-	for _, t := range tags {
-		fmt.Fprintf(sb, "  GpsIFD_%s ExifTag = %#04x\n", t.Name, t.Id)
-	}
-	sb.WriteString(")\n")
-
-	return nil
+	emit("IFD Tag Ids (includes all IFD, IFD1, etc tags)", "IFD_", "RootIFD", raw[rawMain])
+	emit("ExifIFD Tag Ids", "ExifIFD_", "ExifIFD", raw[rawMain])
+	emit("InteropIFD Tag Ids", "InteropIFD_", "InteropIFD", raw[rawMain])
+	emit("GpsIFD Tag Ids", "GpsIFD_", "", raw[rawGps])
 }
 
+// generateExifValueMap renders the enumerated values for a tag. Undefined tags,
+// rationals and multi value tags do not get a lookup map
+//
 //gocyclo:ignore
-func generateExifValueMap(exifType string, tag etExifTag) string {
-	if len(tag.Values) == 0 || exifType == "ExifUndef" {
+func generateExifValueMap(tag exifTag) string {
+	if len(tag.Values) == 0 || tag.Type == "ExifUndef" {
 		return "nil"
-	} else if tag.Count != 0 { //we dont generate a value map for complex values
+	} else if tag.Count > 1 { //we dont generate a value map for complex values
 		return "nil"
-	} else if exifType == "ExifUrational" || exifType == "ExifRational" { //we dont generate a value map for rationals
+	} else if tag.Type == "ExifUrational" || tag.Type == "ExifRational" {
 		return "nil"
 	}
 
@@ -365,108 +446,60 @@ func generateExifValueMap(exifType string, tag etExifTag) string {
 		return err
 	}
 
-	buff := strings.Builder{}
-	switch exifType {
+	//emit keys in a stable order so regeneration is reproducible
+	keys := make([]string, 0, len(tag.Values))
+	for k := range tag.Values {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	numeric := func(goType string, bitSize int, float bool, unsigned bool) string {
+		buff := strings.Builder{}
+		fmt.Fprintf(&buff, "map[%s]string{\n", goType)
+		for _, k := range keys {
+			if err := checkNumber(k, bitSize, float, unsigned); err != nil {
+				fmt.Println("could not parse value key:", k)
+				continue
+			}
+			fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, escape(tag.Values[k]))
+		}
+		buff.WriteString("  }")
+		return buff.String()
+	}
+
+	switch tag.Type {
 	case "ExifString":
+		buff := strings.Builder{}
 		buff.WriteString("map[string]string{\n")
-		for k, v := range tag.Values {
-			fmt.Fprintf(&buff, "    \"%s\": \"%s\",\n", k, v)
+		for _, k := range keys {
+			fmt.Fprintf(&buff, "    \"%s\": \"%s\",\n", k, escape(tag.Values[k]))
 		}
 		buff.WriteString("  }")
+		return buff.String()
 	case "ExifFloat":
-		buff.WriteString("map[float]string{\n")
-		for k, v := range tag.Values {
-			if err := checkNumber(k, 32, true, false); err != nil {
-				fmt.Println("could not parse value key:", k)
-			} else {
-				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
-			}
-		}
-		buff.WriteString("  }")
+		return numeric("float", 32, true, false)
 	case "ExifDouble":
-		buff.WriteString("map[double]string{\n")
-		for k, v := range tag.Values {
-			if err := checkNumber(k, 64, true, false); err != nil {
-				fmt.Println("could not parse value key:", k)
-			} else {
-				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
-			}
-		}
-		buff.WriteString("  }")
+		return numeric("double", 64, true, false)
 	case "ExifUint8":
-		buff.WriteString("map[uint8]string{\n")
-		for k, v := range tag.Values {
-			if err := checkNumber(k, 8, false, true); err != nil {
-				fmt.Println("could not parse value key:", k)
-			} else {
-				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
-			}
-		}
-		buff.WriteString("  }")
+		return numeric("uint8", 8, false, true)
 	case "ExifUint16":
-		buff.WriteString("map[uint16]string{\n")
-		for k, v := range tag.Values {
-			if err := checkNumber(k, 16, false, true); err != nil {
-				fmt.Println("could not parse value key:", k)
-			} else {
-				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
-			}
-		}
-		buff.WriteString("  }")
+		return numeric("uint16", 16, false, true)
 	case "ExifUint32":
-		buff.WriteString("map[uint32]string{\n")
-		for k, v := range tag.Values {
-			if err := checkNumber(k, 32, false, true); err != nil {
-				fmt.Println("could not parse value key:", k)
-			} else {
-				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
-			}
-		}
-		buff.WriteString("  }")
+		return numeric("uint32", 32, false, true)
 	case "ExifInt16":
-		buff.WriteString("map[int16]string{\n")
-		for k, v := range tag.Values {
-			if err := checkNumber(k, 16, false, false); err != nil {
-				fmt.Println("could not parse value key:", k)
-			} else {
-				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
-			}
-		}
-		buff.WriteString("  }")
+		return numeric("int16", 16, false, false)
 	case "ExifInt32":
-		buff.WriteString("map[int32]string{\n")
-		for k, v := range tag.Values {
-			if err := checkNumber(k, 32, false, false); err != nil {
-				fmt.Println("could not parse value key:", k)
-			} else {
-				fmt.Fprintf(&buff, "    %s: \"%s\",\n", k, v)
-			}
-		}
-		buff.WriteString("  }")
+		return numeric("int32", 32, false, false)
 	default:
-		fmt.Println("Type not found:", exifType)
+		fmt.Println("Type not found:", tag.Type)
 		return "nil"
 	}
-	return buff.String()
 }
 
-func readMasterExifJSON() (map[string][]etExifTag, error) {
-	b, err := os.ReadFile("assets/master-exiftags.json")
-	if err != nil {
-		return nil, err
-	}
-	exifMap := make(map[string][]etExifTag)
-	err = json.Unmarshal(b, &exifMap)
-	if err != nil {
-		return nil, err
-	}
-	//sort the slices on id
-	sort.Slice(exifMap[rawMain], func(i, j int) bool {
-		return exifMap[rawMain][i].Id < exifMap[rawMain][j].Id
-	})
-	sort.Slice(exifMap[rawGps], func(i, j int) bool {
-		return exifMap[rawGps][i].Id < exifMap[rawGps][j].Id
-	})
-	return exifMap, nil
-
+// escape makes a value description safe to emit inside a go string literal
+func escape(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `"`, `\"`)
+	s = strings.ReplaceAll(s, "\n", " ")
+	return s
 }
