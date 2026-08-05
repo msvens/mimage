@@ -189,6 +189,49 @@ func (je *JpegEditor) CopyMetaData(sourceImg []byte) error {
 	return nil
 }
 
+// CopyMetaDataFromTiff copies exif, xmp and iptc out of a tiff image and into
+// this jpeg editor, replacing whatever was there.
+//
+// A tiff keeps all three in its ifd chain rather than in separate segments, so
+// the exif is rebuilt from the tiff ifds while xmp and iptc are lifted out of
+// their ifd0 tags and written as proper jpeg segments. Tags describing how the
+// tiff stored its pixels are dropped, see ExifEditor.DropTiffLayoutTags
+func (je *JpegEditor) CopyMetaDataFromTiff(tiffData []byte) error {
+	md, err := newMetaDataFromTiff(tiffData)
+	if err != nil {
+		return err
+	}
+
+	//exif, rebuilt from the tiff ifd chain
+	if err = je.DropExif(); err != nil {
+		return err
+	}
+	drop := append(TiffDropTags(), unreadableRootTags(md.exifData)...)
+	if je.ee, err = NewExifEditorFromIfd(md.exifData.RootIfd(), drop); err != nil {
+		return err
+	}
+
+	//xmp, from the XMLPacket tag
+	if err = je.DropXmp(); err != nil {
+		return err
+	}
+	if b := tiffTagBytes(md.exifData, tiffXmpTag); b != nil {
+		if je.xe, err = NewXmpEditorFromBytes(b); err != nil {
+			return err
+		}
+		je.xe.SetDirty()
+	}
+
+	//iptc, already decoded by the tiff reader from either of its two homes
+	if err = je.DropIptc(); err != nil {
+		return err
+	}
+	if raw := md.iptcData.RawIptc(); len(raw) > 0 {
+		je.ie.setRecords(raw)
+	}
+	return nil
+}
+
 // DropMetaData removes xmp, exif, iptc data from this editor
 func (je *JpegEditor) DropMetaData() error {
 	if err := je.DropExif(); err != nil {

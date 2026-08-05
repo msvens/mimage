@@ -15,6 +15,9 @@ const GPSImg = AssetPath + "gps.jpg"
 // CanonImg is the only asset carrying an exif MakerNote
 const CanonImg = AssetPath + "canon.jpg"
 const Xe3Img = AssetPath + "xe3.jpg"
+
+// TiffImg is leica.jpg converted to tiff, so the two carry the same metadata
+const TiffImg = AssetPath + "leica.tiff"
 const NonImageFile = AssetPath + "exiftool-leica-g1.json"
 const XmpFile = AssetPath + "xmp.xml"
 
