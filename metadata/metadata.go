@@ -102,7 +102,7 @@ func parseJpegBytes(data []byte) (*jpegstructure.SegmentList, error) {
 	return segments, nil
 }
 
-// NewMetaDataFromFile reads a jpeg image file
+// NewMetaDataFromFile reads a jpeg or tiff image file
 func NewMetaDataFromFile(filename string) (*MetaData, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -111,8 +111,44 @@ func NewMetaDataFromFile(filename string) (*MetaData, error) {
 	return NewMetaData(data)
 }
 
-// NewMetaData reads a jpeg image byte slice
+// container identifies the image format a byte slice holds
+type container int
+
+const (
+	containerUnknown container = iota
+	containerJpeg
+	containerTiff
+)
+
+// sniff identifies the container from its magic bytes. Jpeg starts with SOI,
+// tiff with a byte order mark followed by the answer to everything
+func sniff(data []byte) container {
+	if len(data) >= 2 && data[0] == 0xff && data[1] == 0xd8 {
+		return containerJpeg
+	}
+	if len(data) >= 4 {
+		if bytes.Equal(data[:4], []byte{'I', 'I', 0x2a, 0x00}) ||
+			bytes.Equal(data[:4], []byte{'M', 'M', 0x00, 0x2a}) {
+			return containerTiff
+		}
+	}
+	return containerUnknown
+}
+
+// NewMetaData reads an image byte slice. Jpeg and tiff are supported, anything
+// else returns ErrParseImage. Note that editing remains jpeg only
 func NewMetaData(data []byte) (*MetaData, error) {
+	switch sniff(data) {
+	case containerJpeg:
+		return newMetaDataFromJpeg(data)
+	case containerTiff:
+		return newMetaDataFromTiff(data)
+	default:
+		return nil, ErrParseImage
+	}
+}
+
+func newMetaDataFromJpeg(data []byte) (*MetaData, error) {
 	ret := MetaData{}
 	segments, err := parseJpegBytes(data)
 	if err != nil {

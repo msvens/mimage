@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"github.com/dsoprea/go-exif/v3"
@@ -36,6 +37,138 @@ func NewExifEditor(sl *jpegstructure.SegmentList) (*ExifEditor, error) {
 	}
 	rootIb := exif.NewIfdBuilderFromExistingChain(rootIfd)
 	return &ExifEditor{rootIb, false}, nil
+}
+
+// NewExifEditorFromIfd creates an editor seeded from an already parsed ifd
+// chain, for instance one read straight out of a tiff, skipping any tag in
+// excludeTags. The editor is marked dirty since the chain did not come from the
+// image being edited.
+//
+// Tags are excluded while rebuilding rather than deleted afterwards, so a tag
+// go-exif chokes on is never read at all. Only the root ifd and its children
+// are copied, not the nextIfd chain, so a tiff thumbnail ifd is left behind
+// rather than carried into the jpeg
+func NewExifEditorFromIfd(rootIfd *exif.Ifd, excludeTags []ExifTag) (*ExifEditor, error) {
+	if rootIfd == nil {
+		return NewExifEditorEmpty(false)
+	}
+	im, err := exifcommon.NewIfdMappingWithStandard()
+	if err != nil {
+		return nil, err
+	}
+	ti := exif.NewTagIndex()
+	if err = exif.LoadStandardTags(ti); err != nil {
+		return nil, err
+	}
+	exclude := make([]uint16, 0, len(excludeTags))
+	for _, t := range excludeTags {
+		exclude = append(exclude, uint16(t))
+	}
+	ib, err := buildIfdChain(rootIfd, im, ti, exclude)
+	if err != nil {
+		return nil, err
+	}
+	//Rebuilding drops what go-exif cannot decode, but it can also encode a tag
+	//into something it then refuses to read: FileSource is one. Rather than
+	//keep a list of which tags misbehave, verify the result and rebuild once
+	//without whatever did not survive
+	if bad := unreadableAfterEncode(ib, im, ti); len(bad) > 0 {
+		if ib, err = buildIfdChain(rootIfd, im, ti, append(exclude, bad...)); err != nil {
+			return nil, err
+		}
+	}
+	return &ExifEditor{ib, true}, nil
+}
+
+// unreadableAfterEncode encodes a builder and reports any tag that cannot be
+// parsed back out of the result, so it can be excluded and the chain rebuilt.
+// This is the backstop for go-exif encoding something it will not read again,
+// and it needs no knowledge of which tags those are
+func unreadableAfterEncode(ib *exif.IfdBuilder, im *exifcommon.IfdMapping, ti *exif.TagIndex) []uint16 {
+	encoded, err := exif.NewIfdByteEncoder().EncodeToExif(ib)
+	if err != nil {
+		return nil
+	}
+	_, index, err := exif.Collect(im, ti, encoded)
+	if err != nil {
+		return nil
+	}
+	var bad []uint16
+	var walk func(*exif.Ifd)
+	walk = func(ifd *exif.Ifd) {
+		for _, ite := range ifd.Entries() {
+			if _, e := ite.GetRawBytes(); e != nil {
+				bad = append(bad, ite.TagId())
+			}
+		}
+		for _, c := range ifd.Children() {
+			walk(c)
+		}
+	}
+	walk(index.RootIfd)
+	return bad
+}
+
+// buildIfdChain walks an ifd and its children and rebuilds them tag by tag,
+// skipping anything in exclude.
+//
+// Values are re-encoded from their decoded form rather than copied as raw
+// bytes. go-exif's own AddTagsFromExisting does a byte copy, which forces the
+// result to keep the source's byte order: re-encoding a big endian tiff as
+// little endian would byte swap every number and turn ISO 100 into 25600. It
+// also carries a value through even when go-exif cannot encode it back, which
+// produces exif that will not parse. Decoding first means the byte order is
+// ours to choose and anything go-exif does not understand is dropped here,
+// deliberately and predictably, instead of corrupting the output later
+func buildIfdChain(src *exif.Ifd, im *exifcommon.IfdMapping, ti *exif.TagIndex, exclude []uint16) (*exif.IfdBuilder, error) {
+	ib := exif.NewIfdBuilder(im, ti, src.IfdIdentity(), binary.LittleEndian)
+
+	excluded := func(id uint16) bool {
+		for _, e := range exclude {
+			if e == id {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, ite := range src.Entries() {
+		//child ifds are rebuilt below, and the thumbnail offset and length are
+		//recalculated by the encoder
+		if ite.ChildIfdPath() != "" || ite.IsThumbnailOffset() || ite.IsThumbnailSize() {
+			continue
+		}
+		if excluded(ite.TagId()) {
+			continue
+		}
+		value, err := ite.Value()
+		if err != nil {
+			//go-exif cannot decode it, so it could not encode it back either
+			continue
+		}
+		if err = ib.SetStandard(ite.TagId(), value); err != nil {
+			//not a tag go-exif knows how to write in this ifd
+			continue
+		}
+	}
+
+	for _, child := range src.Children() {
+		childIb, err := buildIfdChain(child, im, ti, exclude)
+		if err != nil {
+			return nil, err
+		}
+		if err = ib.AddChildIb(childIb); err != nil {
+			return nil, err
+		}
+	}
+	return ib, nil
+}
+
+// TiffDropTags are the tags that must not survive a transplant from a tiff into
+// a jpeg: the ones describing how the tiff stored its pixels, plus the two that
+// carry xmp and iptc, which become their own jpeg segments instead
+func TiffDropTags() []ExifTag {
+	return append(append([]ExifTag{}, tiffLayoutTags...), tiffSidecarTags...)
 }
 
 // NewExifEditorEmpty create a new empty editor and sets the dirty flag
@@ -86,6 +219,27 @@ func (ee *ExifEditor) DropMakerNote() (int, error) {
 	}
 	return n, nil
 }
+
+// tiffLayoutTags describe how a tiff stores its pixels. They are meaningless
+// once the image has been re-encoded as a jpeg, and StripOffsets and friends
+// are worse than meaningless: they would point at data that is no longer there
+// All of these sit in ifd0 of a tiff. TileOffsets and TileByteCounts have no
+// IFD_ constant because exiftool groups them under the exif ifd, but the tag
+// ids are what matter here
+var tiffLayoutTags = []ExifTag{
+	IFD_ImageWidth, IFD_ImageHeight, IFD_BitsPerSample, IFD_Compression,
+	IFD_PhotometricInterpretation, IFD_StripOffsets, IFD_SamplesPerPixel,
+	IFD_RowsPerStrip, IFD_StripByteCounts, IFD_PlanarConfiguration,
+	IFD_SampleFormat, IFD_Predictor, IFD_TileWidth, IFD_TileLength,
+	0x0144, //TileOffsets
+	0x0145, //TileByteCounts
+}
+
+// tiffSidecarTags hold payloads that a tiff keeps inside ifd0 but a jpeg keeps
+// in its own segment: xmp in APP1, iptc in APP13 and an icc profile in APP2.
+// Leaving them in the transplanted exif would either duplicate them or bury
+// them somewhere nothing looks
+var tiffSidecarTags = []ExifTag{tiffXmpTag, tiffIptcTag, tiffPhotoshopTag, tiffIccTag}
 
 // HasMakerNote reports whether the ExifIFD currently holds a MakerNote tag
 func (ee *ExifEditor) HasMakerNote() bool {

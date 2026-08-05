@@ -53,6 +53,13 @@ func NewIptcEditorEmpty(dirty bool) *IptcEditor {
 		resources: map[uint16]photoshop.ImageResource{}, dirty: dirty}
 }
 
+// setRecords replaces the iptc content of this editor, used when the records
+// were decoded somewhere other than a jpeg segment, for instance from a tiff
+func (ie *IptcEditor) setRecords(raw map[IptcRecordTag]IptcRecordDataset) {
+	ie.raw = raw
+	ie.dirty = true
+}
+
 // Clear this model and set the dirty property
 func (ie *IptcEditor) Clear(dirty bool) {
 	ie.raw = map[IptcRecordTag]IptcRecordDataset{}

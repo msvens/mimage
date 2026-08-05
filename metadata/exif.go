@@ -278,13 +278,19 @@ type ExifData struct {
 // NewExifData creates an ExifData from a jpeg segment list. Returns
 // ErrExifNoData if the segment list did not contain any exif data
 func NewExifData(segments *jpegstructure.SegmentList) (*ExifData, error) {
-	var rawExif []byte
-	var ifdMapping *exifcommon.IfdMapping
-	var err error
-	if _, rawExif, err = segments.Exif(); err != nil {
+	_, rawExif, err := segments.Exif()
+	if err != nil {
 		return &ExifData{}, ErrExifNoData
 	}
-	if ifdMapping, err = exifcommon.NewIfdMappingWithStandard(); err != nil {
+	return NewExifDataFromBytes(rawExif)
+}
+
+// NewExifDataFromBytes creates an ExifData from a raw exif block, that is a
+// tiff header followed by its ifd chain. This is what a jpeg APP1 segment
+// carries, and also what a tiff file is in its entirety
+func NewExifDataFromBytes(rawExif []byte) (*ExifData, error) {
+	ifdMapping, err := exifcommon.NewIfdMappingWithStandard()
+	if err != nil {
 		return nil, err
 	}
 	ti := exif.NewTagIndex()
@@ -297,6 +303,15 @@ func NewExifData(segments *jpegstructure.SegmentList) (*ExifData, error) {
 		return &ExifData{}, err
 	}
 	return &ExifData{&index}, nil
+}
+
+// RootIfd returns the root ifd of this exif data, or nil when there is none.
+// Used to seed an ExifEditor from an already parsed chain
+func (ed *ExifData) RootIfd() *exif.Ifd {
+	if ed.IsEmpty() {
+		return nil
+	}
+	return ed.rawExif.RootIfd
 }
 
 // IsEmpty returns true if the underlying IfdIndex is nil

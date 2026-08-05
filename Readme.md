@@ -31,11 +31,25 @@ if you want to manipulate the actual image (crop,resize,thumbnails)
 
 mimage has 3 main use cases: reading and writing metadata (exif, iptc, xmp) and "resizing" images.
 
-**Note on formats**: metadata reading and editing is **jpeg only** - `metadata` parses the
-jpeg container to find the exif, IPTC and XMP segments. Image transformation is not: `img`
+**Note on formats**:
+
+| | jpeg | tiff | gif, bmp, png |
+| --- | --- | --- | --- |
+| read metadata | yes | yes | no |
+| edit metadata | yes | no | no |
+| transform pixels | yes | yes | yes |
+| `CopyExif` as a source | yes | yes | no |
+
+`metadata` reads exif, IPTC and XMP from jpeg and tiff. Editing stays jpeg only. `img`
 reads and writes `gif`, `tif`, `bmp`, `jpg` and `png`, choosing the format from the file
-extension, so converting a tiff to a jpeg works. Quality and `CopyExif` only apply when the
-destination is a jpeg, and metadata is only carried across when the *source* is a jpeg too.
+extension, so converting a tiff to a jpeg works and carries the metadata with it. Quality
+and `CopyExif` only apply when the destination is a jpeg.
+
+A tiff keeps exif, XMP and IPTC as plain ifd0 tag values rather than in separate segments
+the way jpeg does, so all three come out of the same parse. Transplanting into a jpeg drops
+the tags describing how the tiff stored its pixels - `StripOffsets` and friends would
+otherwise point at data that is no longer there - and moves XMP, IPTC and any icc profile
+into their proper jpeg segments instead of leaving them buried in the exif block.
 
 ## Accessing Metadata
 
@@ -227,6 +241,24 @@ IPTC tag is repeatable and `IptcTagDesc.Repeatable` needs it:
     mimage generate -i    # -> metadata/geniptc.go
 
 # Releases
+
+## v0.0.20
+
+New:
+
+- **Metadata can be read from tiff files.** `NewMetaDataFromFile` and `NewMetaData` now
+  detect the container and handle jpeg and tiff, so nothing changes at the call site. Exif,
+  XMP and IPTC are all read: a tiff keeps XMP in ifd0 tag `0x02bc` and IPTC in `0x83bb`
+  rather than in separate segments, so `Title`, `Rating` and `Keywords` come across as well
+  as the camera settings. Editing remains jpeg only.
+- **A tiff source carries its metadata into a generated jpeg.** `TransformFile` with
+  `CopyExif` set previously ignored the option for anything that was not a jpeg, silently
+  producing output with no metadata at all. Also available directly as
+  `JpegEditor.CopyMetaDataFromTiff`.
+
+Behaviour change: a tiff passed to `NewMetaData` used to return `ErrParseImage` and now
+returns metadata. `CopyExif` is still silently ignored for gif, bmp and png sources, which
+cannot carry exif here.
 
 ## v0.0.19
 

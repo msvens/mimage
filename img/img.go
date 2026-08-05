@@ -105,7 +105,10 @@ type Options struct {
 	X         int
 	Y         int
 	Angle     int
-	CopyExif  bool
+	//CopyExif carries the source metadata into the destination. Only honoured
+	//when the destination is a jpeg and the source is a jpeg or a tiff. For
+	//other source formats it is ignored
+	CopyExif bool
 	//MakerNote controls what happens to an exif MakerNote when CopyExif is set.
 	//The zero value preserves it, matching earlier releases
 	MakerNote MakerNotePolicy
@@ -211,7 +214,9 @@ func openForExifCopy(sourceFile string) (image.Image, []byte, error) {
 	return srcImg, srcBytes, nil
 }
 
-func saveWithExif(srcBytes []byte, dstImage image.Image, opt Options, fileName string) error {
+// saveWithMetaData encodes dstImage as a jpeg and copies the metadata of the
+// source into it. srcIsTiff selects which source container to read from
+func saveWithMetaData(srcBytes []byte, dstImage image.Image, opt Options, fileName string, srcIsTiff bool) error {
 	dstBytes := new(bytes.Buffer)
 	err := imaging.Encode(dstBytes, dstImage, imaging.JPEG, imaging.JPEGQuality(opt.Quality))
 	if err != nil {
@@ -221,7 +226,11 @@ func saveWithExif(srcBytes []byte, dstImage image.Image, opt Options, fileName s
 	if err != nil {
 		return err
 	}
-	err = mde.CopyMetaData(srcBytes)
+	if srcIsTiff {
+		err = mde.CopyMetaDataFromTiff(srcBytes)
+	} else {
+		err = mde.CopyMetaData(srcBytes)
+	}
 	if err != nil {
 		return err
 	}
@@ -358,6 +367,12 @@ func isJpegFile(fname string) bool {
 	return ext == ".jpg" || ext == ".jpeg"
 }
 
+// isTiffFile reports whether fname has a tiff extension
+func isTiffFile(fname string) bool {
+	ext := strings.ToLower(path.Ext(fname))
+	return ext == ".tif" || ext == ".tiff"
+}
+
 // TransformFile creates versions of source based on destinations. Supported formats are
 // "gif", "tif", "bmp", "jpg", and "png". Quality and CopyExif are only supported for
 // jpg images. Transform file uses the file extension to determine input and output format
@@ -366,9 +381,14 @@ func TransformFile(source string, destinations map[string]Options) error {
 	var srcImg image.Image
 	var err error
 	sourceJpeg := isJpegFile(source)
-	if sourceJpeg {
+	sourceTiff := isTiffFile(source)
+	switch {
+	case sourceJpeg:
 		srcImg, srcBytes, err = openForExifCopy(source)
-	} else {
+	case sourceTiff:
+		//a tiff carries its metadata in the ifd chain, so keep the bytes
+		srcImg, srcBytes, err = OpenOpts(source, false, true)
+	default:
 		srcImg, err = Open(source)
 	}
 	if err != nil {
@@ -379,8 +399,8 @@ func TransformFile(source string, destinations map[string]Options) error {
 		destJpg := isJpegFile(dest)
 		if !destJpg {
 			err = imaging.Save(destImg, dest)
-		} else if sourceJpeg && options.CopyExif {
-			err = saveWithExif(srcBytes, destImg, options, dest)
+		} else if (sourceJpeg || sourceTiff) && options.CopyExif {
+			err = saveWithMetaData(srcBytes, destImg, options, dest, sourceTiff)
 		} else {
 			err = imaging.Save(destImg, dest, imaging.JPEGQuality(options.Quality))
 		}

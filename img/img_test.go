@@ -114,3 +114,66 @@ func TestTransformFileMakerNoteFail(t *testing.T) {
 		t.Errorf("expected ErrMakerNotePresent, got %v", err)
 	}
 }
+
+const tiffImg = "../assets/leica.tiff"
+
+// A tiff source carries its metadata into a generated jpeg, which it silently
+// failed to do before: CopyExif was only honoured for jpeg sources
+func TestTransformFileFromTiff(t *testing.T) {
+	dest := path.Join(t.TempDir(), "out.jpg")
+	opts := NewOptions(Resize, 300, 0, true)
+	if err := TransformFile(tiffImg, map[string]Options{dest: opts}); err != nil {
+		t.Fatalf("could not transform tiff: %v", err)
+	}
+	out, err := metadata.NewMetaDataFromFile(dest)
+	if err != nil {
+		t.Fatalf("could not read output metadata: %v", err)
+	}
+	src, err := metadata.NewMetaDataFromFile(tiffImg)
+	if err != nil {
+		t.Fatalf("could not read source metadata: %v", err)
+	}
+	if got, want := out.Summary().CameraMake, src.Summary().CameraMake; got != want {
+		t.Errorf("CameraMake = %q, want %q", got, want)
+	}
+	if got, want := out.Summary().ISO, src.Summary().ISO; got != want {
+		t.Errorf("ISO = %d, want %d", got, want)
+	}
+	if got, want := out.Summary().Title, src.Summary().Title; got != want {
+		t.Errorf("Title = %q, want %q", got, want)
+	}
+	//the output is the resized image, not the source
+	if out.ImageWidth != 300 {
+		t.Errorf("width = %d, want 300", out.ImageWidth)
+	}
+}
+
+// Without CopyExif a tiff source must still produce a jpeg, just without the
+// metadata
+func TestTransformFileFromTiffNoCopyExif(t *testing.T) {
+	dest := path.Join(t.TempDir(), "out.jpg")
+	opts := NewOptions(Resize, 300, 0, false)
+	if err := TransformFile(tiffImg, map[string]Options{dest: opts}); err != nil {
+		t.Fatalf("could not transform tiff: %v", err)
+	}
+	md, err := metadata.NewMetaDataFromFile(dest)
+	if err != nil {
+		t.Fatalf("could not read output: %v", err)
+	}
+	if make := md.Summary().CameraMake; make != "" {
+		t.Errorf("expected no exif without CopyExif, got CameraMake=%q", make)
+	}
+}
+
+// Source formats that cannot carry metadata are still written, silently and
+// without error, see the CopyExif field comment
+func TestTransformFilePngSourceCopyExif(t *testing.T) {
+	dest := path.Join(t.TempDir(), "out.jpg")
+	opts := NewOptions(Resize, 200, 0, true)
+	if err := TransformFile("../assets/leica.png", map[string]Options{dest: opts}); err != nil {
+		t.Fatalf("a png source with CopyExif should still write: %v", err)
+	}
+	if _, err := os.Stat(dest); err != nil {
+		t.Errorf("expected an output file: %v", err)
+	}
+}
