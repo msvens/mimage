@@ -40,9 +40,30 @@ mimage has 3 main use cases: reading and writing metadata (exif, iptc, xmp) and 
 | transform pixels | yes | yes | yes |
 | `CopyExif` as a source | yes | yes | no |
 
+You do not have to hardcode that table. Formats are detected from **file content**, never
+from the filename, and the capabilities are queryable:
+
+```go
+ok, format, err := metadata.SupportedFormat("upload.dat")
+if err != nil {
+    //could not read the file. Not being an image is not an error
+} else if !ok {
+    //mimage cannot handle this one
+}
+
+format.Supported()        //decode and transform
+format.CanReadMetaData()  //exif, IPTC and XMP
+format.CanEditMetaData()  //write metadata back
+format.Extension()        //canonical extension, ".jpg" and so on
+```
+
+Detection by content matters: a tiff someone named `.jpg` is reported as tiff, and a file
+that is not an image at all is `FormatUnknown` rather than being trusted because of its
+name.
+
 `metadata` reads exif, IPTC and XMP from jpeg and tiff. Editing stays jpeg only. `img`
-reads and writes `gif`, `tif`, `bmp`, `jpg` and `png`, choosing the format from the file
-extension, so converting a tiff to a jpeg works and carries the metadata with it. Quality
+reads and writes `gif`, `tif`, `bmp`, `jpg` and `png`, so converting a tiff to a jpeg
+works and carries the metadata with it. Quality
 and `CopyExif` only apply when the destination is a jpeg.
 
 A tiff keeps exif, XMP and IPTC as plain ifd0 tag values rather than in separate segments
@@ -153,8 +174,36 @@ if md.HasMakerNote() {
 The same policy is available when transforming images, via `img.Options`:
 
 ```go
-opts := img.NewOptions(img.ResizeAndCrop, 1200, 628, true)
+opts := img.NewOptions(img.ResizeAndCrop, 1200, 628, true, img.FormatJpeg)
 opts.MakerNote = img.MakerNoteStrip
+```
+
+## Converting without resizing
+
+`TransformFile` always applies a transform. When all you want is the same image in another
+format, use `ConvertFile`. It keeps the original dimensions and carries the metadata:
+
+```go
+written, converted, err := img.ConvertFile(
+    "upload.tiff", "/store/abc123", img.FormatJpeg, img.NewConvertOptions(true))
+// written == "/store/abc123.jpg"
+// converted == false if the source was already a jpeg, in which case nothing
+// was written and you should keep using the original
+```
+
+The output format is a `Format`, not a file extension, and the destination is a **base
+name**: mimage appends the canonical extension and returns the path it wrote, so the name
+can never disagree with the contents. Passing a base that already carries an image
+extension returns `ErrDestHasExtension` rather than producing `out.jpg.jpg`.
+
+Format problems are distinguishable from everything else:
+
+```go
+if errors.Is(err, img.ErrUnsupportedFormat) {
+    //the source is not an image mimage handles, or the target cannot be written
+} else if err != nil {
+    //missing file, disk full, corrupt data
+}
 ```
 
 ## Copy and Manipulating Images
@@ -172,7 +221,12 @@ which produces several outputs from one source in a single pass. The package als
 for doing both against a file, and `NewOptions` to build the `Options` the transform
 functions take.
 
-In the follwoing example we use TransformFile to create a number of versions of our sourceImage.
+The destination map keys are **base names without an extension**. Each destination's
+`Options.Format` decides the output format, and the canonical extension is appended, so a
+key of `thumb` with `FormatJpeg` writes `thumb.jpg`. A key that already carries an image
+extension returns `ErrDestHasExtension`.
+
+In the following example we use TransformFile to create a number of versions of our sourceImage.
 
 ```go
 sourceImg := "../assets/leica.jpg"
@@ -181,20 +235,22 @@ sourceDir := path.Join(homeDir,"transform")
 _ = os.Mkdir(sourceDir, 0755)
 
 //for all but the thumb we are copying the original meta information
-thumb := NewOptions(ResizeAndCrop, 400, 400, false)
-landscape := NewOptions(ResizeAndCrop, 1200, 628, true)
-square := NewOptions(ResizeAndCrop, 1200, 1200, true)
-portrait := NewOptions(ResizeAndCrop, 1080, 1350, true)
-resize := NewOptions(Resize, 1200, 0, true)
+thumb := NewOptions(ResizeAndCrop, 400, 400, false, FormatJpeg)
+landscape := NewOptions(ResizeAndCrop, 1200, 628, true, FormatJpeg)
+square := NewOptions(ResizeAndCrop, 1200, 1200, true, FormatJpeg)
+portrait := NewOptions(ResizeAndCrop, 1080, 1350, true, FormatJpeg)
+resize := NewOptions(Resize, 1200, 0, true, FormatJpeg)
 
+//no extensions here: each Options.Format supplies it
 destImgs := map[string]Options{
-	path.Join(sourceDir,"thumb.jpg"): thumb,
-	path.Join(sourceDir, "landscape.jpg"): landscape,
-	path.Join(sourceDir, "square.jpg"): square,
-	path.Join(sourceDir, "portrait.jpg"): portrait,
-	path.Join(sourceDir, "resize.jpg"): resize,
+	path.Join(sourceDir, "thumb"): thumb,
+	path.Join(sourceDir, "landscape"): landscape,
+	path.Join(sourceDir, "square"): square,
+	path.Join(sourceDir, "portrait"): portrait,
+	path.Join(sourceDir, "resize"): resize,
 }
 
+//writes thumb.jpg, landscape.jpg, square.jpg, portrait.jpg and resize.jpg
 _ = TransformFile(sourceImg, destImgs)
 ```
 
@@ -241,6 +297,48 @@ IPTC tag is repeatable and `IptcTagDesc.Repeatable` needs it:
     mimage generate -i    # -> metadata/geniptc.go
 
 # Releases
+
+## v0.1.0
+
+**Breaking.** The output format is now an explicit `Format` rather than something inferred
+from a filename, and destination paths are base names without an extension. Deriving the
+format from a string meant `out.notAFormat` compiled fine and failed at runtime, and it let
+a file called `.png` contain a jpeg.
+
+Migration:
+
+```go
+// before
+opts := img.NewOptions(img.ResizeAndCrop, 1200, 628, true)
+img.TransformFile(src, map[string]img.Options{"/out/landscape.jpg": opts})
+
+// after
+opts := img.NewOptions(img.ResizeAndCrop, 1200, 628, true, img.FormatJpeg)
+img.TransformFile(src, map[string]img.Options{"/out/landscape": opts})
+```
+
+- `NewOptions` takes a `Format` as its last argument, and `Options.Format` is required.
+  `TransformFile` returns `ErrUnsupportedFormat` if it is missing.
+- `TransformFile` destination keys are base names. A key carrying an image extension
+  returns `ErrDestHasExtension` rather than writing `landscape.jpg.jpg`.
+- Nothing is written if any destination fails validation, so a bad entry cannot leave a
+  half finished set of outputs behind.
+
+New:
+
+- **Format detection.** `metadata.SupportedFormat`, `DetectFormat`, `DetectFormatFile` and
+  the `Format` type, re-exported from `img`. Detection is by file **content**, so a tiff
+  named `.jpg` is reported as tiff. Capabilities are queryable with `Supported`,
+  `CanReadMetaData`, `CanEditMetaData` and `Extension`, rather than callers hardcoding
+  which formats mimage handles.
+- **`img.ConvertFile`** converts between formats **without resizing**, keeping the original
+  dimensions and carrying metadata. Returns the path written, and reports `false` when the
+  source is already in the requested format, in which case nothing is written.
+- `ErrUnsupportedFormat` and `ErrDestHasExtension`, both checkable with `errors.Is`, so a
+  format problem is distinguishable from a missing file or a full disk.
+
+Note that an animated gif converts to its first frame only, and transparency is lost when
+the destination is a jpeg.
 
 ## v0.0.20
 

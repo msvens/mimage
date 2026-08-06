@@ -5,26 +5,6 @@ import (
 	"testing"
 )
 
-func TestSniff(t *testing.T) {
-	tests := []struct {
-		name string
-		data []byte
-		want container
-	}{
-		{"jpeg soi", []byte{0xff, 0xd8, 0xff, 0xe0}, containerJpeg},
-		{"tiff little endian", []byte{'I', 'I', 0x2a, 0x00}, containerTiff},
-		{"tiff big endian", []byte{'M', 'M', 0x00, 0x2a}, containerTiff},
-		{"png", []byte{0x89, 'P', 'N', 'G'}, containerUnknown},
-		{"empty", []byte{}, containerUnknown},
-		{"too short for tiff", []byte{'I', 'I'}, containerUnknown},
-	}
-	for _, tc := range tests {
-		if got := sniff(tc.data); got != tc.want {
-			t.Errorf("%s: sniff = %v, want %v", tc.name, got, tc.want)
-		}
-	}
-}
-
 // The tiff fixture is leica.jpg converted, so every summary field that
 // describes the photograph rather than the file must match
 func TestNewMetaDataFromTiff(t *testing.T) {

@@ -111,37 +111,14 @@ func NewMetaDataFromFile(filename string) (*MetaData, error) {
 	return NewMetaData(data)
 }
 
-// container identifies the image format a byte slice holds
-type container int
-
-const (
-	containerUnknown container = iota
-	containerJpeg
-	containerTiff
-)
-
-// sniff identifies the container from its magic bytes. Jpeg starts with SOI,
-// tiff with a byte order mark followed by the answer to everything
-func sniff(data []byte) container {
-	if len(data) >= 2 && data[0] == 0xff && data[1] == 0xd8 {
-		return containerJpeg
-	}
-	if len(data) >= 4 {
-		if bytes.Equal(data[:4], []byte{'I', 'I', 0x2a, 0x00}) ||
-			bytes.Equal(data[:4], []byte{'M', 'M', 0x00, 0x2a}) {
-			return containerTiff
-		}
-	}
-	return containerUnknown
-}
-
-// NewMetaData reads an image byte slice. Jpeg and tiff are supported, anything
-// else returns ErrParseImage. Note that editing remains jpeg only
+// NewMetaData reads an image byte slice. The format is detected from the
+// content, see DetectFormat. Jpeg and tiff can be read, anything else returns
+// ErrParseImage. Note that editing remains jpeg only
 func NewMetaData(data []byte) (*MetaData, error) {
-	switch sniff(data) {
-	case containerJpeg:
+	switch DetectFormat(data) {
+	case FormatJpeg:
 		return newMetaDataFromJpeg(data)
-	case containerTiff:
+	case FormatTiff:
 		return newMetaDataFromTiff(data)
 	default:
 		return nil, ErrParseImage
