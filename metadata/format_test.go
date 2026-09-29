@@ -129,17 +129,27 @@ func TestFormatCapabilities(t *testing.T) {
 		readMeta  bool
 		editMeta  bool
 		ext       string
+		image     bool
+		video     bool
 	}{
-		{FormatJpeg, true, true, true, ".jpg"},
-		{FormatTiff, true, true, false, ".tiff"},
-		{FormatPng, true, false, false, ".png"},
-		{FormatGif, true, false, false, ".gif"},
-		{FormatBmp, true, false, false, ".bmp"},
-		{FormatUnknown, false, false, false, ""},
+		{FormatJpeg, true, true, true, ".jpg", true, false},
+		{FormatTiff, true, true, false, ".tiff", true, false},
+		{FormatPng, true, false, false, ".png", true, false},
+		{FormatGif, true, false, false, ".gif", true, false},
+		{FormatBmp, true, false, false, ".bmp", true, false},
+		{FormatMp4, true, false, false, ".mp4", false, true},
+		{FormatMov, true, false, false, ".mov", false, true},
+		{FormatUnknown, false, false, false, "", false, false},
 	}
 	for _, tc := range tests {
 		if got := tc.format.Supported(); got != tc.supported {
 			t.Errorf("%v.Supported() = %v, want %v", tc.format, got, tc.supported)
+		}
+		if got := tc.format.IsImage(); got != tc.image {
+			t.Errorf("%v.IsImage() = %v, want %v", tc.format, got, tc.image)
+		}
+		if got := tc.format.IsVideo(); got != tc.video {
+			t.Errorf("%v.IsVideo() = %v, want %v", tc.format, got, tc.video)
 		}
 		if got := tc.format.CanReadMetaData(); got != tc.readMeta {
 			t.Errorf("%v.CanReadMetaData() = %v, want %v", tc.format, got, tc.readMeta)
