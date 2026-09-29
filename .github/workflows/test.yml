@@ -49,4 +49,11 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go }}
+      # the video integration tests need ffmpeg. It is quick to install on
+      # ubuntu, where a missing ffmpeg fails the run. macOS skips just those
+      # tests rather than spend minutes in brew; the parsing tests still run
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - if: runner.os == 'macOS'
+        run: echo "MIMAGE_SKIP_FFMPEG=1" >> "$GITHUB_ENV"
       - run: go test ./...

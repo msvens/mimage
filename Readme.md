@@ -6,12 +6,15 @@
 
 mimage is a native go package for handling 
 image meta information (exif, iptc, xmp) as well as some basic
-image manipulation (resizing, thumbnail creation, etc)
+image manipulation (resizing, thumbnail creation, etc). It also reads video metadata and
+extracts poster frames, using ffmpeg
 
 mimage is used by [mphotos](https://www.github.com/msvens/mphotos) and we welcome others to try it out.
 
 # Installation
-Installing mimage is easy as it only has go native dependencies.
+Installing mimage is easy as it only has go native dependencies. The `video` package is
+the exception: it runs `ffprobe` and `ffmpeg`, which must be installed. Nothing else in
+mimage imports it, so a program that only handles images never needs ffmpeg.
 
     go get -u github.com/msvens/mimage
 
@@ -25,7 +28,12 @@ if you want to access and edit image metadata, or
 ```go
 import "github.com/msvens/mimage/img"
 ```
-if you want to manipulate the actual image (crop,resize,thumbnails)
+if you want to manipulate the actual image (crop,resize,thumbnails), or
+
+```go
+import "github.com/msvens/mimage/video"
+```
+if you want to read video metadata and extract poster frames
 
 # Usage
 
@@ -51,7 +59,9 @@ if err != nil {
     //mimage cannot handle this one
 }
 
-format.Supported()        //decode and transform
+format.Supported()        //mimage handles it, image or video
+format.IsImage()          //decode and transform with img
+format.IsVideo()          //mp4 or QuickTime, see Video below
 format.CanReadMetaData()  //exif, IPTC and XMP
 format.CanEditMetaData()  //write metadata back
 format.Extension()        //canonical extension, ".jpg" and so on
@@ -257,6 +267,69 @@ _ = TransformFile(sourceImg, destImgs)
 Note that in a real situation you would handle the errors that we are now just skipping
 
 
+## Video
+
+The `video` package reads mp4 and QuickTime (`.mov`) files. It does not transcode: it
+reads metadata and extracts a poster frame, the two things needed to show a video
+alongside photos. It runs `ffprobe` and `ffmpeg`, and `video.Available()` checks they
+can be found.
+
+`DetectFormat` recognises the container from its header, so `Supported()` is only a first
+check for a video: the header says mp4, not whether the stream inside is something you can
+use. `Probe` is the real check. It returns `ErrNoVideoStream` for an mp4 holding only
+audio, `ErrTruncated` for a file cut short, and a `*ToolError` carrying ffprobe's message
+for a file it cannot read.
+
+The truncation check is mimage's own. ffprobe stops quietly at end of file, so a web
+export, whose index sits at the front, still probes as a complete video after losing its
+tail in an interrupted copy. `Probe` compares the sizes the file's boxes declare with its
+actual size:
+
+```go
+s, err := video.Probe(ctx, "clip.mp4")
+if errors.Is(err, video.ErrNoVideoStream) {
+    //an mp4, but nothing to show
+}
+s.Duration              //time.Duration
+s.Width, s.Height       //display size: rotation already applied
+s.CreationTime          //keeps the local offset when the camera recorded one
+s.CameraMake, s.Title, s.Keywords, s.Location, s.VideoCodec
+```
+
+Missing metadata is a zero value, not an error. Tags are read from where phones and
+Lightroom put them - Apple's QuickTime keys, Android's, and an embedded XMP packet for
+title, caption and keywords - in that order of preference.
+
+Phones record portrait video as landscape frames plus a rotation flag. `Width` and `Height`
+are what a viewer sees, and `ExtractPoster` writes an upright jpeg, so a poster can go
+straight into `TransformFile` and come out with the same thumbnails a photo gets:
+
+```go
+poster, err := video.ExtractPoster(ctx, "clip.mp4", "/tmp/clip-poster", video.PosterOptions{})
+//poster is "/tmp/clip-poster.jpg"
+err = img.TransformFile(poster, variants)
+```
+
+The frame is taken one second in, past the black or faded opening many clips have, or
+halfway through a clip shorter than two seconds. `PosterOptions.At` picks another
+position.
+
+A 10 bit HDR video, which newer phones record by default, gives a washed out poster: there
+is no tone mapping. An 8 bit export, such as H.264 from Lightroom, is fine.
+
+From the command line:
+
+    mimage video probe clip.mp4
+    mimage video poster -o /tmp clip.mp4
+
+### Testing video
+
+The video tests run ffprobe and ffmpeg against small generated clips in `assets/video`.
+Without ffmpeg installed they **fail** rather than quietly skip, so a green run means video
+was tested. Set `MIMAGE_SKIP_FFMPEG=1` to skip them deliberately; CI does this on macOS
+only. `assets/video/gen.sh` regenerates the clips and the ffprobe output the parsing
+tests read.
+
 ## Motivation
 
 [mphotos](https://www.github.com/msvens/mphotos) has relied on two libraries/tools for
@@ -265,7 +338,9 @@ image manipulation and meta data extraction: [bimg](https://github.com/h2non/bim
 process more complicated as bimg relies on libvips and exiftool is an external program that
 needs to be installed. In effect making mphotos slighly less portable.
 
-mimage seeks to remedy this by offering similar functionality using only go native code
+mimage seeks to remedy this by offering similar functionality using only go native code.
+Video is the one place that gives way - decoding it natively is not realistic - which is
+why it is a separate package that image only programs never import
 
 # Regenerating the tag tables
 
@@ -297,6 +372,27 @@ IPTC tag is repeatable and `IptcTagDesc.Repeatable` needs it:
     mimage generate -i    # -> metadata/geniptc.go
 
 # Releases
+
+## v0.2.0
+
+**Behaviour change**: `Format.Supported()` now means mimage handles the file, image **or
+video**. `DetectFormat` recognises mp4 and QuickTime, so a check of `Supported()` alone no
+longer implies a file can go through `TransformFile`. Use `IsImage()` for that. Passing a
+video to `TransformFile` or `ConvertFile`, as a source or an output format, returns
+`ErrUnsupportedFormat`.
+
+New:
+
+- **The `video` package.** `Probe` reads duration, display size, rotation, creation time,
+  camera, title, caption, keywords, location and codecs, and rejects a file cut short with
+  `ErrTruncated`, which ffprobe alone does not notice. `ExtractPoster` writes an upright
+  jpeg frame for `TransformFile`. Uses ffprobe and ffmpeg; see Video above.
+- `FormatMp4` and `FormatMov`, detected by content. heif, avif and m4a share the container
+  and are not mistaken for video.
+- `Format.IsImage()` and `Format.IsVideo()`. `Extension()` now also covers video, `.mp4`
+  and `.mov`, for naming a stored original.
+- `XmpData.GetDescription`, `GetCamera`, `GetDate` and `GetLocation`.
+- `mimage video probe` and `mimage video poster`.
 
 ## v0.1.0
 
