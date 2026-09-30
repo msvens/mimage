@@ -21,6 +21,9 @@ func TestDetectFormatBytes(t *testing.T) {
 		{"bmp", []byte("BM....."), FormatBmp},
 		//formats mimage does not handle are simply unknown
 		{"webp", []byte("RIFF\x00\x00\x00\x00WEBPVP8 "), FormatUnknown},
+		{"avi", []byte("RIFF\x10\x00\x00\x00AVI LIST"), FormatAvi},
+		{"wav", []byte("RIFF\x10\x00\x00\x00WAVEfmt "), FormatUnknown},
+		{"riff too short for a form type", []byte("RIFF\x10\x00\x00\x00AV"), FormatUnknown},
 		{"heic", []byte("\x00\x00\x00\x18ftypheic"), FormatUnknown},
 		{"png prefix only", []byte{0x89, 'P', 'N', 'G'}, FormatUnknown},
 		{"empty", []byte{}, FormatUnknown},
@@ -139,6 +142,7 @@ func TestFormatCapabilities(t *testing.T) {
 		{FormatBmp, true, false, false, ".bmp", true, false},
 		{FormatMp4, true, false, false, ".mp4", false, true},
 		{FormatMov, true, false, false, ".mov", false, true},
+		{FormatAvi, true, false, false, ".avi", false, true},
 		{FormatUnknown, false, false, false, "", false, false},
 	}
 	for _, tc := range tests {

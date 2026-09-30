@@ -383,7 +383,7 @@ func TestVideoRejected(t *testing.T) {
 		t.Errorf("ConvertFile of a video: expected ErrUnsupportedFormat, got %v", err)
 	}
 
-	for _, f := range []Format{FormatMp4, FormatMov} {
+	for _, f := range []Format{FormatMp4, FormatMov, FormatAvi} {
 		if _, _, err := ConvertFile(tiffImg, path.Join(dir, "b"), f, NewConvertOptions(false)); !errors.Is(err, ErrUnsupportedFormat) {
 			t.Errorf("ConvertFile to %v: expected ErrUnsupportedFormat, got %v", f, err)
 		}

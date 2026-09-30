@@ -108,6 +108,7 @@ const (
 	FormatBmp     = metadata.FormatBmp
 	FormatMp4     = metadata.FormatMp4
 	FormatMov     = metadata.FormatMov
+	FormatAvi     = metadata.FormatAvi
 )
 
 // Image errors

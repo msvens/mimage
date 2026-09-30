@@ -30,6 +30,9 @@ const (
 	//FormatMov is a QuickTime movie. Only the container is known from the
 	//header, not the codec inside
 	FormatMov
+	//FormatAvi is a RIFF AVI video, as older cameras and phones wrote. Only
+	//the container is known from the header, not the codec inside
+	FormatAvi
 )
 
 var formatNames = map[Format]string{
@@ -41,6 +44,7 @@ var formatNames = map[Format]string{
 	FormatBmp:     "bmp",
 	FormatMp4:     "mp4",
 	FormatMov:     "mov",
+	FormatAvi:     "avi",
 }
 
 // canonical extension per named format
@@ -52,6 +56,7 @@ var formatExtensions = map[Format]string{
 	FormatBmp:  ".bmp",
 	FormatMp4:  ".mp4",
 	FormatMov:  ".mov",
+	FormatAvi:  ".avi",
 }
 
 // imageExtensions are the extensions that mark a filename as already naming an
@@ -96,7 +101,7 @@ func (f Format) IsImage() bool {
 // IsVideo reports whether this is a video container format, handled by the
 // video package rather than img
 func (f Format) IsVideo() bool {
-	return f == FormatMp4 || f == FormatMov
+	return f == FormatMp4 || f == FormatMov || f == FormatAvi
 }
 
 // CanReadMetaData reports whether mimage can read exif, iptc and xmp from this
@@ -150,6 +155,10 @@ func DetectFormat(data []byte) Format {
 		return FormatTiff
 	case len(data) >= 2 && data[0] == 'B' && data[1] == 'M':
 		return FormatBmp
+	//RIFF is a generic container, webp and wav use it too: the form type at
+	//offset 8 is what says AVI
+	case len(data) >= 12 && bytes.Equal(data[:4], []byte("RIFF")) && bytes.Equal(data[8:12], []byte("AVI ")):
+		return FormatAvi
 	default:
 		return FormatUnknown
 	}
