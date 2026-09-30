@@ -71,9 +71,44 @@ exiftool -q -overwrite_original \
   -XMP-exif:GPSLatitude="59.8586 N" -XMP-exif:GPSLongitude="17.6389 E" \
   xmp.mp4
 
+# --- sources for Transcode, one per thing it has to fix ---
+
+# like an Android phone original: HEVC, recorded upright (landscape frames plus
+# a display matrix), the media data before the index, and location switched off,
+# which Samsung writes as 0,0. Red on top of the stored frame, so an upright
+# result has red on the right
+ff -f lavfi -i "color=red:size=320x120:rate=10:duration=2[t];color=blue:size=320x120:rate=10:duration=2[b];[t][b]vstack" \
+  "${silence[@]}" -shortest -c:v libx265 -x265-params log-level=error -crf 30 -tag:v hvc1 -pix_fmt yuv420p \
+  "${aac[@]}" samsung.tmp.mp4
+ff -display_rotation:v:0 -90 -i samsung.tmp.mp4 -map 0 -c copy -map_metadata -1 \
+  -movflags +use_metadata_tags \
+  -metadata creation_time="2024-07-14T12:04:06Z" \
+  -metadata location="+00.0000+000.0000/" \
+  -metadata com.android.version="14" \
+  samsung-like.mp4
+rm samsung.tmp.mp4
+
+# interlaced, as DV and early HD camcorders recorded
+ff -f lavfi -i "testsrc2=size=320x240:rate=10:duration=2" -c:v libx264 -crf 30 -pix_fmt yuv420p \
+  -flags +ildct+ilme -x264-params tff=1 -an interlaced.mp4
+
+# non square pixels: 240x240 stored, 4:3 pixels, shown as 320x240
+ff -f lavfi -i "testsrc2=size=240x240:rate=10:duration=2" -vf setsar=4/3 "${h264[@]}" -an anamorphic.mp4
+
+# HDR as a recent iPhone records it: 10 bit HEVC, bt2020, HLG
+ff -f lavfi -i "testsrc2=size=320x240:rate=10:duration=2" \
+  -c:v libx265 -x265-params log-level=error:colorprim=bt2020:transfer=arib-std-b67:colormatrix=bt2020nc \
+  -crf 30 -pix_fmt yuv420p10le -tag:v hvc1 \
+  -color_primaries bt2020 -color_trc arib-std-b67 -colorspace bt2020nc -an hdr.mp4
+
+# an old digicam movie: motion jpeg and uncompressed sound in avi
+ff -f lavfi -i "testsrc2=size=160x120:rate=10:duration=1" -f lavfi -i "anullsrc=r=8000:cl=mono" -shortest \
+  -c:v mjpeg -q:v 20 -c:a pcm_u8 -f avi old.avi
+
 # what ffprobe reports for each, the input to the parsing tests
 mkdir -p probe
-for f in plain.mp4 plain.mov rotated.mp4 blackstart.mp4 short.mp4 audioonly.mp4 coverart.mp4 xmp.mp4; do
+for f in plain.mp4 plain.mov rotated.mp4 blackstart.mp4 short.mp4 audioonly.mp4 coverart.mp4 xmp.mp4 \
+  samsung-like.mp4 interlaced.mp4 anamorphic.mp4 hdr.mp4 old.avi; do
   ffprobe -v error -print_format json -show_format -show_streams -export_xmp 1 "$f" \
     | sed "s|\"filename\": \".*\"|\"filename\": \"$f\"|" > "probe/${f%.*}.${f##*.}.json"
 done
@@ -90,4 +125,4 @@ v.setdefault("tags", {})["rotate"] = "90"
 json.dump(d, open("probe/rotated-legacy.mp4.json", "w"), indent=4)
 PY
 
-ls -l *.mp4 *.mov
+ls -l *.mp4 *.mov *.avi

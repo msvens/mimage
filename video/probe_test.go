@@ -30,6 +30,8 @@ type expectation struct {
 	keywords []string
 	location *Location
 	codecs   [2]string
+	//zero means the 10 fps every synthetic fixture uses
+	fps float64
 }
 
 var cest = time.FixedZone("", 2*3600)
@@ -66,6 +68,23 @@ var expectations = []expectation{
 	},
 	{file: "audioonly.mp4", err: ErrNoVideoStream},
 	{file: "coverart.mp4", err: ErrNoVideoStream},
+}
+
+// real recordings, of which only the ffprobe output is committed. They are
+// checked by the parsing tests alone
+var realExpectations = []expectation{
+	{
+		//a Galaxy S23 original: HEVC, recorded upright, so landscape frames
+		//turned for display. Location was off, which Samsung writes as 0,0
+		file: "samsung-s23.mp4", duration: 25698944 * time.Microsecond, width: 1080, height: 1920,
+		stored: [2]int{1920, 1080}, rotation: 90, created: time.Date(2024, 7, 14, 12, 4, 6, 0, time.UTC),
+		codecs: [2]string{"hevc", "aac"}, fps: 30.007,
+	},
+	{
+		//named .mov but an mp4 by content, already H.264 and with no date
+		file: "landscape.mp4", duration: 30100 * time.Millisecond, width: 1280, height: 720,
+		stored: [2]int{1280, 720}, codecs: [2]string{"h264", "aac"}, fps: 30,
+	},
 }
 
 func checkSummary(t *testing.T, e expectation, s *Summary, err error) {
@@ -117,8 +136,12 @@ func checkSummary(t *testing.T, e expectation, s *Summary, err error) {
 	if s.VideoCodec != e.codecs[0] || s.AudioCodec != e.codecs[1] {
 		t.Errorf("%s: codecs = %q %q, want %q %q", e.file, s.VideoCodec, s.AudioCodec, e.codecs[0], e.codecs[1])
 	}
-	if s.FrameRate != 10 {
-		t.Errorf("%s: frame rate = %v, want 10", e.file, s.FrameRate)
+	wantFps := e.fps
+	if wantFps == 0 {
+		wantFps = 10
+	}
+	if math.Abs(s.FrameRate-wantFps) > 0.01 {
+		t.Errorf("%s: frame rate = %v, want %v", e.file, s.FrameRate, wantFps)
 	}
 }
 
@@ -140,7 +163,7 @@ func readProbe(t *testing.T, file string) []byte {
 }
 
 func TestParseProbe(t *testing.T) {
-	for _, e := range expectations {
+	for _, e := range append(expectations, realExpectations...) {
 		s, err := parseProbe(readProbe(t, e.file))
 		checkSummary(t, e, s, err)
 	}

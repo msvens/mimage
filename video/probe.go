@@ -47,13 +47,23 @@ type Summary struct {
 	VideoCodec   string    `json:"videoCodec,omitempty"`
 	AudioCodec   string    `json:"audioCodec,omitempty"`
 	FrameRate    float64   `json:"frameRate,omitempty"`
+	//VideoProfile and PixelFormat are ffmpeg's names, such as "High" and
+	//"yuv420p"
+	VideoProfile string `json:"videoProfile,omitempty"`
+	PixelFormat  string `json:"pixelFormat,omitempty"`
+	//PixelAspect is the width of a pixel relative to its height, 1 for the
+	//square pixels of anything recent
+	PixelAspect float64 `json:"pixelAspect,omitempty"`
+	//HDR is true for PQ or HLG video, which looks washed out unless converted
+	HDR        bool `json:"hdr,omitempty"`
+	Interlaced bool `json:"interlaced,omitempty"`
 
 	//index of the video stream in the container, so ffmpeg can be pointed at
 	//it rather than at cover art
 	streamIndex int
 }
 
-// Probe reads the metadata of an mp4 or QuickTime video. It is the real check
+// Probe reads the metadata of an mp4, QuickTime or avi video. It is the real check
 // that a file is usable: metadata.Format.Supported only says the container
 // looked right.
 //
@@ -69,8 +79,11 @@ func Probe(ctx context.Context, fileName string) (*Summary, error) {
 	if !format.IsVideo() {
 		return nil, fmt.Errorf("%w: %s is %v", ErrNotVideo, fileName, format)
 	}
-	if err = checkComplete(fileName); err != nil {
-		return nil, err
+	//the box walk only applies to iso base media. For an avi ffprobe judges
+	if format != metadata.FormatAvi {
+		if err = checkComplete(fileName); err != nil {
+			return nil, err
+		}
 	}
 	out, err := run(ctx, FFprobePath, "-v", "error", "-print_format", "json",
 		"-show_format", "-show_streams", "-export_xmp", "1", fileName)
@@ -98,6 +111,10 @@ type probeStream struct {
 	SampleAspectRatio string            `json:"sample_aspect_ratio"`
 	AvgFrameRate      string            `json:"avg_frame_rate"`
 	RFrameRate        string            `json:"r_frame_rate"`
+	Profile           string            `json:"profile"`
+	PixFmt            string            `json:"pix_fmt"`
+	FieldOrder        string            `json:"field_order"`
+	ColorTransfer     string            `json:"color_transfer"`
 	Duration          string            `json:"duration"`
 	Tags              map[string]string `json:"tags"`
 	Disposition       struct {
@@ -141,6 +158,20 @@ func parseProbe(data []byte) (*Summary, error) {
 	if s.FrameRate == 0 {
 		s.FrameRate = ratio(video.RFrameRate)
 	}
+	s.VideoProfile, s.PixelFormat = video.Profile, video.PixFmt
+	s.PixelAspect = ratio(video.SampleAspectRatio)
+	if s.PixelAspect <= 0 {
+		s.PixelAspect = 1
+	}
+	//smpte2084 is PQ (HDR10, Dolby Vision), arib-std-b67 is HLG
+	s.HDR = video.ColorTransfer == "smpte2084" || video.ColorTransfer == "arib-std-b67"
+	//field order is "progressive", "unknown" or absent for progressive video,
+	//and names the field layout ("tt", "bb" and so on) otherwise
+	switch video.FieldOrder {
+	case "", "progressive", "unknown":
+	default:
+		s.Interlaced = true
+	}
 	s.Duration = seconds(probe.Format.Duration)
 	if s.Duration == 0 {
 		s.Duration = seconds(video.Duration)
@@ -155,6 +186,11 @@ func parseProbe(data []byte) (*Summary, error) {
 	xmpMake, xmpModel := xd.GetCamera()
 
 	s.CreationTime = creationTime(tags, video.Tags, xd)
+	//where the camera is named: Apple's and Android's QuickTime keys (both
+	//listed in exiftool's QuickTime Keys table), then the udta boxes cameras
+	//use, which ffmpeg reports as make and model (©mak/©mod and manu/modl in
+	//libavformat/mov.c), then xmp. Samsung names the model only in a 3GPP auth
+	//box, which ffmpeg does not report, so a Samsung video has no camera
 	s.CameraMake = first(tag(tags, "com.apple.quicktime.make"), tag(tags, "com.android.manufacturer"),
 		tag(tags, "make"), xmpMake)
 	s.CameraModel = first(tag(tags, "com.apple.quicktime.model"), tag(tags, "com.android.model"),
@@ -272,16 +308,23 @@ func isEpoch(t time.Time) bool {
 	return t.Year() <= 1904 || t.Unix() == 0
 }
 
+// location reads the recording position. A phone with location turned off
+// still writes one, at exactly 0,0, so that is treated as absent: nobody films
+// at that point in the Gulf of Guinea by accident
 func location(tags map[string]string, xd metadata.XmpData) *Location {
 	for _, key := range []string{"com.apple.quicktime.location.ISO6709", "location", "location-eng"} {
-		if l, ok := parseISO6709(tag(tags, key)); ok {
+		if l, ok := parseISO6709(tag(tags, key)); ok && !nullIsland(l.Latitude, l.Longitude) {
 			return l
 		}
 	}
-	if lat, long, ok := xd.GetLocation(); ok {
+	if lat, long, ok := xd.GetLocation(); ok && !nullIsland(lat, long) {
 		return &Location{Latitude: lat, Longitude: long}
 	}
 	return nil
+}
+
+func nullIsland(lat, long float64) bool {
+	return lat == 0 && long == 0
 }
 
 // parseISO6709 reads the decimal degree form phones write, such as

@@ -1,13 +1,14 @@
-// Package video reads metadata from, and extracts a poster frame out of, mp4
-// and QuickTime video.
+// Package video reads metadata from mp4, QuickTime and avi video, transcodes it
+// to an mp4 every browser plays, and extracts a poster frame.
 //
 // It shells out to ffprobe and ffmpeg, which must be installed. This is the only
 // mimage package that does: the metadata and img packages never import it, so
 // a program that only handles images does not need either tool.
 //
 // The intended flow mirrors the image one. metadata.DetectFormatFile says
-// whether a file is a video, Probe reads it into a Summary and ExtractPoster
-// writes an upright jpeg still that img.TransformFile turns into thumbnails
+// whether a file is a video, Probe reads its metadata, Transcode makes the
+// playable copy and ExtractPoster writes an upright jpeg still of it that
+// img.TransformFile turns into thumbnails
 package video
 
 import (
@@ -29,8 +30,8 @@ var (
 var (
 	//ErrFFmpegNotFound is returned when ffprobe or ffmpeg cannot be found
 	ErrFFmpegNotFound = errors.New("mimage/video: ffmpeg not found")
-	//ErrNotVideo is returned for a file whose content is not an mp4 or
-	//QuickTime container, whatever its name
+	//ErrNotVideo is returned for a file whose content is not an mp4,
+	//QuickTime or avi container, whatever its name
 	ErrNotVideo = errors.New("mimage/video: not a video")
 	//ErrNoVideoStream is returned for a container holding no playable video,
 	//such as audio only, or audio with cover art
