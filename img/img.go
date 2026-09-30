@@ -96,7 +96,8 @@ const (
 // Format identifies an image format. See metadata.Format
 type Format = metadata.Format
 
-// Image formats, aliased from the metadata package
+// Formats, aliased from the metadata package. The video formats are detected
+// but cannot be read or written here, see the video package
 const (
 	//FormatUnknown is anything mimage does not handle
 	FormatUnknown = metadata.FormatUnknown
@@ -105,13 +106,16 @@ const (
 	FormatGif     = metadata.FormatGif
 	FormatTiff    = metadata.FormatTiff
 	FormatBmp     = metadata.FormatBmp
+	FormatMp4     = metadata.FormatMp4
+	FormatMov     = metadata.FormatMov
+	FormatAvi     = metadata.FormatAvi
 )
 
 // Image errors
 var (
 	//ErrUnsupportedFormat is returned when a source cannot be decoded as a
-	//known image format, or a requested output format is one mimage cannot
-	//write. Check with errors.Is
+	//known image format, including a video, or a requested output format is
+	//one mimage cannot write. Check with errors.Is
 	ErrUnsupportedFormat = errors.New("mimage: unsupported image format")
 	//ErrDestHasExtension is returned when a destination base name already
 	//carries an image extension. mimage appends the extension for the chosen
@@ -139,7 +143,8 @@ type Options struct {
 	//The zero value preserves it, matching earlier releases
 	MakerNote MakerNotePolicy
 	//Format of the output. Required: a destination whose Format is
-	//FormatUnknown, or a format mimage cannot write, is an error
+	//FormatUnknown, or a format mimage cannot write such as a video, is an
+	//error
 	Format Format
 }
 
@@ -161,12 +166,13 @@ func NewConvertOptions(copyExif bool) ConvertOptions {
 
 // destPath appends the canonical extension for format to destBase. A base that
 // already carries an image extension is rejected rather than silently fixed,
-// since "out.jpg" would otherwise become "out.jpg.jpg"
+// since "out.jpg" would otherwise become "out.jpg.jpg". Only image formats can
+// be written
 func destPath(destBase string, format Format) (string, error) {
-	ext := format.Extension()
-	if ext == "" {
+	if !format.IsImage() {
 		return "", fmt.Errorf("%w: cannot write %v", ErrUnsupportedFormat, format)
 	}
+	ext := format.Extension()
 	if metadata.IsImageExtension(path.Ext(destBase)) {
 		return "", fmt.Errorf("%w: %s, pass a name without one", ErrDestHasExtension, destBase)
 	}
@@ -194,7 +200,7 @@ func ConvertFile(source, destBase string, format Format, opts ConvertOptions) (s
 	if err != nil {
 		return "", false, err
 	}
-	if !srcFormat.Supported() {
+	if !srcFormat.IsImage() {
 		return "", false, fmt.Errorf("%w: cannot read %v", ErrUnsupportedFormat, srcFormat)
 	}
 	if srcFormat == format {
@@ -495,7 +501,7 @@ func TransformFile(source string, destinations map[string]Options) error {
 	if err != nil {
 		return err
 	}
-	if !srcFormat.Supported() {
+	if !srcFormat.IsImage() {
 		return fmt.Errorf("%w: cannot read %v", ErrUnsupportedFormat, srcFormat)
 	}
 

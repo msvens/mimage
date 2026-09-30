@@ -364,3 +364,35 @@ func TestTransformFileNamesFromFormat(t *testing.T) {
 		}
 	}
 }
+
+// Video is detected but is not something the image pipeline can read or write
+func TestVideoRejected(t *testing.T) {
+	dir := t.TempDir()
+	//only the header matters: detection happens before any decoding
+	mp4 := path.Join(dir, "clip.mp4")
+	header := []byte("\x00\x00\x00\x18ftypisom\x00\x00\x02\x00isomavc1\x00\x00\x00\x08free")
+	if err := os.WriteFile(mp4, header, 0644); err != nil {
+		t.Fatalf("could not write: %v", err)
+	}
+
+	thumb := NewOptions(ResizeAndCrop, 100, 100, false, FormatJpeg)
+	if err := TransformFile(mp4, map[string]Options{path.Join(dir, "thumb"): thumb}); !errors.Is(err, ErrUnsupportedFormat) {
+		t.Errorf("TransformFile of a video: expected ErrUnsupportedFormat, got %v", err)
+	}
+	if _, _, err := ConvertFile(mp4, path.Join(dir, "a"), FormatJpeg, NewConvertOptions(false)); !errors.Is(err, ErrUnsupportedFormat) {
+		t.Errorf("ConvertFile of a video: expected ErrUnsupportedFormat, got %v", err)
+	}
+
+	for _, f := range []Format{FormatMp4, FormatMov, FormatAvi} {
+		if _, _, err := ConvertFile(tiffImg, path.Join(dir, "b"), f, NewConvertOptions(false)); !errors.Is(err, ErrUnsupportedFormat) {
+			t.Errorf("ConvertFile to %v: expected ErrUnsupportedFormat, got %v", f, err)
+		}
+		opts := NewOptions(Resize, 100, 0, false, f)
+		if err := TransformFile(tiffImg, map[string]Options{path.Join(dir, "c"): opts}); !errors.Is(err, ErrUnsupportedFormat) {
+			t.Errorf("TransformFile to %v: expected ErrUnsupportedFormat, got %v", f, err)
+		}
+	}
+	if entries, _ := os.ReadDir(dir); len(entries) != 1 {
+		t.Errorf("nothing but the source should exist, found %d entries", len(entries))
+	}
+}

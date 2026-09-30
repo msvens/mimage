@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-// Format identifies an image format. Detection is by content rather than by
-// filename, since extensions are frequently wrong
+// Format identifies an image or video format. Detection is by content rather
+// than by filename, since extensions are frequently wrong
 type Format int
 
-// Image formats mimage handles. Anything else, webp, heif, camera raw and so
-// on, is FormatUnknown: there is nothing a caller could do differently for a
-// format that is equally unsupported, and naming a few of them while omitting
-// the rest would draw an arbitrary line
+// Formats mimage handles. Anything else, webp, heif, camera raw and so on, is
+// FormatUnknown: there is nothing a caller could do differently for a format
+// that is equally unsupported, and naming a few of them while omitting the rest
+// would draw an arbitrary line
 const (
 	//FormatUnknown is anything mimage does not handle
 	FormatUnknown Format = iota
@@ -24,6 +24,15 @@ const (
 	FormatGif
 	FormatTiff
 	FormatBmp
+	//FormatMp4 is an iso base media file with an mp4 family brand. Only the
+	//container is known from the header, not the codec inside
+	FormatMp4
+	//FormatMov is a QuickTime movie. Only the container is known from the
+	//header, not the codec inside
+	FormatMov
+	//FormatAvi is a RIFF AVI video, as older cameras and phones wrote. Only
+	//the container is known from the header, not the codec inside
+	FormatAvi
 )
 
 var formatNames = map[Format]string{
@@ -33,16 +42,21 @@ var formatNames = map[Format]string{
 	FormatGif:     "gif",
 	FormatTiff:    "tiff",
 	FormatBmp:     "bmp",
+	FormatMp4:     "mp4",
+	FormatMov:     "mov",
+	FormatAvi:     "avi",
 }
 
-// canonical extension per writable format. Formats mimage cannot write are
-// deliberately absent
+// canonical extension per named format
 var formatExtensions = map[Format]string{
 	FormatJpeg: ".jpg",
 	FormatPng:  ".png",
 	FormatGif:  ".gif",
 	FormatTiff: ".tiff",
 	FormatBmp:  ".bmp",
+	FormatMp4:  ".mp4",
+	FormatMov:  ".mov",
+	FormatAvi:  ".avi",
 }
 
 // imageExtensions are the extensions that mark a filename as already naming an
@@ -62,10 +76,32 @@ func (f Format) String() string {
 	return "unknown"
 }
 
-// Supported reports whether mimage can decode and transform this format. Every
-// named format is supported, so this is true for anything but FormatUnknown
+// Supported reports whether mimage can handle this format, image or video.
+// Every named format is supported, so this is true for anything but
+// FormatUnknown. Use IsImage and IsVideo to tell which kind it is.
+//
+// For video this is a first check only: the header identifies the container,
+// not the codec inside it. The video package's Probe is what establishes that a
+// particular file can actually be used
 func (f Format) Supported() bool {
 	return f != FormatUnknown
+}
+
+// IsImage reports whether this is an image format, one the img package can
+// decode and transform
+func (f Format) IsImage() bool {
+	switch f {
+	case FormatJpeg, FormatPng, FormatGif, FormatTiff, FormatBmp:
+		return true
+	default:
+		return false
+	}
+}
+
+// IsVideo reports whether this is a video container format, handled by the
+// video package rather than img
+func (f Format) IsVideo() bool {
+	return f == FormatMp4 || f == FormatMov || f == FormatAvi
 }
 
 // CanReadMetaData reports whether mimage can read exif, iptc and xmp from this
@@ -81,7 +117,8 @@ func (f Format) CanEditMetaData() bool {
 }
 
 // Extension is the canonical file extension for this format including the
-// leading dot, or "" for a format mimage cannot write
+// leading dot, or "" for FormatUnknown. Note that mimage can only write image
+// formats: a video extension is for naming a file, not a conversion target
 func (f Format) Extension() string {
 	return formatExtensions[f]
 }
@@ -98,10 +135,14 @@ func IsImageExtension(ext string) bool {
 	return imageExtensions[strings.ToLower(ext)]
 }
 
-// DetectFormat identifies an image from its leading bytes. Only the header is
-// examined, so a short prefix of the file is enough. Returns FormatUnknown for
-// anything mimage does not handle, including a slice too short to tell
+// DetectFormat identifies an image or video from its leading bytes. Only the
+// header is examined, so a short prefix of the file is enough. Returns
+// FormatUnknown for anything mimage does not handle, including a slice too short
+// to tell
 func DetectFormat(data []byte) Format {
+	if f := detectVideo(data); f != FormatUnknown {
+		return f
+	}
 	switch {
 	case len(data) >= 2 && data[0] == 0xff && data[1] == 0xd8:
 		return FormatJpeg
@@ -114,18 +155,22 @@ func DetectFormat(data []byte) Format {
 		return FormatTiff
 	case len(data) >= 2 && data[0] == 'B' && data[1] == 'M':
 		return FormatBmp
+	//RIFF is a generic container, webp and wav use it too: the form type at
+	//offset 8 is what says AVI
+	case len(data) >= 12 && bytes.Equal(data[:4], []byte("RIFF")) && bytes.Equal(data[8:12], []byte("AVI ")):
+		return FormatAvi
 	default:
 		return FormatUnknown
 	}
 }
 
-// headerBytes is how much of a file DetectFormat needs. The longest signature
-// is png at 8 bytes
-const headerBytes = 16
+// headerBytes is how much of a file DetectFormat reads. Image signatures need at
+// most 8 bytes, but an ftyp box lists its compatible brands after the first 16
+const headerBytes = 64
 
-// DetectFormatFile identifies an image file by its content. Only the header is
-// read. An error means the file could not be read, not that it is not an image:
-// an unrecognised file returns FormatUnknown with a nil error
+// DetectFormatFile identifies an image or video file by its content. Only the
+// header is read. An error means the file could not be read, not that it is not
+// media: an unrecognised file returns FormatUnknown with a nil error
 func DetectFormatFile(fileName string) (Format, error) {
 	f, err := os.Open(fileName)
 	if err != nil {
@@ -134,7 +179,7 @@ func DetectFormatFile(fileName string) (Format, error) {
 	defer func() { _ = f.Close() }()
 
 	header := make([]byte, headerBytes)
-	n, err := f.Read(header)
+	n, err := io.ReadFull(f, header)
 	if err != nil && n == 0 {
 		//an empty or truncated file is not an image, but it is not an io
 		//failure either
@@ -148,7 +193,8 @@ func DetectFormatFile(fileName string) (Format, error) {
 
 // SupportedFormat reports whether mimage can handle fileName, and what it
 // actually is. The format is detected from the file content, so a tiff named
-// .jpg is reported as tiff. An error means the file could not be read
+// .jpg is reported as tiff. An error means the file could not be read. See
+// Format.Supported for what that means for a video
 func SupportedFormat(fileName string) (bool, Format, error) {
 	format, err := DetectFormatFile(fileName)
 	if err != nil {
