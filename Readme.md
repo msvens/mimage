@@ -61,7 +61,7 @@ if err != nil {
 
 format.Supported()        //mimage handles it, image or video
 format.IsImage()          //decode and transform with img
-format.IsVideo()          //mp4 or QuickTime, see Video below
+format.IsVideo()          //mp4, QuickTime or avi, see Video below
 format.CanReadMetaData()  //exif, IPTC and XMP
 format.CanEditMetaData()  //write metadata back
 format.Extension()        //canonical extension, ".jpg" and so on
@@ -269,10 +269,10 @@ Note that in a real situation you would handle the errors that we are now just s
 
 ## Video
 
-The `video` package reads mp4 and QuickTime (`.mov`) files. It does not transcode: it
-reads metadata and extracts a poster frame, the two things needed to show a video
-alongside photos. It runs `ffprobe` and `ffmpeg`, and `video.Available()` checks they
-can be found.
+The `video` package reads mp4, QuickTime (`.mov`) and avi files. It reads their metadata,
+transcodes them to an mp4 every browser plays, and extracts a poster frame: what is needed
+to show a video alongside photos. It runs `ffprobe` and `ffmpeg`, and `video.Available()`
+checks they can be found.
 
 `DetectFormat` recognises the container from its header, so `Supported()` is only a first
 check for a video: the header says mp4, not whether the stream inside is something you can
@@ -298,7 +298,9 @@ s.CameraMake, s.Title, s.Keywords, s.Location, s.VideoCodec
 
 Missing metadata is a zero value, not an error. Tags are read from where phones and
 Lightroom put them - Apple's QuickTime keys, Android's, and an embedded XMP packet for
-title, caption and keywords - in that order of preference.
+title, caption and keywords - in that order of preference. A phone with location switched
+off writes 0,0, which is reported as no location. Samsung keeps the camera model in a
+3GPP box ffprobe does not show, so a Samsung video has no camera for now.
 
 Phones record portrait video as landscape frames plus a rotation flag. `Width` and `Height`
 are what a viewer sees, and `ExtractPoster` writes an upright jpeg, so a poster can go
@@ -314,12 +316,42 @@ The frame is taken one second in, past the black or faded opening many clips hav
 halfway through a clip shorter than two seconds. `PosterOptions.At` picks another
 position.
 
-A 10 bit HDR video, which newer phones record by default, gives a washed out poster: there
-is no tone mapping. An 8 bit export, such as H.264 from Lightroom, is fine.
+Take the poster from the transcoded file rather than the original: it is what plays.
+
+### Transcoding
+
+Phone originals are often HEVC, which not every browser plays, with the index at the end of
+the file, so playback cannot start before the download finishes. `Transcode` writes an mp4
+that plays everywhere: H.264 in 8 bit standard range, AAC sound, the index at the front,
+and the original's date, camera and location tags:
+
+```go
+r, err := video.Transcode(ctx, "original.mov", "/store/abc123", video.TranscodeOptions{})
+r.Path     //"/store/abc123.mp4"
+r.Encoded  //false when the source was already web ready and only copied
+r.Source   //Probe of the original: the metadata to keep
+r.Output   //Probe of what was written
+```
+
+A source that is already web ready is copied, which is fast and loses nothing. Anything else
+is encoded, fixing on the way whatever needs it: rotation becomes upright pixels, interlacing
+is removed, full range and non square pixels are converted. The result is probed and compared with the source - length, orientation, date -
+before it replaces anything, and on any error nothing is left behind.
+
+The zero `TranscodeOptions` is the recommended setting: `QualityStandard`, the shorter side
+at most 1080 and at most 60 fps. `QualityHigh` and `QualitySmall` trade size for detail, and
+`CRF`, `Preset`, `AudioBitrate`, `MaxShortSide` and `MaxFrameRate` override any single
+setting.
+
+HDR video is refused with `ErrHDRUnsupported` rather than turned into a washed out picture.
+Converting it needs an ffmpeg built with zimg, which Homebrew's is not, so it could not be
+tested everywhere mimage is developed. An iPhone records HDR unless HDR Video is switched
+off in its camera settings.
 
 From the command line:
 
     mimage video probe clip.mp4
+    mimage video transcode -o /tmp --quality high clip.mov
     mimage video poster -o /tmp clip.mp4
 
 ### Testing video
@@ -376,7 +408,7 @@ IPTC tag is repeatable and `IptcTagDesc.Repeatable` needs it:
 ## v0.2.0
 
 **Behaviour change**: `Format.Supported()` now means mimage handles the file, image **or
-video**. `DetectFormat` recognises mp4 and QuickTime, so a check of `Supported()` alone no
+video**. `DetectFormat` recognises mp4, QuickTime and avi, so a check of `Supported()` alone no
 longer implies a file can go through `TransformFile`. Use `IsImage()` for that. Passing a
 video to `TransformFile` or `ConvertFile`, as a source or an output format, returns
 `ErrUnsupportedFormat`.
@@ -385,14 +417,14 @@ New:
 
 - **The `video` package.** `Probe` reads duration, display size, rotation, creation time,
   camera, title, caption, keywords, location and codecs, and rejects a file cut short with
-  `ErrTruncated`, which ffprobe alone does not notice. `ExtractPoster` writes an upright
-  jpeg frame for `TransformFile`. Uses ffprobe and ffmpeg; see Video above.
-- `FormatMp4` and `FormatMov`, detected by content. heif, avif and m4a share the container
-  and are not mistaken for video.
-- `Format.IsImage()` and `Format.IsVideo()`. `Extension()` now also covers video, `.mp4`
-  and `.mov`, for naming a stored original.
+  `ErrTruncated`, which ffprobe alone does not notice. `Transcode` writes a web ready mp4,
+  copying when it can and keeping the original's metadata. `ExtractPoster` writes an
+  upright jpeg frame for `TransformFile`. Uses ffprobe and ffmpeg; see Video above.
+- `FormatMp4`, `FormatMov` and `FormatAvi`, detected by content. heif, avif and m4a share
+  the mp4 container, webp and wav the avi one, and none are mistaken for video.
+- `Format.IsImage()` and `Format.IsVideo()`. `Extension()` now also covers video.
 - `XmpData.GetDescription`, `GetCamera`, `GetDate` and `GetLocation`.
-- `mimage video probe` and `mimage video poster`.
+- `mimage video probe`, `mimage video transcode` and `mimage video poster`.
 
 ## v0.1.0
 
